@@ -1,0 +1,53 @@
+{
+  "name": "@onesaz/tailwind-config",
+  "version": "0.1.0",
+  "description": "Tailwind CSS preset for Onesaz UI - shared configuration with design tokens",
+  "type": "module",
+  "license": "MIT",
+  "author": "Onesaz <engineering@onesaz.com>",
+  "homepage": "https://github.com/onesaz/onesaz-ui#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onesaz/onesaz-ui.git",
+    "directory": "packages/tailwind-config"
+  },
+  "bugs": {
+    "url": "https://github.com/onesaz/onesaz-ui/issues"
+  },
+  "keywords": [
+    "tailwindcss",
+    "tailwind-preset",
+    "design-system",
+    "onesaz"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@onesaz/tokens": "*"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.15",
+    "tsup": "^8.3.5",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

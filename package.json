@@ -1,0 +1,33 @@
+{
+  "name": "onesaz-ui",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/onesaz/onesaz-ui.git"
+  },
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "storybook": "npm run dev --workspace=@onesaz/storybook",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "publish:packages": "npm run build && npm publish --workspace=@onesaz/tokens && npm publish --workspace=@onesaz/tailwind-config && npm publish --workspace=@onesaz/ui",
+    "version:patch": "npm version patch --workspace=@onesaz/tokens --workspace=@onesaz/tailwind-config --workspace=@onesaz/ui --no-git-tag-version",
+    "version:minor": "npm version minor --workspace=@onesaz/tokens --workspace=@onesaz/tailwind-config --workspace=@onesaz/ui --no-git-tag-version",
+    "version:major": "npm version major --workspace=@onesaz/tokens --workspace=@onesaz/tailwind-config --workspace=@onesaz/ui --no-git-tag-version"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.5.4"
+  },
+  "packageManager": "npm@10.8.2",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
