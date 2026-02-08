@@ -1,0 +1,150 @@
+/* Onesaz UI - CSS Variables for Theming */
+
+:root {
+  /* Background & Foreground */
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  /* Card */
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  /* Popover */
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  /* Muted */
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  /* Border & Input */
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+
+  /* Accent (default: purple) */
+  --accent: #8b5cf6;
+  --accent-foreground: #ffffff;
+  --accent-hover: #7c3aed;
+
+  /* Ring */
+  --ring: #8b5cf6;
+
+  /* Destructive */
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  /* Border Radius */
+  --radius: 0.375rem;
+  --radius-sm: 0.25rem;
+  --radius-lg: 0.5rem;
+}
+
+/* Dark Theme */
+[data-theme="dark"] {
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --popover: #1e293b;
+  --popover-foreground: #f8fafc;
+  --muted: #334155;
+  --muted-foreground: #94a3b8;
+  --border: #334155;
+  --input: #334155;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+}
+
+/* Base Styles */
+* {
+  border-color: var(--border);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Animations */
+.animate-in {
+  animation-name: onesaz-enter;
+  animation-duration: 150ms;
+  animation-timing-function: ease-out;
+}
+
+.animate-out {
+  animation-name: onesaz-exit;
+  animation-duration: 150ms;
+  animation-timing-function: ease-in;
+}
+
+@keyframes onesaz-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes onesaz-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* Fade animations */
+.fade-in {
+  animation: onesaz-fade-in 150ms ease-out;
+}
+
+.fade-out {
+  animation: onesaz-fade-out 150ms ease-in;
+}
+
+@keyframes onesaz-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes onesaz-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Slide animations */
+.slide-in-from-top {
+  animation: onesaz-slide-in-from-top 150ms ease-out;
+}
+
+.slide-in-from-bottom {
+  animation: onesaz-slide-in-from-bottom 150ms ease-out;
+}
+
+@keyframes onesaz-slide-in-from-top {
+  from { transform: translateY(-4px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes onesaz-slide-in-from-bottom {
+  from { transform: translateY(4px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Zoom animations */
+.zoom-in {
+  animation: onesaz-zoom-in 150ms ease-out;
+}
+
+@keyframes onesaz-zoom-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}

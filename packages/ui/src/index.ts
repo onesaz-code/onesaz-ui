@@ -19,36 +19,30 @@ export {
   CardContent,
 } from './components/card'
 export { Badge, type BadgeProps } from './components/badge'
-export { Label } from './components/label'
-export { Checkbox } from './components/checkbox'
-export { Switch } from './components/switch'
-export { Separator } from './components/separator'
+export { Label, type LabelProps } from './components/label'
+export { Checkbox, type CheckboxProps } from './components/checkbox'
+export { Switch, type SwitchProps } from './components/switch'
+export { Separator, type SeparatorProps } from './components/separator'
 
 // Compound Components
 export {
   Select,
+  SelectOption,
   SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  SelectScrollUpButton,
-  SelectScrollDownButton,
+  type SelectProps,
+  type SelectOptionProps,
+  type SelectGroupProps,
 } from './components/select'
 
 export {
   Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogTrigger,
-  DialogClose,
   DialogContent,
   DialogHeader,
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  type DialogProps,
+  type DialogContentProps,
 } from './components/dialog'
 
 // New Components
@@ -75,3 +69,6 @@ export {
   type PaginationLinkProps,
 } from './components/pagination'
 export { Combobox, type ComboboxProps, type ComboboxOption } from './components/combobox'
+
+// Playground - for testing all components
+export { Playground } from './playground'

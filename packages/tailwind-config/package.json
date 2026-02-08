@@ -1,7 +1,7 @@
 {
   "name": "@onesaz/tailwind-config",
-  "version": "0.1.0",
-  "description": "Tailwind CSS preset for Onesaz UI - shared configuration with design tokens",
+  "version": "0.2.8",
+  "description": "Tailwind CSS preset for Onesaz UI - shared configuration with design tokens (supports v3 and v4)",
   "type": "module",
   "license": "MIT",
   "author": "Onesaz <engineering@onesaz.com>",
@@ -18,6 +18,7 @@
     "tailwindcss",
     "tailwind-preset",
     "design-system",
+    "tailwindcss-v4",
     "onesaz"
   ],
   "publishConfig": {
@@ -31,7 +32,9 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
-    }
+    },
+    "./v4": "./dist/v4.css",
+    "./v4.css": "./dist/v4.css"
   },
   "files": ["dist"],
   "scripts": {
@@ -48,6 +51,6 @@
     "typescript": "^5.5.4"
   },
   "peerDependencies": {
-    "tailwindcss": "^3.4.0"
+    "tailwindcss": "^3.4.0 || ^4.0.0"
   }
 }

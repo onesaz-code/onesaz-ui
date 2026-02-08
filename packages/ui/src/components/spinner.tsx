@@ -19,7 +19,7 @@ const Spinner = React.forwardRef<HTMLDivElement, SpinnerProps>(
             'h-6 w-6': size === 'default',
             'h-8 w-8': size === 'lg',
           },
-          'text-[var(--accent)]',
+          'text-accent',
           className
         )}
         {...props}

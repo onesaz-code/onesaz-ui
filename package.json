@@ -29,5 +29,8 @@
   "packageManager": "npm@10.8.2",
   "engines": {
     "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@onesaz/tailwind-config": "^0.2.4"
   }
 }
