@@ -19,7 +19,7 @@ import { Label } from './components/label'
 import { Checkbox } from './components/checkbox'
 import { Switch } from './components/switch'
 import { Separator } from './components/separator'
-import { Select, SelectOption, SelectGroup } from './components/select'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem, SelectGroup, SelectLabel } from './components/select'
 import {
   Dialog,
   DialogContent,
@@ -63,10 +63,15 @@ const ThemeToggle = () => {
   return (
     <div className="flex items-center gap-2">
       <Label>Theme:</Label>
-      <Select value={theme} onChange={(e) => setTheme(e.target.value as 'light' | 'dark' | 'system')}>
-        <SelectOption value="light">Light</SelectOption>
-        <SelectOption value="dark">Dark</SelectOption>
-        <SelectOption value="system">System</SelectOption>
+      <Select value={theme} onValueChange={(value) => setTheme(value as 'light' | 'dark' | 'system')}>
+        <SelectTrigger className="w-32">
+          <SelectValue placeholder="Select theme" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="light">Light</SelectItem>
+          <SelectItem value="dark">Dark</SelectItem>
+          <SelectItem value="system">System</SelectItem>
+        </SelectContent>
       </Select>
     </div>
   )
@@ -166,35 +171,47 @@ const PlaygroundContent = () => {
         <Section title="Select">
           <div className="space-y-4 max-w-md">
             <div>
-              <Label htmlFor="select-default">Default Select</Label>
-              <Select
-                id="select-default"
-                value={selectValue}
-                onChange={(e) => setSelectValue(e.target.value)}
-              >
-                <SelectOption value="">Select an option...</SelectOption>
-                <SelectOption value="option1">Option 1</SelectOption>
-                <SelectOption value="option2">Option 2</SelectOption>
-                <SelectOption value="option3">Option 3</SelectOption>
+              <Label>Default Select</Label>
+              <Select value={selectValue} onValueChange={setSelectValue}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select an option..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="option1">Option 1</SelectItem>
+                  <SelectItem value="option2">Option 2</SelectItem>
+                  <SelectItem value="option3">Option 3</SelectItem>
+                </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="select-grouped">Grouped Select</Label>
-              <Select id="select-grouped">
-                <SelectGroup label="Fruits">
-                  <SelectOption value="apple">Apple</SelectOption>
-                  <SelectOption value="banana">Banana</SelectOption>
-                </SelectGroup>
-                <SelectGroup label="Vegetables">
-                  <SelectOption value="carrot">Carrot</SelectOption>
-                  <SelectOption value="potato">Potato</SelectOption>
-                </SelectGroup>
+              <Label>Grouped Select</Label>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select a food..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Fruits</SelectLabel>
+                    <SelectItem value="apple">Apple</SelectItem>
+                    <SelectItem value="banana">Banana</SelectItem>
+                  </SelectGroup>
+                  <SelectGroup>
+                    <SelectLabel>Vegetables</SelectLabel>
+                    <SelectItem value="carrot">Carrot</SelectItem>
+                    <SelectItem value="potato">Potato</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
               </Select>
             </div>
             <div>
-              <Label htmlFor="select-disabled">Disabled Select</Label>
-              <Select id="select-disabled" disabled>
-                <SelectOption value="">Disabled...</SelectOption>
+              <Label>Disabled Select</Label>
+              <Select disabled>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Disabled..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                </SelectContent>
               </Select>
             </div>
           </div>
@@ -314,19 +331,27 @@ const PlaygroundContent = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="state">State *</Label>
-                    <Select id="state">
-                      <SelectOption value="">Select state</SelectOption>
-                      <SelectOption value="telangana">TELANGANA</SelectOption>
-                      <SelectOption value="andhra">ANDHRA PRADESH</SelectOption>
+                    <Label>State *</Label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select state" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="telangana">TELANGANA</SelectItem>
+                        <SelectItem value="andhra">ANDHRA PRADESH</SelectItem>
+                      </SelectContent>
                     </Select>
                   </div>
                   <div>
-                    <Label htmlFor="district">District *</Label>
-                    <Select id="district">
-                      <SelectOption value="">Select District</SelectOption>
-                      <SelectOption value="hyderabad">HYDERABAD</SelectOption>
-                      <SelectOption value="rangareddy">RANGAREDDY</SelectOption>
+                    <Label>District *</Label>
+                    <Select>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select District" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="hyderabad">HYDERABAD</SelectItem>
+                        <SelectItem value="rangareddy">RANGAREDDY</SelectItem>
+                      </SelectContent>
                     </Select>
                   </div>
                 </div>

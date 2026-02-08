@@ -27,11 +27,20 @@ export { Separator, type SeparatorProps } from './components/separator'
 // Compound Components
 export {
   Select,
-  SelectOption,
   SelectGroup,
-  type SelectProps,
-  type SelectOptionProps,
-  type SelectGroupProps,
+  SelectValue,
+  SelectTrigger,
+  SelectContent,
+  SelectLabel,
+  SelectItem,
+  SelectSeparator,
+  SelectScrollUpButton,
+  SelectScrollDownButton,
+  // Native select for simple use cases
+  NativeSelect,
+  NativeSelectOption,
+  type NativeSelectProps,
+  type NativeSelectOptionProps,
 } from './components/select'
 
 export {
