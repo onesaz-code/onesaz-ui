@@ -129,3 +129,115 @@ export const WithDisabledOptions: Story = {
     ),
   ],
 }
+
+// ============================================================================
+// Multi-Select Examples
+// ============================================================================
+
+export const MultiSelect: Story = {
+  render: () => (
+    <div className="grid w-[350px] items-center gap-1.5">
+      <Label>Frameworks (Multi-select)</Label>
+      <Combobox
+        multiple
+        options={frameworks}
+        placeholder="Select frameworks..."
+        searchPlaceholder="Search frameworks..."
+      />
+    </div>
+  ),
+}
+
+export const MultiSelectControlled: Story = {
+  render: function ControlledMultiCombobox() {
+    const [value, setValue] = React.useState<string[]>(['next', 'remix'])
+
+    return (
+      <div className="grid w-[350px] items-center gap-1.5">
+        <Label>Frameworks</Label>
+        <Combobox
+          multiple
+          options={frameworks}
+          value={value}
+          onValueChange={setValue}
+          placeholder="Select frameworks..."
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          Selected: {value.length > 0 ? value.join(', ') : 'None'}
+        </p>
+      </div>
+    )
+  },
+}
+
+export const MultiSelectManyOptions: Story = {
+  render: function MultiSelectManyOptions() {
+    const [value, setValue] = React.useState<string[]>(['us', 'uk', 'ca', 'de', 'fr'])
+
+    return (
+      <div className="grid w-[350px] items-center gap-1.5">
+        <Label>Countries (shows +N more)</Label>
+        <Combobox
+          multiple
+          options={countries}
+          value={value}
+          onValueChange={setValue}
+          placeholder="Select countries..."
+          maxDisplayItems={3}
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {value.length} countries selected
+        </p>
+      </div>
+    )
+  },
+}
+
+export const MultiSelectCustomMaxDisplay: Story = {
+  render: () => (
+    <div className="space-y-6 w-[350px]">
+      <div className="space-y-2">
+        <Label>Max 2 displayed</Label>
+        <Combobox
+          multiple
+          options={frameworks}
+          defaultValue={['next', 'remix', 'astro', 'gatsby']}
+          placeholder="Select frameworks..."
+          maxDisplayItems={2}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Max 5 displayed</Label>
+        <Combobox
+          multiple
+          options={frameworks}
+          defaultValue={['next', 'remix', 'astro', 'gatsby']}
+          placeholder="Select frameworks..."
+          maxDisplayItems={5}
+        />
+      </div>
+    </div>
+  ),
+}
+
+export const SingleVsMulti: Story = {
+  render: () => (
+    <div className="space-y-6 w-[350px]">
+      <div className="space-y-2">
+        <Label>Single Select</Label>
+        <Combobox
+          options={frameworks}
+          placeholder="Select one framework..."
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Multi Select</Label>
+        <Combobox
+          multiple
+          options={frameworks}
+          placeholder="Select multiple frameworks..."
+        />
+      </div>
+    </div>
+  ),
+}

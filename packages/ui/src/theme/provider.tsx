@@ -34,33 +34,31 @@ export function ThemeProvider({
   radius: defaultRadius = 'medium',
   storageKey = 'onesaz-theme',
 }: ThemeProviderProps) {
-  const [theme, setThemeState] = React.useState<Theme>(() => {
-    if (typeof window === 'undefined') return defaultTheme
-    const stored = localStorage.getItem(`${storageKey}-mode`)
-    return (stored as Theme) || defaultTheme
-  })
-
-  const [accentColor, setAccentColorState] = React.useState<AccentColor>(() => {
-    if (typeof window === 'undefined') return defaultAccent
-    const stored = localStorage.getItem(`${storageKey}-accent`)
-    return (stored as AccentColor) || defaultAccent
-  })
-
-  const [grayColor, setGrayColorState] = React.useState<GrayColor>(() => {
-    if (typeof window === 'undefined') return defaultGray
-    const stored = localStorage.getItem(`${storageKey}-gray`)
-    return (stored as GrayColor) || defaultGray
-  })
-
-  const [radius, setRadiusState] = React.useState<RadiusPreset>(() => {
-    if (typeof window === 'undefined') return defaultRadius
-    const stored = localStorage.getItem(`${storageKey}-radius`)
-    return (stored as RadiusPreset) || defaultRadius
-  })
+  const [theme, setThemeState] = React.useState<Theme>(defaultTheme)
+  const [accentColor, setAccentColorState] = React.useState<AccentColor>(defaultAccent)
+  const [grayColor, setGrayColorState] = React.useState<GrayColor>(defaultGray)
+  const [radius, setRadiusState] = React.useState<RadiusPreset>(defaultRadius)
 
   const [resolvedTheme, setResolvedTheme] = React.useState<'light' | 'dark'>(() =>
-    theme === 'system' ? getSystemTheme() : theme
+    defaultTheme === 'system' ? getSystemTheme() : defaultTheme === 'dark' ? 'dark' : 'light'
   )
+
+  // Sync state with props when they change (important for Storybook controls)
+  React.useEffect(() => {
+    setThemeState(defaultTheme)
+  }, [defaultTheme])
+
+  React.useEffect(() => {
+    setAccentColorState(defaultAccent)
+  }, [defaultAccent])
+
+  React.useEffect(() => {
+    setGrayColorState(defaultGray)
+  }, [defaultGray])
+
+  React.useEffect(() => {
+    setRadiusState(defaultRadius)
+  }, [defaultRadius])
 
   // Listen for system theme changes
   React.useEffect(() => {

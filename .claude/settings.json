@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/harsha919/Desktop/ONESAZ/erp-ui/src/myComponents/**)"
+    ]
+  }
+}

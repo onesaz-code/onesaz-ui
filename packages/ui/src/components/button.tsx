@@ -11,9 +11,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         className={cn(
-          'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors',
+          'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors cursor-pointer',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
-          'disabled:pointer-events-none disabled:opacity-50',
+          'disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed',
           {
             'bg-accent text-accent-foreground hover:bg-accent-hover':
               variant === 'default',
@@ -44,4 +44,58 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 )
 Button.displayName = 'Button'
 
-export { Button }
+// ============================================================================
+// IconButton - Specialized button for icons
+// ============================================================================
+
+export interface IconButtonProps extends Omit<ButtonProps, 'size'> {
+  /** Size of the icon button */
+  size?: 'xs' | 'sm' | 'md' | 'lg'
+  /** Whether the button is rounded (circular) */
+  rounded?: boolean
+  /** Aria label for accessibility (required for icon-only buttons) */
+  'aria-label': string
+}
+
+const iconButtonSizes = {
+  xs: 'h-7 w-7',
+  sm: 'h-8 w-8',
+  md: 'h-10 w-10',
+  lg: 'h-12 w-12',
+}
+
+const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
+  ({ className, variant = 'ghost', size = 'md', rounded = false, ...props }, ref) => {
+    return (
+      <button
+        className={cn(
+          'inline-flex items-center justify-center transition-colors cursor-pointer',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+          'disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed',
+          {
+            'bg-accent text-accent-foreground hover:bg-accent-hover':
+              variant === 'default',
+            'bg-destructive text-destructive-foreground hover:bg-destructive/90':
+              variant === 'destructive',
+            'border border-input bg-background hover:bg-muted hover:text-foreground':
+              variant === 'outline',
+            'bg-muted text-foreground hover:bg-muted/80':
+              variant === 'secondary',
+            'hover:bg-muted hover:text-foreground':
+              variant === 'ghost',
+            'text-accent underline-offset-4 hover:underline':
+              variant === 'link',
+          },
+          iconButtonSizes[size],
+          rounded ? 'rounded-full' : 'rounded-md',
+          className
+        )}
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
+IconButton.displayName = 'IconButton'
+
+export { Button, IconButton }

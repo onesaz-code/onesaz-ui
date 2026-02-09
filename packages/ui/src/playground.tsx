@@ -311,7 +311,7 @@ const PlaygroundContent = () => {
         <Section title="Dialog">
           <Button onClick={() => setDialogOpen(true)}>Open Dialog</Button>
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogContent onClose={() => setDialogOpen(false)}>
+            <DialogContent>
               <DialogHeader>
                 <DialogTitle>Create New Zone</DialogTitle>
                 <DialogDescription>

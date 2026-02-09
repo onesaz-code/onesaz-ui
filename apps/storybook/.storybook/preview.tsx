@@ -21,7 +21,7 @@ const ThemeDecorator: Decorator = (Story, context) => {
       grayColor={grayColor}
       radius={radius}
     >
-      <div className="min-h-[100px] p-4">
+      <div className="min-h-[100px] p-4 bg-background text-foreground">
         <Story />
       </div>
     </ThemeProvider>
