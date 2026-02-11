@@ -7,41 +7,71 @@ export interface ComboboxOption {
   disabled?: boolean
 }
 
+type ComboboxPrimitiveOption = string
+type ComboboxObjectOption = object
+type ComboboxOptionInput = ComboboxPrimitiveOption | ComboboxObjectOption
+type NormalizedOption<T> = {
+  value: string
+  label: string
+  disabled?: boolean
+  raw: T
+}
+
 // ============================================================================
 // Single Select Combobox Props
 // ============================================================================
-export interface ComboboxSingleProps {
-  options: ComboboxOption[]
-  value?: string
-  defaultValue?: string
-  onValueChange?: (value: string) => void
+export interface ComboboxSingleProps<T extends ComboboxOptionInput = ComboboxOptionInput> {
+  options: T[]
+  value?: T | null
+  defaultValue?: T | null
+  onChange?: (value: T | null) => void
   placeholder?: string
   searchPlaceholder?: string
   emptyMessage?: string
   disabled?: boolean
   className?: string
   multiple?: false
+  clearable?: boolean
+  openOnFocus?: boolean
+  inputValue?: string
+  onInputChange?: (value: string) => void
+  simpleOptions?: boolean
+  labelKey?: string
+  valueKey?: string
 }
 
 // ============================================================================
 // Multi Select Combobox Props
 // ============================================================================
-export interface ComboboxMultipleProps {
-  options: ComboboxOption[]
-  value?: string[]
-  defaultValue?: string[]
-  onValueChange?: (value: string[]) => void
+export interface ComboboxMultipleProps<T extends ComboboxOptionInput = ComboboxOptionInput> {
+  options: T[]
+  value?: T[]
+  defaultValue?: T[]
+  onChange?: (value: T[]) => void
   placeholder?: string
   searchPlaceholder?: string
   emptyMessage?: string
   disabled?: boolean
   className?: string
   multiple: true
+  clearable?: boolean
+  openOnFocus?: boolean
+  inputValue?: string
+  onInputChange?: (value: string) => void
+  /** Show select-all option */
+  selectAll?: boolean
+  /** Label for select-all option */
+  selectAllLabel?: string
+  simpleOptions?: boolean
+  labelKey?: string
+  valueKey?: string
   /** Maximum number of items to display as chips before showing "+N more" */
   maxDisplayItems?: number
 }
 
-export type ComboboxProps = ComboboxSingleProps | ComboboxMultipleProps
+export type ComboboxProps =
+  | ComboboxSingleProps
+  | ComboboxMultipleProps
 
 // Type guard to check if props are for multi-select
 function isMultipleProps(props: ComboboxProps): props is ComboboxMultipleProps {
@@ -56,83 +86,138 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       searchPlaceholder = 'Search...',
       emptyMessage = 'No results found.',
       disabled = false,
+      clearable = true,
+      openOnFocus = true,
       className,
     } = props
 
+    const labelKey = props.labelKey ?? 'label'
+    const valueKey = props.valueKey ?? 'value'
+
+    const getOptionLabel = React.useCallback(
+      (option: ComboboxOptionInput) => {
+        if (typeof option === 'string') return option
+        const record = option as Record<string, unknown>
+        const maybeLabel = record[labelKey]
+        return typeof maybeLabel === 'string' ? maybeLabel : String(maybeLabel ?? '')
+      },
+      [labelKey]
+    )
+
+    const getOptionValue = React.useCallback(
+      (option: ComboboxOptionInput) => {
+        if (typeof option === 'string') return option
+        const record = option as Record<string, unknown>
+        const maybeValue = record[valueKey]
+        if (maybeValue !== undefined && maybeValue !== null) {
+          return String(maybeValue)
+        }
+        return getOptionLabel(option)
+      },
+      [valueKey, getOptionLabel]
+    )
+
+    const normalizedOptions = React.useMemo<NormalizedOption<ComboboxOptionInput>[]>(
+      () =>
+        (options ?? []).map((option) => ({
+          raw: option,
+          label: getOptionLabel(option),
+          value: getOptionValue(option),
+          disabled: Boolean((option as { disabled?: boolean }).disabled),
+        })),
+      [options, getOptionLabel, getOptionValue]
+    )
+
     const [open, setOpen] = React.useState(false)
-    const [search, setSearch] = React.useState('')
+    const [internalSearch, setInternalSearch] = React.useState('')
     const containerRef = React.useRef<HTMLDivElement>(null)
+    const searchInputRef = React.useRef<HTMLInputElement | null>(null)
 
     // Handle single vs multiple value state
     const isMultiple = isMultipleProps(props)
+    const selectAll = isMultiple ? (props.selectAll ?? false) : false
+    const selectAllLabel = isMultiple ? (props.selectAllLabel ?? 'Select all') : 'Select all'
 
     // Single select state
-    const [internalSingleValue, setInternalSingleValue] = React.useState(
-      !isMultiple ? (props.defaultValue ?? '') : ''
-    )
+    const [internalSingleValue, setInternalSingleValue] = React.useState<
+      ComboboxOptionInput | null
+    >(!isMultiple ? (props.defaultValue ?? null) : null)
 
     // Multi select state
-    const [internalMultiValue, setInternalMultiValue] = React.useState<string[]>(
-      isMultiple ? (props.defaultValue ?? []) : []
-    )
+    const [internalMultiValue, setInternalMultiValue] = React.useState<
+      ComboboxOptionInput[]
+    >(isMultiple ? (props.defaultValue ?? []) : [])
 
     // Get current value(s)
     const singleValue = !isMultiple
-      ? (props.value !== undefined ? props.value : internalSingleValue)
-      : ''
+      ? (props.value !== undefined ? (props.value as ComboboxOptionInput | null) : internalSingleValue)
+      : null
     const multiValue = isMultiple
-      ? (props.value !== undefined ? props.value : internalMultiValue)
+      ? (props.value !== undefined ? (props.value as ComboboxOptionInput[]) : internalMultiValue)
       : []
+
+    const search = props.inputValue !== undefined ? props.inputValue : internalSearch
 
     const filteredOptions = React.useMemo(() => {
-      if (!search) return options
-      return options.filter((option) =>
+      if (!search) return normalizedOptions
+      return normalizedOptions.filter((option) =>
         option.label.toLowerCase().includes(search.toLowerCase())
       )
-    }, [options, search])
+    }, [normalizedOptions, search])
 
     // Single select: get selected option
-    const selectedOption = !isMultiple
-      ? options.find((option) => option.value === singleValue)
-      : undefined
-
     // Multi select: get selected options
-    const selectedOptions = isMultiple
-      ? options.filter((option) => multiValue.includes(option.value))
-      : []
+    const selectedOptions = isMultiple ? multiValue : []
+    const selectedValueKeys = React.useMemo(
+      () => new Set(selectedOptions.map((option) => getOptionValue(option))),
+      [selectedOptions, getOptionValue]
+    )
+    const singleValueKey = singleValue ? getOptionValue(singleValue) : null
+    const selectableOptions = React.useMemo(
+      () => normalizedOptions.filter((option) => !option.disabled),
+      [normalizedOptions]
+    )
+    const allSelected =
+      isMultiple &&
+      selectableOptions.length > 0 &&
+      selectableOptions.every((option) => selectedValueKeys.has(option.value))
 
-    const handleSingleSelect = (optionValue: string) => {
+    const handleSingleSelect = (option: ComboboxOptionInput) => {
       if (!isMultiple) {
         if (props.value === undefined) {
-          setInternalSingleValue(optionValue)
+          setInternalSingleValue(option)
         }
-        props.onValueChange?.(optionValue)
+        props.onChange?.(option as never)
         setOpen(false)
-        setSearch('')
+        if (props.inputValue === undefined) {
+          setInternalSearch('')
+        }
       }
     }
 
-    const handleMultiSelect = (optionValue: string) => {
+    const handleMultiSelect = (option: ComboboxOptionInput) => {
       if (isMultiple) {
-        const newValue = multiValue.includes(optionValue)
-          ? multiValue.filter((v) => v !== optionValue)
-          : [...multiValue, optionValue]
+        const optionKey = getOptionValue(option)
+        const exists = multiValue.some((item) => getOptionValue(item) === optionKey)
+        const newValue = exists
+          ? multiValue.filter((item) => getOptionValue(item) !== optionKey)
+          : [...multiValue, option]
 
         if (props.value === undefined) {
           setInternalMultiValue(newValue)
         }
-        props.onValueChange?.(newValue)
+        props.onChange?.(newValue as never)
       }
     }
 
     const handleRemoveItem = (optionValue: string, e: React.MouseEvent) => {
       e.stopPropagation()
       if (isMultiple) {
-        const newValue = multiValue.filter((v) => v !== optionValue)
+        const newValue = multiValue.filter((v) => getOptionValue(v) !== optionValue)
         if (props.value === undefined) {
           setInternalMultiValue(newValue)
         }
-        props.onValueChange?.(newValue)
+        props.onChange?.(newValue as never)
       }
     }
 
@@ -142,7 +227,30 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         if (props.value === undefined) {
           setInternalMultiValue([])
         }
-        props.onValueChange?.([])
+        props.onChange?.([] as never)
+      }
+    }
+
+    const handleSelectAll = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (!isMultiple) return
+      const nextValue = allSelected ? [] : selectableOptions
+      if (props.value === undefined) {
+        setInternalMultiValue(nextValue.map((option) => option.raw))
+      }
+      props.onChange?.(nextValue.map((option) => option.raw) as never)
+    }
+
+    const handleClearSingle = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      if (!isMultiple) {
+        if (props.value === undefined) {
+          setInternalSingleValue(null)
+        }
+        props.onChange?.(null)
+        if (props.inputValue === undefined) {
+          setInternalSearch('')
+        }
       }
     }
 
@@ -156,6 +264,22 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       document.addEventListener('mousedown', handleClickOutside)
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
+
+    React.useEffect(() => {
+      if (open) {
+        searchInputRef.current?.focus()
+      }
+    }, [open])
+
+    React.useImperativeHandle(
+      ref,
+      () => searchInputRef.current as HTMLInputElement,
+      []
+    )
+
+    const setSearchRef = (node: HTMLInputElement | null) => {
+      searchInputRef.current = node
+    }
 
     const maxDisplayItems = isMultiple ? (props.maxDisplayItems ?? 3) : 0
     const displayedOptions = selectedOptions.slice(0, maxDisplayItems)
@@ -186,13 +310,13 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 <>
                   {displayedOptions.map((option) => (
                     <span
-                      key={option.value}
+                      key={getOptionValue(option)}
                       className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
                     >
-                      {option.label}
+                      {getOptionLabel(option)}
                       <button
                         type="button"
-                        onClick={(e) => handleRemoveItem(option.value, e)}
+                        onClick={(e) => handleRemoveItem(getOptionValue(option), e)}
                         className="ml-1 rounded-full hover:bg-background/50"
                       >
                         <svg
@@ -220,8 +344,8 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
               )}
             </div>
           ) : (
-            <span className={cn(!selectedOption && 'text-muted-foreground')}>
-              {selectedOption?.label ?? placeholder}
+            <span className={cn(!singleValue && 'text-muted-foreground')}>
+              {singleValue ? getOptionLabel(singleValue) : placeholder}
             </span>
           )}
 
@@ -232,6 +356,29 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 type="button"
                 onClick={handleClearAll}
                 className="rounded p-0.5 hover:bg-muted"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="14"
+                  height="14"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="opacity-50 hover:opacity-100"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+            {!isMultiple && clearable && singleValue && (
+              <button
+                type="button"
+                onClick={handleClearSingle}
+                className="rounded p-0.5 hover:bg-muted"
+                aria-label="Clear selection"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -288,11 +435,19 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 <path d="m21 21-4.3-4.3" />
               </svg>
               <input
-                ref={ref}
+                ref={setSearchRef}
                 className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
                 placeholder={searchPlaceholder}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => {
+                  if (props.inputValue === undefined) {
+                    setInternalSearch(e.target.value)
+                  }
+                  props.onInputChange?.(e.target.value)
+                }}
+                onFocus={() => {
+                  if (openOnFocus && !disabled) setOpen(true)
+                }}
               />
             </div>
             <div className="max-h-[300px] overflow-y-auto p-1">
@@ -301,79 +456,120 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                   {emptyMessage}
                 </div>
               ) : (
-                filteredOptions.map((option) => {
-                  const isSelected = isMultiple
-                    ? multiValue.includes(option.value)
-                    : option.value === singleValue
-
-                  return (
+                <>
+                  {isMultiple && selectAll && (
                     <button
-                      key={option.value}
                       type="button"
-                      disabled={option.disabled}
-                      onClick={() =>
-                        isMultiple
-                          ? handleMultiSelect(option.value)
-                          : handleSingleSelect(option.value)
-                      }
+                      onClick={handleSelectAll}
                       className={cn(
                         'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
                         'hover:bg-muted hover:text-foreground',
                         'focus:bg-muted focus:text-foreground',
-                        'disabled:pointer-events-none disabled:opacity-50',
-                        isSelected && 'bg-muted'
+                        allSelected && 'bg-muted'
                       )}
                     >
-                      <span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-                        {isMultiple ? (
-                          // Checkbox for multi-select
-                          <div
-                            className={cn(
-                              'h-4 w-4 rounded border border-input',
-                              isSelected && 'bg-accent border-accent'
-                            )}
-                          >
-                            {isSelected && (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="white"
-                                strokeWidth="3"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-4 w-4"
-                              >
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                            )}
-                          </div>
-                        ) : (
-                          // Checkmark for single-select
-                          isSelected && (
+                      <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
+                        <div
+                          className={cn(
+                            'flex h-4 w-4 items-center justify-center rounded border border-input',
+                            allSelected && 'bg-accent border-accent'
+                          )}
+                        >
+                          {allSelected && (
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
                               width="24"
                               height="24"
                               viewBox="0 0 24 24"
                               fill="none"
-                              stroke="currentColor"
-                              strokeWidth="2"
+                              stroke="white"
+                              strokeWidth="3"
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              className="h-4 w-4"
+                              className="h-3 w-3"
                             >
                               <polyline points="20 6 9 17 4 12" />
                             </svg>
-                          )
-                        )}
+                          )}
+                        </div>
                       </span>
-                      {option.label}
+                      {selectAllLabel}
                     </button>
-                  )
-                })
+                  )}
+                  {filteredOptions.map((option) => {
+                    const isSelected = isMultiple
+                      ? selectedValueKeys.has(option.value)
+                      : option.value === singleValueKey
+
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        disabled={option.disabled}
+                        onClick={() =>
+                          isMultiple
+                            ? handleMultiSelect(option.raw)
+                            : handleSingleSelect(option.raw)
+                        }
+                        className={cn(
+                          'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
+                          'hover:bg-muted hover:text-foreground',
+                          'focus:bg-muted focus:text-foreground',
+                          'disabled:pointer-events-none disabled:opacity-50',
+                          isSelected && 'bg-muted'
+                        )}
+                      >
+                        <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
+                          {isMultiple ? (
+                            // Checkbox for multi-select
+                            <div
+                              className={cn(
+                                'flex h-4 w-4 items-center justify-center rounded border border-input',
+                                isSelected && 'bg-accent border-accent'
+                              )}
+                            >
+                              {isSelected && (
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="24"
+                                  height="24"
+                                  viewBox="0 0 24 24"
+                                  fill="none"
+                                  stroke="white"
+                                  strokeWidth="3"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  className="h-3 w-3"
+                                >
+                                  <polyline points="20 6 9 17 4 12" />
+                                </svg>
+                              )}
+                            </div>
+                          ) : (
+                            // Checkmark for single-select
+                            isSelected && (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="24"
+                                height="24"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="h-4 w-4"
+                              >
+                                <polyline points="20 6 9 17 4 12" />
+                              </svg>
+                            )
+                          )}
+                        </span>
+                        {option.label}
+                      </button>
+                    )
+                  })}
+                </>
               )}
             </div>
           </div>

@@ -126,6 +126,23 @@ export {
   type AlertDescriptionProps,
 } from './components/alert'
 export {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+  TabsContent,
+  UnderlineTabsList,
+  UnderlineTabsTrigger,
+  UnderlineTabsContent,
+  type UnderlineTabsTriggerProps,
+  VerticalTabs,
+  VerticalTabsList,
+  VerticalTabsTrigger,
+  VerticalTabsContent,
+  VerticalTabsGroupLabel,
+  type VerticalTabsTriggerProps,
+  type VerticalTabsGroupLabelProps,
+} from './components/tabs'
+export {
   Tooltip,
   TooltipProvider,
   TooltipRoot,

@@ -19,7 +19,7 @@ export const Default: Story = {
       <Dialog.Trigger asChild>
         <Button variant="outline">Open Dialog</Button>
       </Dialog.Trigger>
-      <Dialog.Content className="sm:max-w-[425px]">
+      <Dialog.Content size="md">
         <Dialog.Header>
           <Dialog.Title>Edit profile</Dialog.Title>
           <Dialog.Description>
@@ -54,7 +54,7 @@ export const Confirmation: Story = {
       <Dialog.Trigger asChild>
         <Button variant="destructive">Delete Account</Button>
       </Dialog.Trigger>
-      <Dialog.Content className="sm:max-w-[400px]">
+      <Dialog.Content size="sm">
         <Dialog.Header>
           <Dialog.Title>Are you sure?</Dialog.Title>
           <Dialog.Description>
@@ -70,5 +70,33 @@ export const Confirmation: Story = {
         </Dialog.Footer>
       </Dialog.Content>
     </Dialog>
+  ),
+}
+
+export const Sizes: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-3">
+      {(['sm', 'md', 'lg', 'xl', '2xl', 'full'] as const).map((size) => (
+        <Dialog key={size}>
+          <Dialog.Trigger asChild>
+            <Button variant="outline">{size}</Button>
+          </Dialog.Trigger>
+          <Dialog.Content size={size}>
+            <Dialog.Header>
+              <Dialog.Title>Dialog size: {size}</Dialog.Title>
+              <Dialog.Description>
+                This dialog uses the `{size}` size preset.
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
+              <Dialog.Close asChild>
+                <Button variant="outline">Close</Button>
+              </Dialog.Close>
+              <Button>Action</Button>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog>
+      ))}
+    </div>
   ),
 }

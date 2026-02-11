@@ -26,24 +26,33 @@ const DialogOverlay = React.forwardRef<
 ))
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
 
+type DialogSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full'
+
 interface DialogContentProps extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> {
   hideCloseButton?: boolean
+  size?: DialogSize
 }
 
 const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,
   DialogContentProps
->(({ className, children, hideCloseButton = false, ...props }, ref) => (
+>(({ className, children, hideCloseButton = false, size = 'lg', ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 p-6 shadow-lg',
+        'fixed left-1/2 top-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 p-6 shadow-lg',
         'bg-popover border border-border text-popover-foreground',
         'rounded-lg',
         'data-[state=open]:animate-zoom-in data-[state=closed]:animate-zoom-out',
         'duration-200',
+        size === 'sm' && 'max-w-sm',
+        size === 'md' && 'max-w-md',
+        size === 'lg' && 'max-w-lg',
+        size === 'xl' && 'max-w-xl',
+        size === '2xl' && 'max-w-2xl',
+        size === 'full' && 'max-w-full',
         className
       )}
       {...props}

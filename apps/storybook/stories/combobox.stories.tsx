@@ -74,9 +74,90 @@ export const Countries: Story = {
   ),
 }
 
+export const SimpleOptions: Story = {
+  render: () => (
+    <div className="grid w-[300px] items-center gap-1.5">
+      <Label>Simple Options</Label>
+      <Combobox
+        simpleOptions
+        options={['Alpha', 'Beta', 'Gamma', 'Delta']}
+        placeholder="Select option..."
+      />
+    </div>
+  ),
+}
+
+export const ControlledSimple: Story = {
+  render: function ControlledSimple() {
+    const [value, setValue] = React.useState<string | null>(null)
+
+    return (
+      <div className="grid w-[300px] items-center gap-1.5">
+        <Label>Controlled Simple</Label>
+        <Combobox
+          simpleOptions
+          options={['Alpha', 'Beta', 'Gamma', 'Delta']}
+          value={value}
+          onChange={setValue}
+          placeholder="Select option..."
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          Selected: {value ?? 'None'}
+        </p>
+      </div>
+    )
+  },
+}
+
+export const CustomKeys: Story = {
+  render: () => (
+    <div className="grid w-[300px] items-center gap-1.5">
+      <Label>Custom Keys</Label>
+      <Combobox
+        options={[
+          { id: 'hr', name: 'HR' },
+          { id: 'ops', name: 'Operations' },
+          { id: 'sales', name: 'Sales' },
+        ]}
+        labelKey="name"
+        valueKey="id"
+        placeholder="Select department..."
+      />
+    </div>
+  ),
+}
+
+export const ControlledMultiCustomKeys: Story = {
+  render: function ControlledMultiCustomKeys() {
+    const [value, setValue] = React.useState<{ id: string; name: string }[]>([])
+
+    return (
+      <div className="grid w-[350px] items-center gap-1.5">
+        <Label>Custom Keys (Multi)</Label>
+        <Combobox
+          multiple
+          options={[
+            { id: 'hr', name: 'HR' },
+            { id: 'ops', name: 'Operations' },
+            { id: 'sales', name: 'Sales' },
+          ]}
+          labelKey="name"
+          valueKey="id"
+          value={value}
+          onChange={setValue}
+          placeholder="Select departments..."
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          Selected: {value.length ? value.map((v) => v.name).join(', ') : 'None'}
+        </p>
+      </div>
+    )
+  },
+}
+
 export const Controlled: Story = {
   render: function ControlledCombobox() {
-    const [value, setValue] = React.useState('')
+    const [value, setValue] = React.useState<(typeof frameworks)[number] | null>(null)
 
     return (
       <div className="grid w-[300px] items-center gap-1.5">
@@ -84,11 +165,11 @@ export const Controlled: Story = {
         <Combobox
           options={frameworks}
           value={value}
-          onValueChange={setValue}
+          onChange={setValue}
           placeholder="Select framework..."
         />
         <p className="text-sm text-[var(--muted-foreground)]">
-          Selected: {value || 'None'}
+          Selected: {value?.label ?? 'None'}
         </p>
       </div>
     )
@@ -148,9 +229,50 @@ export const MultiSelect: Story = {
   ),
 }
 
+export const ControlledSimpleMulti: Story = {
+  render: function ControlledSimpleMulti() {
+    const [value, setValue] = React.useState<string[]>([])
+
+    return (
+      <div className="grid w-[350px] items-center gap-1.5">
+        <Label>Controlled Simple (Multi)</Label>
+        <Combobox
+          multiple
+          simpleOptions
+          options={['Alpha', 'Beta', 'Gamma', 'Delta']}
+          value={value}
+          onChange={setValue}
+          placeholder="Select options..."
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          Selected: {value.length ? value.join(', ') : 'None'}
+        </p>
+      </div>
+    )
+  },
+}
+
+export const MultiSelectWithSelectAll: Story = {
+  render: () => (
+    <div className="grid w-[350px] items-center gap-1.5">
+      <Label>Frameworks (Select all)</Label>
+      <Combobox
+        multiple
+        selectAll
+        options={frameworks}
+        placeholder="Select frameworks..."
+        searchPlaceholder="Search frameworks..."
+      />
+    </div>
+  ),
+}
+
 export const MultiSelectControlled: Story = {
   render: function ControlledMultiCombobox() {
-    const [value, setValue] = React.useState<string[]>(['next', 'remix'])
+    const [value, setValue] = React.useState<(typeof frameworks)[number][]>([
+      frameworks[0],
+      frameworks[1],
+    ])
 
     return (
       <div className="grid w-[350px] items-center gap-1.5">
@@ -159,11 +281,11 @@ export const MultiSelectControlled: Story = {
           multiple
           options={frameworks}
           value={value}
-          onValueChange={setValue}
+          onChange={setValue}
           placeholder="Select frameworks..."
         />
         <p className="text-sm text-[var(--muted-foreground)]">
-          Selected: {value.length > 0 ? value.join(', ') : 'None'}
+          Selected: {value.length > 0 ? value.map((v) => v.label).join(', ') : 'None'}
         </p>
       </div>
     )
@@ -172,7 +294,13 @@ export const MultiSelectControlled: Story = {
 
 export const MultiSelectManyOptions: Story = {
   render: function MultiSelectManyOptions() {
-    const [value, setValue] = React.useState<string[]>(['us', 'uk', 'ca', 'de', 'fr'])
+    const [value, setValue] = React.useState<(typeof countries)[number][]>([
+      countries[0],
+      countries[1],
+      countries[2],
+      countries[4],
+      countries[5],
+    ])
 
     return (
       <div className="grid w-[350px] items-center gap-1.5">
@@ -181,7 +309,7 @@ export const MultiSelectManyOptions: Story = {
           multiple
           options={countries}
           value={value}
-          onValueChange={setValue}
+          onChange={setValue}
           placeholder="Select countries..."
           maxDisplayItems={3}
         />
@@ -201,7 +329,7 @@ export const MultiSelectCustomMaxDisplay: Story = {
         <Combobox
           multiple
           options={frameworks}
-          defaultValue={['next', 'remix', 'astro', 'gatsby']}
+          defaultValue={[frameworks[0], frameworks[1], frameworks[2], frameworks[3]]}
           placeholder="Select frameworks..."
           maxDisplayItems={2}
         />
@@ -211,7 +339,7 @@ export const MultiSelectCustomMaxDisplay: Story = {
         <Combobox
           multiple
           options={frameworks}
-          defaultValue={['next', 'remix', 'astro', 'gatsby']}
+          defaultValue={[frameworks[0], frameworks[1], frameworks[2], frameworks[3]]}
           placeholder="Select frameworks..."
           maxDisplayItems={5}
         />

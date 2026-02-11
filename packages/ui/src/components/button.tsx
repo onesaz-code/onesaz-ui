@@ -4,10 +4,12 @@ import { cn } from '../utils/cn'
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
   size?: 'default' | 'sm' | 'lg' | 'icon'
+  /** Whether the button should take the full width of its container */
+  fullWidth?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = 'default', size = 'default', ...props }, ref) => {
+  ({ className, variant = 'default', size = 'default', fullWidth = false, ...props }, ref) => {
     return (
       <button
         className={cn(
@@ -34,6 +36,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             'h-11 rounded-md px-8': size === 'lg',
             'h-10 w-10': size === 'icon',
           },
+          fullWidth && 'w-full',
           className
         )}
         ref={ref}

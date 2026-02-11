@@ -4,6 +4,9 @@
  * @import "@onesaz/tailwind-config/v4.css";
  */
 
+/* Use data-theme/class-based dark mode instead of prefers-color-scheme */
+/* @custom-variant dark (&:where(.dark, [data-theme="dark"], .dark *, [data-theme="dark"] *)); */
+
 @theme {
   /* ========================================
    * ACCENT COLORS - Purple

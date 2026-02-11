@@ -221,7 +221,7 @@ const IconRailContent = React.forwardRef<HTMLDivElement, IconRailContentProps>(
     return (
       <div
         ref={ref}
-        className={cn('flex-1 flex flex-col items-center py-2 gap-1 overflow-y-auto', className)}
+        className={cn('flex-1 flex flex-col items-center py-2 px-2 gap-1 overflow-y-auto', className)}
         {...props}
       >
         {children}

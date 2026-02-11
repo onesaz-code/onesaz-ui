@@ -13,13 +13,26 @@ export interface TextFieldProps extends Omit<InputProps, 'inputSize' | 'size'> {
   /** Required indicator */
   required?: boolean
   /** Size of the text field */
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'small' | 'medium'
   /** Full width mode */
   fullWidth?: boolean
   /** Start adornment (icon, text, etc.) */
   startAdornment?: React.ReactNode
   /** End adornment (icon, text, etc.) */
   endAdornment?: React.ReactNode
+  /** Input element props (MUI-compatible) */
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>
+  /** Input container/slot props (MUI-compatible) */
+  InputProps?: {
+    startAdornment?: React.ReactNode
+    endAdornment?: React.ReactNode
+    className?: string
+    containerClassName?: string
+  }
+  /** Input label props (MUI-compatible) */
+  InputLabelProps?: React.LabelHTMLAttributes<HTMLLabelElement>
+  /** Input ref (MUI-compatible) */
+  inputRef?: React.Ref<HTMLInputElement>
 }
 
 const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
@@ -36,6 +49,10 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
       error,
       startAdornment,
       endAdornment,
+      inputProps,
+      InputProps,
+      InputLabelProps,
+      inputRef,
       ...props
     },
     ref
@@ -44,6 +61,40 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
     const id = idProp || generatedId
     const helperId = `${id}-helper`
     const hasError = error || !!errorMessage
+    const mergedRef = (node: HTMLInputElement | null) => {
+      if (typeof ref === 'function') ref(node)
+      else if (ref) (ref as React.MutableRefObject<HTMLInputElement | null>).current = node
+      if (typeof inputRef === 'function') inputRef(node)
+      else if (inputRef) (inputRef as React.MutableRefObject<HTMLInputElement | null>).current = node
+    }
+
+    const { className: inputPropsClassName, ...restInputProps } = inputProps ?? {}
+    const {
+      className: inputSlotClassName,
+      containerClassName,
+      startAdornment: inputSlotStart,
+      endAdornment: inputSlotEnd,
+      ...restInputSlotProps
+    } = InputProps ?? {}
+    const resolvedStartAdornment = inputSlotStart ? (
+      <>
+        {inputSlotStart}
+        {startAdornment}
+      </>
+    ) : (
+      startAdornment
+    )
+    const resolvedEndAdornment = inputSlotEnd ? (
+      <>
+        {endAdornment}
+        {inputSlotEnd}
+      </>
+    ) : (
+      endAdornment
+    )
+
+    const resolvedSize =
+      size === 'small' ? 'sm' : size === 'medium' ? 'md' : size
 
     return (
       <div className={cn('grid gap-1.5', fullWidth && 'w-full', className)}>
@@ -54,6 +105,7 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
               'text-sm font-medium',
               hasError && 'text-destructive'
             )}
+            {...InputLabelProps}
           >
             {label}
             {required && (
@@ -64,15 +116,19 @@ const TextField = React.forwardRef<HTMLInputElement, TextFieldProps>(
           </Label>
         )}
         <Input
-          ref={ref}
+          ref={mergedRef}
           id={id}
-          inputSize={size}
+          inputSize={resolvedSize}
           error={hasError}
-          startAdornment={startAdornment}
-          endAdornment={endAdornment}
+          startAdornment={resolvedStartAdornment}
+          endAdornment={resolvedEndAdornment}
           aria-describedby={helperText || errorMessage ? helperId : undefined}
           aria-invalid={hasError}
+          className={cn(inputSlotClassName, inputPropsClassName)}
+          containerClassName={containerClassName}
           {...props}
+          {...restInputSlotProps}
+          {...restInputProps}
         />
         {(helperText || errorMessage) && (
           <p

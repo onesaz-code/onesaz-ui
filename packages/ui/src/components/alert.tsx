@@ -15,12 +15,12 @@ export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles = {
-  default: 'bg-muted border-border text-foreground',
-  info: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200',
-  success: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',
-  warning: 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200',
-  error: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
-  destructive: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
+  default: 'bg-muted border-border',
+  info: 'bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800',
+  success: 'bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800',
+  warning: 'bg-yellow-50 dark:bg-yellow-950/30 border-yellow-200 dark:border-yellow-800',
+  error: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800',
+  destructive: 'bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800',
 }
 
 const iconColors = {
@@ -102,7 +102,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         ref={ref}
         role="alert"
         className={cn(
-          'relative flex items-start gap-3 rounded-lg border p-4',
+          'relative flex items-start gap-3 rounded-lg border p-4 text-foreground',
           variantStyles[variant],
           className
         )}
@@ -151,7 +151,7 @@ const AlertTitle = React.forwardRef<HTMLHeadingElement, AlertTitleProps>(
   ({ className, children, ...props }, ref) => (
     <h5
       ref={ref}
-      className={cn('font-semibold leading-none tracking-tight', className)}
+      className={cn('font-semibold leading-none tracking-tight text-foreground', className)}
       {...props}
     >
       {children}
@@ -167,7 +167,7 @@ const AlertDescription = React.forwardRef<HTMLParagraphElement, AlertDescription
   ({ className, children, ...props }, ref) => (
     <p
       ref={ref}
-      className={cn('mt-1 text-sm opacity-90', className)}
+      className={cn('mt-1 text-sm text-muted-foreground', className)}
       {...props}
     >
       {children}

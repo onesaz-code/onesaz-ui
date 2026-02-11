@@ -10,6 +10,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   startAdornment?: React.ReactNode
   /** End adornment */
   endAdornment?: React.ReactNode
+  /** Wrapper class (when using adornments) */
+  containerClassName?: string
 }
 
 const sizeClasses = {
@@ -19,7 +21,19 @@ const sizeClasses = {
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, inputSize = 'md', error, startAdornment, endAdornment, ...props }, ref) => {
+  (
+    {
+      className,
+      type,
+      inputSize = 'md',
+      error,
+      startAdornment,
+      endAdornment,
+      containerClassName,
+      ...props
+    },
+    ref
+  ) => {
     const hasAdornment = startAdornment || endAdornment
 
     if (hasAdornment) {
@@ -32,7 +46,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               ? 'border-destructive focus-within:ring-2 focus-within:ring-destructive/20'
               : 'border-input focus-within:ring-2 focus-within:ring-ring/20 focus-within:border-ring',
             'transition-colors',
-            props.disabled && 'opacity-50 cursor-not-allowed bg-muted'
+            props.disabled && 'opacity-50 cursor-not-allowed bg-muted',
+            containerClassName
           )}
         >
           {startAdornment && (

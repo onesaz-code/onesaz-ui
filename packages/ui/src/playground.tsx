@@ -85,7 +85,9 @@ const PlaygroundContent = () => {
   const [inputValue, setInputValue] = React.useState('')
   const [textareaValue, setTextareaValue] = React.useState('')
   const [selectValue, setSelectValue] = React.useState('')
-  const [comboboxValue, setComboboxValue] = React.useState('')
+  const [comboboxValue, setComboboxValue] = React.useState<
+    string | Record<string, unknown> | null
+  >(null)
 
   const comboboxOptions = [
     { value: 'react', label: 'React' },
@@ -225,7 +227,9 @@ const PlaygroundContent = () => {
               <Combobox
                 options={comboboxOptions}
                 value={comboboxValue}
-                onValueChange={setComboboxValue}
+                onChange={(nextValue) => {
+                  setComboboxValue(nextValue as string | Record<string, unknown> | null)
+                }}
                 placeholder="Search frameworks..."
               />
             </div>
