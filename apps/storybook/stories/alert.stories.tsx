@@ -14,11 +14,8 @@ const meta: Meta<typeof Alert> = {
       control: 'select',
       options: ['default', 'info', 'success', 'warning', 'error', 'destructive'],
     },
-    dismissible: {
-      control: 'boolean',
-    },
-    showIcon: {
-      control: 'boolean',
+    duration: {
+      control: 'number',
     },
   },
 }
@@ -27,12 +24,13 @@ export default meta
 type Story = StoryObj<typeof Alert>
 
 export const Default: Story = {
-  args: {
-    children: 'This is a default alert message.',
-  },
+  args: {},
   render: (args) => (
     <div className="w-[400px]">
-      <Alert {...args} />
+      <Alert {...args}>
+        <AlertTitle>Default Alert</AlertTitle>
+        <AlertDescription>This is a default alert message.</AlertDescription>
+      </Alert>
     </div>
   ),
 }
@@ -88,21 +86,8 @@ export const WithDescriptionOnly: Story = {
   render: () => (
     <div className="w-[400px] space-y-4">
       <Alert variant="info">
-        <AlertDescription>
-          This is a longer description that provides more context about the alert.
-          It can span multiple lines if needed.
-        </AlertDescription>
-      </Alert>
-    </div>
-  ),
-}
-
-export const WithoutIcon: Story = {
-  render: () => (
-    <div className="w-[400px] space-y-4">
-      <Alert variant="info" showIcon={false}>
-        <AlertTitle>No Icon</AlertTitle>
-        <AlertDescription>This alert is displayed without an icon.</AlertDescription>
+        <AlertTitle></AlertTitle>
+        <AlertDescription>This is a longer description that provides more context about the alert. It can span multiple lines if needed.</AlertDescription>
       </Alert>
     </div>
   ),
@@ -114,7 +99,7 @@ const DismissibleExample = () => {
   return (
     <div className="w-[400px] space-y-4">
       {show ? (
-        <Alert variant="success" dismissible onDismiss={() => setShow(false)}>
+        <Alert variant="success" onClose={() => setShow(false)}>
           <AlertTitle>Dismissible Alert</AlertTitle>
           <AlertDescription>Click the X button to dismiss this alert.</AlertDescription>
         </Alert>
@@ -132,48 +117,21 @@ export const Dismissible: Story = {
 export const DismissibleVariants: Story = {
   render: () => (
     <div className="w-[400px] space-y-4">
-      <Alert variant="info" dismissible>
+      <Alert variant="info">
         <AlertTitle>Info</AlertTitle>
         <AlertDescription>Dismissible info alert.</AlertDescription>
       </Alert>
-      <Alert variant="success" dismissible>
+      <Alert variant="success">
         <AlertTitle>Success</AlertTitle>
         <AlertDescription>Dismissible success alert.</AlertDescription>
       </Alert>
-      <Alert variant="warning" dismissible>
+      <Alert variant="warning">
         <AlertTitle>Warning</AlertTitle>
         <AlertDescription>Dismissible warning alert.</AlertDescription>
       </Alert>
-      <Alert variant="error" dismissible>
+      <Alert variant="error">
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>Dismissible error alert.</AlertDescription>
-      </Alert>
-    </div>
-  ),
-}
-
-export const CustomIcon: Story = {
-  render: () => (
-    <div className="w-[400px]">
-      <Alert
-        variant="info"
-        icon={
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="h-5 w-5"
-          >
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-        }
-      >
-        <AlertTitle>Custom Icon</AlertTitle>
-        <AlertDescription>This alert uses a custom message icon.</AlertDescription>
       </Alert>
     </div>
   ),
@@ -184,30 +142,22 @@ export const RealWorldExamples: Story = {
     <div className="w-[450px] space-y-4">
       <Alert variant="info">
         <AlertTitle>New Feature Available</AlertTitle>
-        <AlertDescription>
-          We've added a new dark mode option. You can enable it in your settings.
-        </AlertDescription>
+        <AlertDescription>We've added a new dark mode option. You can enable it in your settings.</AlertDescription>
       </Alert>
 
       <Alert variant="success">
         <AlertTitle>Payment Successful</AlertTitle>
-        <AlertDescription>
-          Your payment of $49.99 has been processed. A confirmation email has been sent.
-        </AlertDescription>
+        <AlertDescription>Your payment of $49.99 has been processed. A confirmation email has been sent.</AlertDescription>
       </Alert>
 
-      <Alert variant="warning" dismissible>
+      <Alert variant="warning">
         <AlertTitle>Session Expiring</AlertTitle>
-        <AlertDescription>
-          Your session will expire in 5 minutes. Please save your work.
-        </AlertDescription>
+        <AlertDescription>Your session will expire in 5 minutes. Please save your work.</AlertDescription>
       </Alert>
 
       <Alert variant="error">
         <AlertTitle>Upload Failed</AlertTitle>
-        <AlertDescription>
-          The file "report.pdf" could not be uploaded. Please check your connection and try again.
-        </AlertDescription>
+        <AlertDescription>The file "report.pdf" could not be uploaded. Please check your connection and try again.</AlertDescription>
       </Alert>
     </div>
   ),

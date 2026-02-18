@@ -53,6 +53,7 @@ export {
   type FormHelperTextProps,
   type FormGroupProps,
 } from './components/form'
+export { Slider, type SliderProps } from './components/slider'
 
 // Display Components
 export {
@@ -117,14 +118,9 @@ export {
 
 // Feedback Components
 export { Spinner, type SpinnerProps } from './components/spinner'
-export {
-  Alert,
-  AlertTitle,
-  AlertDescription,
-  type AlertProps,
-  type AlertTitleProps,
-  type AlertDescriptionProps,
-} from './components/alert'
+
+export { Alert, AlertTitle, AlertDescription, type AlertProps, type AlertTitleProps, type AlertDescriptionProps } from './components/alert'
+
 export {
   Tabs,
   TabsList,
@@ -238,6 +234,30 @@ export {
   type ListSubheaderProps,
   type ListDividerProps,
 } from './components/list'
+
+// Charts
+export {
+  BarChart,
+  LineChart,
+  PieChart,
+  AreaChart,
+  ScatterChart,
+  RadarChart,
+  DonutChart,
+  ProgressDonut,
+  MultiProgressDonut,
+  ProgressCard,
+  type BarChartProps,
+  type LineChartProps,
+  type PieChartProps,
+  type AreaChartProps,
+  type ScatterChartProps,
+  type RadarChartProps,
+  type DonutChartProps,
+  type ProgressDonutProps,
+  type MultiProgressDonutProps,
+  type ProgressCardProps,
+} from './components/charts'
 
 // Navigation
 export {
