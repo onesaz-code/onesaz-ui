@@ -127,6 +127,10 @@ export interface DataGridProps<TData = any> {
 
   // Sorting
   sortingMode?: 'client' | 'server'
+  /** Initial sort model - array of { field: string, sort: 'asc' | 'desc' } */
+  initialSortModel?: { field: string; sort: 'asc' | 'desc' }[]
+  /** If true, sorts by createdAt descending (latest first). Requires a 'createdAt' field in rows. */
+  sortLatestFirst?: boolean
 
   // Filtering
   filterMode?: 'client' | 'server'
@@ -715,16 +719,22 @@ const ExportDropdown = ({
   }, [])
 
   const exportToCSV = () => {
-    const visibleColumns = columns.filter(col => !col.hide)
+    const visibleColumns = columns.filter(col => !col.hide && !col.disableExport && !col.hideExport)
     const headers = visibleColumns.map(col => col.headerName || col.field)
     const csvRows = [headers.join(',')]
 
     rows.forEach(row => {
       const values = visibleColumns.map(col => {
-        const value = row[col.field]
+        // Use valueGetter if available, otherwise use direct field access
+        let value;
+        if (col.valueGetter) {
+          value = col.valueGetter({ row, field: col.field });
+        } else {
+          value = row[col.field];
+        }
         // Escape quotes and wrap in quotes if contains comma
         const stringValue = String(value ?? '')
-        if (stringValue.includes(',') || stringValue.includes('"')) {
+        if (stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')) {
           return `"${stringValue.replace(/"/g, '""')}"`
         }
         return stringValue
@@ -743,11 +753,16 @@ const ExportDropdown = ({
   }
 
   const exportToJSON = () => {
-    const visibleColumns = columns.filter(col => !col.hide)
+    const visibleColumns = columns.filter(col => !col.hide && !col.disableExport && !col.hideExport)
     const data = rows.map(row => {
       const obj: Record<string, any> = {}
       visibleColumns.forEach(col => {
-        obj[col.field] = row[col.field]
+        // Use valueGetter if available, otherwise use direct field access
+        if (col.valueGetter) {
+          obj[col.field] = col.valueGetter({ row, field: col.field });
+        } else {
+          obj[col.field] = row[col.field];
+        }
       })
       return obj
     })
@@ -1216,6 +1231,8 @@ export function DataGrid<TData extends Record<string, any>>({
   rowCount,
   pageSizeOptions = [10, 25, 50, 100],
   sortingMode = 'client',
+  initialSortModel,
+  sortLatestFirst = false,
   filterMode = 'client',
   height = 400,
   minHeight,
@@ -1242,8 +1259,19 @@ export function DataGrid<TData extends Record<string, any>>({
   // Refs
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
 
+  // Compute initial sorting state
+  const computedInitialSort = React.useMemo<SortingState>(() => {
+    if (initialSortModel && initialSortModel.length > 0) {
+      return initialSortModel.map((s) => ({ id: s.field, desc: s.sort === 'desc' }))
+    }
+    if (sortLatestFirst) {
+      return [{ id: 'createdAt', desc: true }]
+    }
+    return []
+  }, []) // Only compute once on mount
+
   // State
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [sorting, setSorting] = React.useState<SortingState>(computedInitialSort)
   const [globalFilter, setGlobalFilter] = React.useState('')
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>(
     rowSelectionModel || {}
