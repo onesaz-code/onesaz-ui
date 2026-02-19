@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
+import { useState } from 'react'
 import { Checkbox, Label } from '@onesaz/ui'
 
 const meta: Meta<typeof Checkbox> = {
@@ -42,5 +43,32 @@ export const DisabledChecked: Story = {
   args: {
     disabled: true,
     defaultChecked: true,
+  },
+}
+
+export const Controlled: Story = {
+  render: () => {
+    const [checked, setChecked] = useState(false)
+    
+    return (
+      <div className="flex flex-col space-y-4">
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="controlled" 
+            checked={checked}
+            onChange={(e) => setChecked(e.target.checked)}
+          />
+          <Label htmlFor="controlled">
+            Controlled checkbox (currently {checked ? 'checked' : 'unchecked'})
+          </Label>
+        </div>
+        <button
+          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          onClick={() => setChecked(!checked)}
+        >
+          Toggle via button
+        </button>
+      </div>
+    )
   },
 }
