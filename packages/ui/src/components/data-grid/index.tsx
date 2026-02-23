@@ -752,31 +752,6 @@ const ExportDropdown = ({
     setOpen(false)
   }
 
-  const exportToJSON = () => {
-    const visibleColumns = columns.filter(col => !col.hide && !col.disableExport && !col.hideExport)
-    const data = rows.map(row => {
-      const obj: Record<string, any> = {}
-      visibleColumns.forEach(col => {
-        // Use valueGetter if available, otherwise use direct field access
-        if (col.valueGetter) {
-          obj[col.field] = col.valueGetter({ row, field: col.field });
-        } else {
-          obj[col.field] = row[col.field];
-        }
-      })
-      return obj
-    })
-
-    const jsonContent = JSON.stringify(data, null, 2)
-    const blob = new Blob([jsonContent], { type: 'application/json' })
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = `${fileName}.json`
-    link.click()
-    URL.revokeObjectURL(link.href)
-    setOpen(false)
-  }
-
   const handleCustomExport = () => {
     if (onExport) {
       onExport(rows, columns)
@@ -811,16 +786,6 @@ const ExportDropdown = ({
               <polyline points="14 2 14 8 20 8" />
             </svg>
             Export CSV
-          </button>
-          <button
-            className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-muted"
-            onClick={exportToJSON}
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-              <polyline points="14 2 14 8 20 8" />
-            </svg>
-            Export JSON
           </button>
           {onExport && (
             <button
