@@ -66,6 +66,12 @@ export {
 } from './components/card'
 export { Badge, type BadgeProps } from './components/badge'
 export { Separator, type SeparatorProps } from './components/separator'
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from './components/accordion'
 
 // Compound Components
 export {
