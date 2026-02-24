@@ -49,6 +49,8 @@ export interface GridColDef<TData = any> {
   type?: 'string' | 'number' | 'date' | 'dateTime' | 'boolean'
   // Cell content handling
   wrapText?: boolean // If true, text wraps instead of truncating (default: false)
+  scrollable?: boolean // If true, cell content becomes scrollable when it overflows
+  maxCellHeight?: number // Maximum height for scrollable cells (default: 100px)
   cellClassName?: string // Custom className for cell content
   // For export exclusion
   export?: boolean
@@ -278,6 +280,8 @@ function convertColumns<TData>(
         flex: col.flex,
         headerName: col.headerName || col.field,
         wrapText: col.wrapText,
+        scrollable: col.scrollable,
+        maxCellHeight: col.maxCellHeight,
         cellClassName: col.cellClassName,
       },
     }
@@ -975,6 +979,8 @@ const RowRenderer = ({
         const align = meta?.align || 'left'
         // Column-level wrapText overrides global setting
         const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
+        const scrollable = meta?.scrollable || false
+        const maxCellHeight = meta?.maxCellHeight || 100
         const cellClassName = meta?.cellClassName
 
         // columnWidths already incorporates resized widths from columnSizing
@@ -989,7 +995,7 @@ const RowRenderer = ({
               showCellVerticalBorder && 'border-r last:border-r-0 border-border'
             )}
             style={{
-              height: wrapText ? 'auto' : rowHeight,
+              height: wrapText || scrollable ? 'auto' : rowHeight,
               minHeight: rowHeight,
               textAlign: align,
               width,
@@ -999,12 +1005,16 @@ const RowRenderer = ({
           >
             <div
               className={cn(
-                wrapText ? 'whitespace-normal break-words' : 'truncate',
+                wrapText ? 'whitespace-normal break-words' : scrollable ? 'overflow-auto' : 'truncate',
+                scrollable && 'max-h-[100px]',
                 cellClassName
               )}
+              style={{
+                maxHeight: scrollable ? `${maxCellHeight}px` : undefined,
+              }}
               title={
-                // Show tooltip for truncated simple text values
-                !wrapText && (typeof cell.getValue() === 'string' || typeof cell.getValue() === 'number')
+                // Show tooltip for truncated simple text values (not for scrollable or wrapped content)
+                !wrapText && !scrollable && (typeof cell.getValue() === 'string' || typeof cell.getValue() === 'number')
                   ? String(cell.getValue())
                   : undefined
               }

@@ -909,3 +909,64 @@ export const VirtualizedWithResizing: Story = {
     )
   },
 }
+
+export const WithScrollableBadges: Story = {
+  render: () => {
+    // Sample data with many tags/badges
+    const itemsWithManyBadges = [
+      {
+        id: 1,
+        name: 'Project Alpha',
+        tags: ['React', 'TypeScript', 'Tailwind', 'Vite', 'ESLint', 'Prettier', 'Jest', 'Cypress', 'Storybook', 'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Zeplin', 'Miro', 'Notion', 'Slack', 'Discord', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Trello', 'Asana', 'Monday.com', 'ClickUp', 'Linear', 'Shortcut', 'Clubhouse', 'Pivotal Tracker', 'Azure DevOps', 'Team Foundation Server', 'Jenkins', 'GitHub Actions', 'GitLab CI', 'CircleCI', 'Travis CI', 'AppVeyor', 'Buildkite', 'Semaphore', 'Codeship', 'Bamboo', 'TeamCity', 'GoCD', 'Concourse', 'Drone', 'Woodpecker', 'Argo CD', 'Flux', 'Tekton']
+      },
+      {
+        id: 2,
+        name: 'Project Beta',
+        tags: ['Vue', 'JavaScript', 'Bootstrap', 'Webpack', 'Babel', 'PostCSS', 'Sass', 'Less', 'Stylus', 'Pug', 'Handlebars', 'EJS', 'Nunjucks', 'Liquid', 'Twig', 'Blade', 'Slim', 'Haml', 'ERB', 'JSP', 'ASP.NET', 'Razor', 'Thymeleaf', 'FreeMarker', 'Velocity', 'Mustache', 'Dust.js', 'Swig', 'Eco', 'Jade', 'Hogan.js', 'doT', 'Underscore', 'Lodash', 'Ramda', 'Immutable.js', 'Moment.js', 'Day.js', 'date-fns', 'Luxon']
+      },
+      {
+        id: 3,
+        name: 'Project Gamma',
+        tags: ['Angular', 'RxJS', 'NgRx', 'Angular Material']
+      }
+    ]
+
+    const columnsWithScrollableBadges: GridColDef<typeof itemsWithManyBadges[0]>[] = [
+      { field: 'id', headerName: 'ID', width: 70 },
+      { field: 'name', headerName: 'Project Name', flex: 1, minWidth: 150 },
+      {
+        field: 'tags',
+        headerName: 'Tags',
+        width: 300,
+        scrollable: true,
+        maxCellHeight: 120,
+        renderCell: ({ value }) => (
+          <div className="flex flex-wrap gap-1">
+            {value.map((tag: string, index: number) => (
+              <Badge key={index} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        ),
+      },
+    ]
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          DataGrid with scrollable cells containing many badges. The tags column has scrollable: true and maxCellHeight: 120px,
+          allowing users to scroll through all badges when they overflow the cell height.
+        </p>
+        <DataGrid
+          rows={itemsWithManyBadges}
+          columns={columnsWithScrollableBadges}
+          getRowId={(row) => row.id}
+          height={400}
+          toolBar
+          title="Scrollable Badges Example"
+        />
+      </div>
+    )
+  },
+}

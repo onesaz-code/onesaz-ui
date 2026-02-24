@@ -42,17 +42,17 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        'fixed left-1/2 top-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 p-6 shadow-lg',
+        'fixed z-50 grid w-full gap-4 p-6 shadow-lg',
         'bg-popover border border-border text-popover-foreground',
         'rounded-lg',
         'data-[state=open]:animate-zoom-in data-[state=closed]:animate-zoom-out',
         'duration-200',
-        size === 'sm' && 'max-w-sm',
-        size === 'md' && 'max-w-md',
-        size === 'lg' && 'max-w-lg',
-        size === 'xl' && 'max-w-xl',
-        size === '2xl' && 'max-w-2xl',
-        size === 'full' && 'max-w-full',
+        size === 'sm' && 'left-1/2 top-1/2 max-w-sm -translate-x-1/2 -translate-y-1/2',
+        size === 'md' && 'left-1/2 top-1/2 max-w-md -translate-x-1/2 -translate-y-1/2',
+        size === 'lg' && 'left-1/2 top-1/2 max-w-lg -translate-x-1/2 -translate-y-1/2',
+        size === 'xl' && 'left-1/2 top-1/2 max-w-xl -translate-x-1/2 -translate-y-1/2',
+        size === '2xl' && 'left-1/2 top-1/2 max-w-2xl -translate-x-1/2 -translate-y-1/2',
+        size === 'full' && 'inset-0 h-full w-full max-w-full rounded-none',
         className
       )}
       {...props}
