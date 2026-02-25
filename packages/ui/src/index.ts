@@ -65,6 +65,7 @@ export {
   CardContent,
 } from './components/card'
 export { Badge, type BadgeProps } from './components/badge'
+export { Chip, type ChipProps } from './components/chip'
 export { Separator, type SeparatorProps } from './components/separator'
 export {
   Accordion,
@@ -223,6 +224,9 @@ export {
   type PaginationModel,
   type GridRowSelectionModel,
   type ColumnVisibilityModel,
+  type PinnedRowsModel,
+  type PinnedColumnsModel,
+  type ColumnGroupModel,
 } from './components/data-grid'
 export {
   List,

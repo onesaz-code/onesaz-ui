@@ -92,6 +92,26 @@ export interface ColumnVisibilityModel {
   [key: string]: boolean
 }
 
+// Pinned rows model (MUI DataGrid Pro compatible)
+export interface PinnedRowsModel<TData = any> {
+  top?: TData[]
+  bottom?: TData[]
+}
+
+// Pinned columns model (MUI DataGrid Pro compatible)
+export interface PinnedColumnsModel {
+  left?: string[]
+  right?: string[]
+}
+
+// Column group definition (MUI DataGrid Pro compatible)
+export interface ColumnGroupModel {
+  groupId: string
+  headerName?: string
+  children: { field: string }[]
+  headerAlign?: 'left' | 'center' | 'right'
+}
+
 // Density affects row height
 type GridDensity = 'compact' | 'standard' | 'comfortable'
 
@@ -156,6 +176,15 @@ export interface DataGridProps<TData = any> {
 
   // Row styling
   getRowClassName?: (params: { row: TData; rowIndex: number }) => string
+
+  // Pinned rows (MUI DataGrid Pro compatible)
+  pinnedRows?: PinnedRowsModel<TData>
+
+  // Pinned columns (MUI DataGrid Pro compatible)
+  pinnedColumns?: PinnedColumnsModel
+
+  // Column grouping (MUI DataGrid Pro compatible)
+  columnGroupingModel?: ColumnGroupModel[]
 
   // Custom slot props (for toolbar customization)
   slotProps?: {
@@ -942,6 +971,8 @@ interface RowRendererProps {
   style?: React.CSSProperties
   globalWrapText?: boolean
   columnWidths: Map<string, CalculatedColumnWidth>
+  pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
+  isPinnedRow?: boolean
 }
 
 const RowRenderer = ({
@@ -955,6 +986,8 @@ const RowRenderer = ({
   style,
   globalWrapText = false,
   columnWidths,
+  pinnedColumnOffsets,
+  isPinnedRow = false,
 }: RowRendererProps) => {
   const customClassName = getRowClassName?.({ row: row.original, rowIndex })
 
@@ -964,6 +997,7 @@ const RowRenderer = ({
       className={cn(
         'border-b border-border transition-colors hover:bg-muted/50',
         row.getIsSelected() && 'bg-accent/10',
+        isPinnedRow && 'bg-muted/30 font-semibold',
         customClassName
       )}
       data-state={row.getIsSelected() ? 'selected' : undefined}
@@ -987,12 +1021,18 @@ const RowRenderer = ({
         const colWidth = columnWidths.get(cell.column.id)
         const width = colWidth?.width || cell.column.getSize()
 
+        // Check if this column is pinned
+        const pinnedInfo = pinnedColumnOffsets?.get(cell.column.id)
+
         return (
           <td
             key={cell.id}
             className={cn(
               'px-4 overflow-hidden',
-              showCellVerticalBorder && 'border-r last:border-r-0 border-border'
+              showCellVerticalBorder && 'border-r last:border-r-0 border-border',
+              pinnedInfo && 'sticky z-[1] bg-background',
+              pinnedInfo?.side === 'left' && 'border-r border-border',
+              pinnedInfo?.side === 'right' && 'border-l border-border',
             )}
             style={{
               height: wrapText || scrollable ? 'auto' : rowHeight,
@@ -1001,6 +1041,11 @@ const RowRenderer = ({
               width,
               maxWidth: colWidth?.maxWidth || width,
               minWidth: colWidth?.minWidth || cell.column.columnDef.minSize,
+              ...(pinnedInfo ? {
+                position: 'sticky' as const,
+                [pinnedInfo.side]: pinnedInfo.offset,
+                zIndex: 1,
+              } : {}),
             }}
           >
             <div
@@ -1040,6 +1085,7 @@ interface VirtualizedTableBodyProps {
   parentRef: React.RefObject<HTMLDivElement>
   globalWrapText?: boolean
   columnWidths: Map<string, CalculatedColumnWidth>
+  pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
 }
 
 const VirtualizedTableBody = ({
@@ -1053,6 +1099,7 @@ const VirtualizedTableBody = ({
   parentRef,
   globalWrapText = false,
   columnWidths,
+  pinnedColumnOffsets,
 }: VirtualizedTableBodyProps) => {
   const rows = table.getRowModel().rows
 
@@ -1112,6 +1159,7 @@ const VirtualizedTableBody = ({
             getRowClassName={getRowClassName}
             globalWrapText={globalWrapText}
             columnWidths={columnWidths}
+            pinnedColumnOffsets={pinnedColumnOffsets}
           />
         )
       })}
@@ -1138,6 +1186,7 @@ interface StandardTableBodyProps {
   getRowClassName?: (params: { row: any; rowIndex: number }) => string
   globalWrapText?: boolean
   columnWidths: Map<string, CalculatedColumnWidth>
+  pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
 }
 
 const StandardTableBody = ({
@@ -1149,6 +1198,7 @@ const StandardTableBody = ({
   getRowClassName,
   globalWrapText = false,
   columnWidths,
+  pinnedColumnOffsets,
 }: StandardTableBodyProps) => {
   const rows = table.getRowModel().rows
 
@@ -1181,9 +1231,240 @@ const StandardTableBody = ({
           getRowClassName={getRowClassName}
           globalWrapText={globalWrapText}
           columnWidths={columnWidths}
+          pinnedColumnOffsets={pinnedColumnOffsets}
         />
       ))}
     </tbody>
+  )
+}
+
+// Pinned rows renderer - renders rows outside the scrollable body
+interface PinnedRowsRendererProps {
+  pinnedData: any[]
+  columns: GridColDef[]
+  tanstackColumns: ColumnDef<any>[]
+  getRowId?: (row: any) => string | number
+  rowHeight: number
+  showCellVerticalBorder: boolean
+  getRowClassName?: (params: { row: any; rowIndex: number }) => string
+  globalWrapText?: boolean
+  columnWidths: Map<string, CalculatedColumnWidth>
+  pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
+  position: 'top' | 'bottom'
+}
+
+const PinnedRowsRenderer = ({
+  pinnedData,
+  columns: _gridColumns,
+  tanstackColumns,
+  getRowId: getRowIdFn,
+  rowHeight,
+  showCellVerticalBorder,
+  getRowClassName,
+  globalWrapText = false,
+  columnWidths,
+  pinnedColumnOffsets,
+  position,
+}: PinnedRowsRendererProps) => {
+  // Create a mini table instance for pinned rows
+  const pinnedTable = useReactTable({
+    data: pinnedData,
+    columns: tanstackColumns,
+    getCoreRowModel: getCoreRowModel(),
+    getRowId: getRowIdFn ? (row) => String(getRowIdFn(row)) : undefined,
+  })
+
+  const pinnedRows = pinnedTable.getRowModel().rows
+  if (pinnedRows.length === 0) return null
+
+  return (
+    <tbody
+      className={cn(
+        'sticky z-[2]',
+        position === 'top' && 'top-0',
+        position === 'bottom' && 'bottom-0',
+      )}
+    >
+      {pinnedRows.map((row: any, rowIndex: number) => {
+        const customClassName = getRowClassName?.({ row: row.original, rowIndex })
+        return (
+          <tr
+            key={row.id}
+            className={cn(
+              'border-b border-border bg-muted/60 font-medium',
+              position === 'top' && 'border-b-2 border-b-border',
+              position === 'bottom' && 'border-t-2 border-t-border',
+              customClassName
+            )}
+          >
+            {row.getVisibleCells().map((cell: any) => {
+              const meta = cell.column.columnDef.meta as any
+              const align = meta?.align || 'left'
+              const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
+              const scrollable = meta?.scrollable || false
+              const maxCellHeight = meta?.maxCellHeight || 100
+              const cellClassName = meta?.cellClassName
+              const colWidth = columnWidths.get(cell.column.id)
+              const width = colWidth?.width || cell.column.getSize()
+              const pinnedInfo = pinnedColumnOffsets?.get(cell.column.id)
+
+              return (
+                <td
+                  key={cell.id}
+                  className={cn(
+                    'px-4 overflow-hidden bg-muted/60',
+                    showCellVerticalBorder && 'border-r last:border-r-0 border-border',
+                    pinnedInfo && 'sticky z-[3]',
+                    pinnedInfo?.side === 'left' && 'border-r border-border',
+                    pinnedInfo?.side === 'right' && 'border-l border-border',
+                  )}
+                  style={{
+                    height: wrapText || scrollable ? 'auto' : rowHeight,
+                    minHeight: rowHeight,
+                    textAlign: align,
+                    width,
+                    maxWidth: colWidth?.maxWidth || width,
+                    minWidth: colWidth?.minWidth || cell.column.columnDef.minSize,
+                    ...(pinnedInfo ? {
+                      position: 'sticky' as const,
+                      [pinnedInfo.side]: pinnedInfo.offset,
+                    } : {}),
+                  }}
+                >
+                  <div
+                    className={cn(
+                      wrapText ? 'whitespace-normal break-words' : scrollable ? 'overflow-auto' : 'truncate',
+                      scrollable && 'max-h-[100px]',
+                      cellClassName
+                    )}
+                    style={{
+                      maxHeight: scrollable ? `${maxCellHeight}px` : undefined,
+                    }}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </div>
+                </td>
+              )
+            })}
+          </tr>
+        )
+      })}
+    </tbody>
+  )
+}
+
+// Column group header renderer
+interface ColumnGroupHeaderProps {
+  columnGroupingModel: ColumnGroupModel[]
+  columns: GridColDef[]
+  columnWidths: Map<string, CalculatedColumnWidth>
+  showColumnVerticalBorder: boolean
+  rowHeight: number
+  columnVisibility: VisibilityState
+  checkboxSelection: boolean
+  pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
+}
+
+const ColumnGroupHeader = ({
+  columnGroupingModel,
+  columns: gridColumns,
+  columnWidths,
+  showColumnVerticalBorder,
+  rowHeight,
+  columnVisibility,
+  checkboxSelection,
+  pinnedColumnOffsets,
+}: ColumnGroupHeaderProps) => {
+  // Build a mapping from field → group
+  const fieldToGroup = React.useMemo(() => {
+    const map = new Map<string, ColumnGroupModel>()
+    columnGroupingModel.forEach((group) => {
+      group.children.forEach((child) => {
+        map.set(child.field, group)
+      })
+    })
+    return map
+  }, [columnGroupingModel])
+
+  // Build ordered group header cells, collapsing adjacent columns in the same group
+  const groupCells = React.useMemo(() => {
+    const cells: {
+      groupId: string | null
+      headerName: string
+      headerAlign?: 'left' | 'center' | 'right'
+      colSpan: number
+      width: number
+      pinnedInfo?: { side: 'left' | 'right'; offset: number }
+    }[] = []
+
+    // Collect visible column fields in order
+    const visibleFields: string[] = []
+    if (checkboxSelection) {
+      visibleFields.push('__select__')
+    }
+    gridColumns.forEach((col) => {
+      if (!col.hide && columnVisibility[col.field] !== false) {
+        visibleFields.push(col.field)
+      }
+    })
+
+    let currentGroup: ColumnGroupModel | null = null
+    let currentCell: typeof cells[number] | null = null
+
+    visibleFields.forEach((field) => {
+      const group = fieldToGroup.get(field)
+      const colWidth = columnWidths.get(field)?.width || 100
+      const pinnedInfo = pinnedColumnOffsets?.get(field)
+
+      if (group && group === currentGroup && currentCell) {
+        // Same group as previous column - extend span
+        currentCell.colSpan += 1
+        currentCell.width += colWidth
+      } else {
+        // New group or ungrouped column
+        currentCell = {
+          groupId: group?.groupId || null,
+          headerName: group?.headerName || '',
+          headerAlign: group?.headerAlign || 'center',
+          colSpan: 1,
+          width: colWidth,
+          pinnedInfo,
+        }
+        cells.push(currentCell)
+        currentGroup = group || null
+      }
+    })
+
+    return cells
+  }, [fieldToGroup, gridColumns, columnWidths, columnVisibility, checkboxSelection, pinnedColumnOffsets])
+
+  return (
+    <tr className="bg-muted border-b border-border">
+      {groupCells.map((cell, idx) => (
+        <th
+          key={`group-${cell.groupId || 'ungrouped'}-${idx}`}
+          colSpan={cell.colSpan}
+          className={cn(
+            'px-4 text-center font-semibold text-muted-foreground border-b-2 border-border bg-muted overflow-hidden',
+            showColumnVerticalBorder && 'border-r last:border-r-0',
+            cell.pinnedInfo && 'sticky z-[2]',
+          )}
+          style={{
+            height: rowHeight * 0.8,
+            textAlign: cell.headerAlign,
+            width: cell.width,
+            ...(cell.pinnedInfo ? {
+              position: 'sticky' as const,
+              [cell.pinnedInfo.side]: cell.pinnedInfo.offset,
+            } : {}),
+          }}
+        >
+          <div className="truncate">
+            {cell.headerName}
+          </div>
+        </th>
+      ))}
+    </tr>
   )
 }
 
@@ -1230,6 +1511,9 @@ export function DataGrid<TData extends Record<string, any>>({
   exportFileName = 'data-export',
   resizableColumns = false,
   onColumnResize,
+  pinnedRows,
+  pinnedColumns,
+  columnGroupingModel,
 }: DataGridProps<TData>) {
   // Refs
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
@@ -1283,6 +1567,51 @@ export function DataGrid<TData extends Record<string, any>>({
   // Calculate column widths based on flex, width, minWidth, maxWidth
   // Pass columnSizing so resized columns become fixed and don't affect flex distribution
   const columnWidths = useColumnWidths(columns, containerWidth, checkboxSelection, columnSizing)
+
+  // Compute pinned column offsets (sticky left/right positions)
+  const pinnedColumnOffsets = React.useMemo(() => {
+    if (!pinnedColumns) return undefined
+    const offsets = new Map<string, { side: 'left' | 'right'; offset: number }>()
+
+    // Calculate left pinned column offsets (cumulative from left)
+    if (pinnedColumns.left?.length) {
+      let leftOffset = 0
+      // If checkbox selection is enabled, account for the checkbox column width
+      if (checkboxSelection) {
+        leftOffset = 50
+      }
+      for (const field of pinnedColumns.left) {
+        const colWidth = columnWidths.get(field)
+        offsets.set(field, { side: 'left', offset: leftOffset })
+        leftOffset += colWidth?.width || 100
+      }
+    }
+
+    // Calculate right pinned column offsets (cumulative from right)
+    if (pinnedColumns.right?.length) {
+      let rightOffset = 0
+      // Process right-pinned columns in reverse order
+      for (let i = pinnedColumns.right.length - 1; i >= 0; i--) {
+        const field = pinnedColumns.right[i]
+        const colWidth = columnWidths.get(field)
+        offsets.set(field, { side: 'right', offset: rightOffset })
+        rightOffset += colWidth?.width || 100
+      }
+    }
+
+    return offsets.size > 0 ? offsets : undefined
+  }, [pinnedColumns, columnWidths, checkboxSelection])
+
+  // Create table rows for pinned rows (top and bottom)
+  const pinnedTopTable = React.useMemo(() => {
+    if (!pinnedRows?.top?.length) return null
+    return pinnedRows.top
+  }, [pinnedRows?.top])
+
+  const pinnedBottomTable = React.useMemo(() => {
+    if (!pinnedRows?.bottom?.length) return null
+    return pinnedRows.bottom
+  }, [pinnedRows?.bottom])
 
   // Convert MUI columns to TanStack columns
   const tanstackColumns = React.useMemo(
@@ -1449,6 +1778,19 @@ export function DataGrid<TData extends Record<string, any>>({
             })}
           </colgroup>
           <thead className="sticky top-0 z-[1]">
+            {/* Column group header row */}
+            {columnGroupingModel && columnGroupingModel.length > 0 && (
+              <ColumnGroupHeader
+                columnGroupingModel={columnGroupingModel}
+                columns={columns}
+                columnWidths={columnWidths}
+                showColumnVerticalBorder={showColumnVerticalBorder}
+                rowHeight={rowHeight}
+                columnVisibility={columnVisibility}
+                checkboxSelection={checkboxSelection}
+                pinnedColumnOffsets={pinnedColumnOffsets}
+              />
+            )}
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="bg-muted">
                 {headerGroup.headers.map((header) => {
@@ -1457,6 +1799,7 @@ export function DataGrid<TData extends Record<string, any>>({
                   const colWidth = columnWidths.get(header.column.id)
                   // columnWidths already incorporates columnSizing (resized widths)
                   const effectiveWidth = colWidth?.width || header.getSize()
+                  const pinnedInfo = pinnedColumnOffsets?.get(header.column.id)
 
                   return (
                     <th
@@ -1466,7 +1809,11 @@ export function DataGrid<TData extends Record<string, any>>({
                         showColumnVerticalBorder && 'border-r last:border-r-0',
                         header.column.getCanSort() && 'cursor-pointer select-none hover:bg-muted/80',
                         // Add cursor class when resizing
-                        header.column.getIsResizing() && 'cursor-col-resize'
+                        header.column.getIsResizing() && 'cursor-col-resize',
+                        // Pinned column styling
+                        pinnedInfo && 'sticky z-[2]',
+                        pinnedInfo?.side === 'left' && 'border-r border-border',
+                        pinnedInfo?.side === 'right' && 'border-l border-border',
                       )}
                       style={{
                         height: rowHeight,
@@ -1474,6 +1821,10 @@ export function DataGrid<TData extends Record<string, any>>({
                         minWidth: colWidth?.minWidth || header.column.columnDef.minSize,
                         maxWidth: colWidth?.maxWidth || header.column.columnDef.maxSize,
                         textAlign: align,
+                        ...(pinnedInfo ? {
+                          position: 'sticky' as const,
+                          [pinnedInfo.side]: pinnedInfo.offset,
+                        } : {}),
                       }}
                       onClick={header.column.getToggleSortingHandler()}
                     >
@@ -1502,6 +1853,23 @@ export function DataGrid<TData extends Record<string, any>>({
             ))}
           </thead>
 
+          {/* Pinned top rows */}
+          {pinnedTopTable && pinnedTopTable.length > 0 && (
+            <PinnedRowsRenderer
+              pinnedData={pinnedTopTable}
+              columns={columns}
+              tanstackColumns={tanstackColumns}
+              getRowId={getRowId}
+              rowHeight={rowHeight}
+              showCellVerticalBorder={showCellVerticalBorder}
+              getRowClassName={getRowClassName}
+              globalWrapText={wrapText}
+              columnWidths={columnWidths}
+              pinnedColumnOffsets={pinnedColumnOffsets}
+              position="top"
+            />
+          )}
+
           {virtualized ? (
             <VirtualizedTableBody
               table={table}
@@ -1514,6 +1882,7 @@ export function DataGrid<TData extends Record<string, any>>({
               parentRef={tableContainerRef as React.RefObject<HTMLDivElement>}
               globalWrapText={wrapText}
               columnWidths={columnWidths}
+              pinnedColumnOffsets={pinnedColumnOffsets}
             />
           ) : (
             <StandardTableBody
@@ -1525,6 +1894,24 @@ export function DataGrid<TData extends Record<string, any>>({
               getRowClassName={getRowClassName}
               globalWrapText={wrapText}
               columnWidths={columnWidths}
+              pinnedColumnOffsets={pinnedColumnOffsets}
+            />
+          )}
+
+          {/* Pinned bottom rows */}
+          {pinnedBottomTable && pinnedBottomTable.length > 0 && (
+            <PinnedRowsRenderer
+              pinnedData={pinnedBottomTable}
+              columns={columns}
+              tanstackColumns={tanstackColumns}
+              getRowId={getRowId}
+              rowHeight={rowHeight}
+              showCellVerticalBorder={showCellVerticalBorder}
+              getRowClassName={getRowClassName}
+              globalWrapText={wrapText}
+              columnWidths={columnWidths}
+              pinnedColumnOffsets={pinnedColumnOffsets}
+              position="bottom"
             />
           )}
         </table>

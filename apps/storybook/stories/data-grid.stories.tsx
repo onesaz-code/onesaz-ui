@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
-import { DataGrid, Badge, Button, type GridColDef, type GridRowSelectionModel, type ColumnVisibilityModel } from '@onesaz/ui'
+import { DataGrid, Badge, Button, type GridColDef, type GridRowSelectionModel, type ColumnVisibilityModel, type PinnedRowsModel, type PinnedColumnsModel, type ColumnGroupModel } from '@onesaz/ui'
 
 const meta: Meta<typeof DataGrid> = {
   title: 'Components/DataGrid',
@@ -965,6 +965,263 @@ export const WithScrollableBadges: Story = {
           height={400}
           toolBar
           title="Scrollable Badges Example"
+        />
+      </div>
+    )
+  },
+}
+
+// ============================================================
+// Pinned Rows Story
+// ============================================================
+
+interface SalesRow {
+  id: number
+  region: string
+  q1: number
+  q2: number
+  q3: number
+  q4: number
+  total: number
+}
+
+const salesData: SalesRow[] = [
+  { id: 1, region: 'North', q1: 12000, q2: 15000, q3: 13500, q4: 18000, total: 58500 },
+  { id: 2, region: 'South', q1: 9500, q2: 11000, q3: 10200, q4: 14000, total: 44700 },
+  { id: 3, region: 'East', q1: 14000, q2: 16500, q3: 15800, q4: 19500, total: 65800 },
+  { id: 4, region: 'West', q1: 11200, q2: 13000, q3: 12100, q4: 16000, total: 52300 },
+  { id: 5, region: 'Central', q1: 8800, q2: 9500, q3: 9200, q4: 12500, total: 40000 },
+  { id: 6, region: 'Northeast', q1: 7500, q2: 8200, q3: 7900, q4: 10500, total: 34100 },
+  { id: 7, region: 'Southeast', q1: 10200, q2: 11800, q3: 11000, q4: 14800, total: 47800 },
+  { id: 8, region: 'Northwest', q1: 6800, q2: 7500, q3: 7200, q4: 9800, total: 31300 },
+]
+
+const salesColumns: GridColDef<SalesRow>[] = [
+  { field: 'region', headerName: 'Region', width: 150 },
+  { field: 'q1', headerName: 'Q1', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+  { field: 'q2', headerName: 'Q2', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+  { field: 'q3', headerName: 'Q3', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+  { field: 'q4', headerName: 'Q4', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+  { field: 'total', headerName: 'Total', width: 140, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+]
+
+const grandTotalRow: SalesRow = {
+  id: 999,
+  region: 'Grand Total',
+  q1: salesData.reduce((sum, r) => sum + r.q1, 0),
+  q2: salesData.reduce((sum, r) => sum + r.q2, 0),
+  q3: salesData.reduce((sum, r) => sum + r.q3, 0),
+  q4: salesData.reduce((sum, r) => sum + r.q4, 0),
+  total: salesData.reduce((sum, r) => sum + r.total, 0),
+}
+
+const averageRow: SalesRow = {
+  id: 998,
+  region: 'Average',
+  q1: Math.round(grandTotalRow.q1 / salesData.length),
+  q2: Math.round(grandTotalRow.q2 / salesData.length),
+  q3: Math.round(grandTotalRow.q3 / salesData.length),
+  q4: Math.round(grandTotalRow.q4 / salesData.length),
+  total: Math.round(grandTotalRow.total / salesData.length),
+}
+
+export const PinnedRows: Story = {
+  render: () => (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Pinned rows stay fixed at the top or bottom of the table while the main body scrolls.
+        The &quot;Average&quot; row is pinned to the top and the &quot;Grand Total&quot; row is pinned to the bottom.
+      </p>
+      <DataGrid
+        rows={salesData}
+        columns={salesColumns}
+        getRowId={(row) => row.id}
+        height={350}
+        toolBar
+        title="Sales by Region"
+        pinnedRows={{
+          top: [averageRow],
+          bottom: [grandTotalRow],
+        }}
+        getRowClassName={({ row }) =>
+          row.id === 999 ? 'font-bold' : row.id === 998 ? 'italic' : ''
+        }
+      />
+    </div>
+  ),
+}
+
+// ============================================================
+// Pinned Columns Story
+// ============================================================
+
+interface StudentScore {
+  id: number
+  name: string
+  rollNo: string
+  math: number
+  science: number
+  english: number
+  history: number
+  geography: number
+  physics: number
+  chemistry: number
+  biology: number
+  total: number
+}
+
+const studentScores: StudentScore[] = [
+  { id: 1, name: 'Aarav Sharma', rollNo: 'A001', math: 92, science: 88, english: 75, history: 82, geography: 78, physics: 85, chemistry: 90, biology: 87, total: 677 },
+  { id: 2, name: 'Priya Patel', rollNo: 'A002', math: 85, science: 92, english: 88, history: 76, geography: 83, physics: 91, chemistry: 86, biology: 93, total: 694 },
+  { id: 3, name: 'Rohan Kumar', rollNo: 'A003', math: 78, science: 75, english: 82, history: 90, geography: 87, physics: 72, chemistry: 79, biology: 80, total: 643 },
+  { id: 4, name: 'Ananya Singh', rollNo: 'A004', math: 95, science: 90, english: 92, history: 85, geography: 88, physics: 93, chemistry: 91, biology: 89, total: 723 },
+  { id: 5, name: 'Dev Gupta', rollNo: 'A005', math: 70, science: 72, english: 68, history: 74, geography: 71, physics: 69, chemistry: 73, biology: 75, total: 572 },
+]
+
+const studentColumns: GridColDef<StudentScore>[] = [
+  { field: 'rollNo', headerName: 'Roll No', width: 100 },
+  { field: 'name', headerName: 'Student Name', width: 160 },
+  { field: 'math', headerName: 'Math', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'science', headerName: 'Science', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'english', headerName: 'English', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'history', headerName: 'History', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'geography', headerName: 'Geography', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'physics', headerName: 'Physics', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'chemistry', headerName: 'Chemistry', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'biology', headerName: 'Biology', width: 100, align: 'center', headerAlign: 'center' },
+  { field: 'total', headerName: 'Total', width: 120, align: 'right', headerAlign: 'right' },
+]
+
+export const PinnedColumns: Story = {
+  render: () => (
+    <div className="space-y-4">
+      <p className="text-sm text-muted-foreground">
+        Pinned columns remain visible when scrolling horizontally. &quot;Roll No&quot; and &quot;Student Name&quot; are pinned to
+        the left, while &quot;Total&quot; is pinned to the right.
+      </p>
+      <DataGrid
+        rows={studentScores}
+        columns={studentColumns}
+        getRowId={(row) => row.id}
+        height={350}
+        toolBar
+        title="Student Scores"
+        pinnedColumns={{
+          left: ['rollNo', 'name'],
+          right: ['total'],
+        }}
+      />
+    </div>
+  ),
+}
+
+// ============================================================
+// Column Grouping Story
+// ============================================================
+
+export const ColumnGrouping: Story = {
+  render: () => {
+    const groupingColumns: GridColDef[] = [
+      { field: 'rollNo', headerName: 'Roll No', width: 100 },
+      { field: 'name', headerName: 'Student Name', width: 160 },
+      { field: 'math', headerName: 'Math', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'science', headerName: 'Science', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'english', headerName: 'English', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'history', headerName: 'History', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'geography', headerName: 'Geography', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'physics', headerName: 'Physics', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'chemistry', headerName: 'Chemistry', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'biology', headerName: 'Biology', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'total', headerName: 'Total', width: 120, align: 'right', headerAlign: 'right' },
+    ]
+
+    const columnGroupingModel: ColumnGroupModel[] = [
+      {
+        groupId: 'stem',
+        headerName: 'STEM Subjects',
+        children: [{ field: 'math' }, { field: 'science' }, { field: 'physics' }, { field: 'chemistry' }, { field: 'biology' }],
+        headerAlign: 'center',
+      },
+      {
+        groupId: 'humanities',
+        headerName: 'Humanities',
+        children: [{ field: 'english' }, { field: 'history' }, { field: 'geography' }],
+        headerAlign: 'center',
+      },
+    ]
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Column grouping adds a header row above the column headers that groups related columns together.
+          &quot;STEM Subjects&quot; groups Math, Science, Physics, Chemistry and Biology.
+          &quot;Humanities&quot; groups English, History, and Geography.
+        </p>
+        <DataGrid
+          rows={studentScores}
+          columns={groupingColumns}
+          getRowId={(row) => row.id}
+          height={400}
+          toolBar
+          title="Student Scores (Grouped Columns)"
+          columnGroupingModel={columnGroupingModel}
+        />
+      </div>
+    )
+  },
+}
+
+// ============================================================
+// Combined: Pinned Rows + Pinned Columns + Column Grouping
+// ============================================================
+
+export const AllFeaturesCombined: Story = {
+  render: () => {
+    const combinedColumns: GridColDef<SalesRow>[] = [
+      { field: 'region', headerName: 'Region', width: 150 },
+      { field: 'q1', headerName: 'Q1', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+      { field: 'q2', headerName: 'Q2', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+      { field: 'q3', headerName: 'Q3', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+      { field: 'q4', headerName: 'Q4', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+      { field: 'total', headerName: 'Total', width: 150, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
+    ]
+
+    const columnGroupingModel: ColumnGroupModel[] = [
+      {
+        groupId: 'firstHalf',
+        headerName: '1st Half',
+        children: [{ field: 'q1' }, { field: 'q2' }],
+        headerAlign: 'center',
+      },
+      {
+        groupId: 'secondHalf',
+        headerName: '2nd Half',
+        children: [{ field: 'q3' }, { field: 'q4' }],
+        headerAlign: 'center',
+      },
+    ]
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          All three features combined: &quot;Region&quot; is pinned left, &quot;Total&quot; is pinned right,
+          Grand Total is a pinned bottom row, and quarters are grouped into 1st/2nd Half.
+        </p>
+        <DataGrid
+          rows={salesData}
+          columns={combinedColumns}
+          getRowId={(row) => row.id}
+          height={400}
+          toolBar
+          title="Sales Dashboard"
+          pinnedRows={{
+            bottom: [grandTotalRow],
+          }}
+          pinnedColumns={{
+            left: ['region'],
+            right: ['total'],
+          }}
+          columnGroupingModel={columnGroupingModel}
         />
       </div>
     )
