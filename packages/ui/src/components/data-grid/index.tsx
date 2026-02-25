@@ -1418,6 +1418,7 @@ interface PinnedRowsRendererProps {
   columnWidths: Map<string, CalculatedColumnWidth>
   pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
   position: 'top' | 'bottom'
+  columnVisibility: VisibilityState
 }
 
 const PinnedRowsRenderer = ({
@@ -1432,6 +1433,7 @@ const PinnedRowsRenderer = ({
   columnWidths,
   pinnedColumnOffsets,
   position,
+  columnVisibility,
 }: PinnedRowsRendererProps) => {
   // Create a mini table instance for pinned rows
   const pinnedTable = useReactTable({
@@ -1439,28 +1441,23 @@ const PinnedRowsRenderer = ({
     columns: tanstackColumns,
     getCoreRowModel: getCoreRowModel(),
     getRowId: getRowIdFn ? (row) => String(getRowIdFn(row)) : undefined,
+    state: { columnVisibility },
   })
 
   const pinnedRows = pinnedTable.getRowModel().rows
   if (pinnedRows.length === 0) return null
 
   return (
-    <tbody
-      className={cn(
-        'sticky z-[2]',
-        position === 'top' && 'top-0',
-        position === 'bottom' && 'bottom-0',
-      )}
-    >
+    <tbody>
       {pinnedRows.map((row: any, rowIndex: number) => {
         const customClassName = getRowClassName?.({ row: row.original, rowIndex })
         return (
           <tr
             key={row.id}
             className={cn(
-              'border-b border-border bg-muted/60 font-medium',
-              position === 'top' && 'border-b-2 border-b-border',
-              position === 'bottom' && 'border-t-2 border-t-border',
+              'sticky z-[2] border-b border-border bg-muted font-medium',
+              position === 'top' && 'top-0 border-b-2 border-b-border',
+              position === 'bottom' && 'bottom-0 border-t-2 border-t-border',
               customClassName
             )}
           >
@@ -1479,7 +1476,7 @@ const PinnedRowsRenderer = ({
                 <td
                   key={cell.id}
                   className={cn(
-                    'px-4 overflow-hidden bg-muted/60 border-b border-border',
+                    'px-4 overflow-hidden bg-muted border-b border-border',
                     showCellVerticalBorder && 'border-r border-border',
                     pinnedInfo && 'sticky z-[3]',
                     pinnedInfo?.side === 'left' && 'border-r border-border',
@@ -1685,6 +1682,10 @@ export function DataGrid<TData extends Record<string, any>>({
   // Refs
   const tableContainerRef = React.useRef<HTMLDivElement>(null)
 
+  // rowSpan is incompatible with virtualization (HTML rowSpan requires all spanned rows in the DOM).
+  // Silently disable virtualization when any column uses rowSpan.
+  const effectiveVirtualized = virtualized && !columns.some((col) => col.rowSpan)
+
   // Compute initial sorting state
   const computedInitialSort = React.useMemo<SortingState>(() => {
     if (initialSortModel && initialSortModel.length > 0) {
@@ -1816,7 +1817,7 @@ export function DataGrid<TData extends Record<string, any>>({
     data: rows,
     columns: tanstackColumns,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: virtualized ? undefined : (paginationMode === 'client' ? getPaginationRowModel() : undefined),
+    getPaginationRowModel: effectiveVirtualized ? undefined : (paginationMode === 'client' ? getPaginationRowModel() : undefined),
     getSortedRowModel: sortingMode === 'client' ? getSortedRowModel() : undefined,
     getFilteredRowModel: filterMode === 'client' ? getFilteredRowModel() : undefined,
     getRowId: getRowId ? (row) => String(getRowId(row)) : undefined,
@@ -1824,7 +1825,7 @@ export function DataGrid<TData extends Record<string, any>>({
       sorting,
       globalFilter,
       rowSelection,
-      pagination: virtualized ? undefined : pagination,
+      pagination: effectiveVirtualized ? undefined : pagination,
       columnVisibility,
       columnSizing,
     },
@@ -1835,7 +1836,7 @@ export function DataGrid<TData extends Record<string, any>>({
       setRowSelection(newValue)
       onRowSelectionModelChange?.(newValue)
     },
-    onPaginationChange: virtualized ? undefined : (updater) => {
+    onPaginationChange: effectiveVirtualized ? undefined : (updater) => {
       const newValue = typeof updater === 'function' ? updater(pagination) : updater
       setPagination(newValue)
       onPaginationModelChange?.({ page: newValue.pageIndex, pageSize: newValue.pageSize })
@@ -1861,10 +1862,10 @@ export function DataGrid<TData extends Record<string, any>>({
       }
     },
     enableRowSelection: checkboxSelection,
-    manualPagination: virtualized ? true : paginationMode === 'server',
+    manualPagination: effectiveVirtualized ? true : paginationMode === 'server',
     manualSorting: sortingMode === 'server',
     manualFiltering: filterMode === 'server',
-    pageCount: virtualized ? undefined : (paginationMode === 'server' && rowCount
+    pageCount: effectiveVirtualized ? undefined : (paginationMode === 'server' && rowCount
       ? Math.ceil(rowCount / pagination.pageSize)
       : undefined),
   })
@@ -1954,7 +1955,7 @@ export function DataGrid<TData extends Record<string, any>>({
               )
             })}
           </colgroup>
-          <thead className="sticky top-0 z-[1]">
+          <thead className="sticky top-0 z-[3] bg-muted">
             {/* Column group header row */}
             {columnGroupingModel && columnGroupingModel.length > 0 && (
               <ColumnGroupHeader
@@ -1988,7 +1989,7 @@ export function DataGrid<TData extends Record<string, any>>({
                         // Add cursor class when resizing
                         header.column.getIsResizing() && 'cursor-col-resize',
                         // Pinned column styling
-                        pinnedInfo && 'sticky z-[2]',
+                        pinnedInfo && 'sticky z-[4]',
                         pinnedInfo?.side === 'left' && 'border-r border-border',
                         pinnedInfo?.side === 'right' && 'border-l border-border',
                       )}
@@ -2043,11 +2044,12 @@ export function DataGrid<TData extends Record<string, any>>({
               globalWrapText={wrapText}
               columnWidths={columnWidths}
               pinnedColumnOffsets={pinnedColumnOffsets}
+              columnVisibility={columnVisibility}
               position="top"
             />
           )}
 
-          {virtualized ? (
+          {effectiveVirtualized ? (
             <VirtualizedTableBody
               table={table}
               rowHeight={rowHeight}
@@ -2092,6 +2094,7 @@ export function DataGrid<TData extends Record<string, any>>({
               globalWrapText={wrapText}
               columnWidths={columnWidths}
               pinnedColumnOffsets={pinnedColumnOffsets}
+              columnVisibility={columnVisibility}
               position="bottom"
             />
           )}
@@ -2099,7 +2102,7 @@ export function DataGrid<TData extends Record<string, any>>({
       </div>
 
       {/* Footer with pagination - only show when not virtualized */}
-      {!virtualized && !hideFooter && !hideFooterPagination && (
+      {!effectiveVirtualized && !hideFooter && !hideFooterPagination && (
         <DataGridPagination
           table={table}
           pageSizeOptions={pageSizeOptions}
@@ -2109,7 +2112,7 @@ export function DataGrid<TData extends Record<string, any>>({
       )}
 
       {/* Footer info for virtualized mode */}
-      {virtualized && !hideFooter && (
+      {effectiveVirtualized && !hideFooter && (
         <div className="flex items-center justify-end gap-4 px-4 py-3 border-t border-border bg-background">
           <span className="text-sm text-muted-foreground whitespace-nowrap">
             {table.getFilteredRowModel().rows.length} total rows (virtualized)
