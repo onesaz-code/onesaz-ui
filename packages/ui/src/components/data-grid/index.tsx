@@ -52,6 +52,9 @@ export interface GridColDef<TData = any> {
   scrollable?: boolean // If true, cell content becomes scrollable when it overflows
   maxCellHeight?: number // Maximum height for scrollable cells (default: 100px)
   cellClassName?: string // Custom className for cell content
+  // Spanning
+  colSpan?: number | ((params: GridSpanParams<TData>) => number | undefined) // Number of columns this cell should span
+  rowSpan?: boolean | ((params: GridSpanParams<TData>) => number | undefined) // true for auto-merge consecutive same values, or function returning span count
   // For export exclusion
   export?: boolean
   hideExport?: boolean
@@ -77,6 +80,13 @@ export interface GridValueGetterParams<TData = any> {
 
 export interface GridValueFormatterParams {
   value: any
+}
+
+export interface GridSpanParams<TData = any> {
+  row: TData
+  value: any
+  field: string
+  rowIndex: number
 }
 
 export interface PaginationModel {
@@ -312,6 +322,8 @@ function convertColumns<TData>(
         scrollable: col.scrollable,
         maxCellHeight: col.maxCellHeight,
         cellClassName: col.cellClassName,
+        colSpan: col.colSpan,
+        rowSpan: col.rowSpan,
       },
     }
 
@@ -959,6 +971,80 @@ const DataGridToolbar = ({
   )
 }
 
+// Row span map: columnId -> rowIndex -> span (0 means skip, >1 means render with rowSpan attribute)
+// Cells with span=1 are normal, span=0 should be hidden, span>1 should use HTML rowSpan
+type RowSpanMap = Map<string, Map<number, number>>
+
+function computeRowSpanMap(
+  rows: any[],
+  columns: GridColDef[],
+): RowSpanMap | undefined {
+  // Check if any column uses rowSpan
+  const rowSpanColumns = columns.filter((col) => col.rowSpan)
+  if (rowSpanColumns.length === 0) return undefined
+
+  const map: RowSpanMap = new Map()
+
+  rowSpanColumns.forEach((col) => {
+    const colMap = new Map<number, number>()
+    const field = col.field
+
+    if (typeof col.rowSpan === 'function') {
+      // Function-based rowSpan
+      const rowSpanFn = col.rowSpan
+      let i = 0
+      while (i < rows.length) {
+        const row = rows[i]
+        const value = row.original ? row.original[field] : row[field]
+        const span = rowSpanFn({ row: row.original || row, value, field, rowIndex: i })
+        if (span && span > 1) {
+          colMap.set(i, span)
+          // Mark subsequent rows as skipped
+          for (let j = 1; j < span && (i + j) < rows.length; j++) {
+            colMap.set(i + j, 0)
+          }
+          i += span
+        } else {
+          colMap.set(i, 1)
+          i++
+        }
+      }
+    } else if (col.rowSpan === true) {
+      // Auto-merge: merge consecutive rows with the same value
+      let i = 0
+      while (i < rows.length) {
+        const row = rows[i]
+        const value = row.original ? row.original[field] : row[field]
+        let span = 1
+        // Count consecutive identical values
+        while (
+          i + span < rows.length
+        ) {
+          const nextRow = rows[i + span]
+          const nextValue = nextRow.original ? nextRow.original[field] : nextRow[field]
+          if (nextValue === value) {
+            span++
+          } else {
+            break
+          }
+        }
+        colMap.set(i, span)
+        // Mark subsequent rows as skipped (span = 0)
+        for (let j = 1; j < span; j++) {
+          colMap.set(i + j, 0)
+        }
+        i += span
+      }
+    }
+
+    if (colMap.size > 0) {
+      map.set(field, colMap)
+    }
+  })
+
+  return map.size > 0 ? map : undefined
+}
+
 // Row renderer component for both virtualized and non-virtualized modes
 interface RowRendererProps {
   row: any
@@ -973,6 +1059,8 @@ interface RowRendererProps {
   columnWidths: Map<string, CalculatedColumnWidth>
   pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
   isPinnedRow?: boolean
+  rowSpanMap?: RowSpanMap
+  gridColumns?: GridColDef[]
 }
 
 const RowRenderer = ({
@@ -988,8 +1076,38 @@ const RowRenderer = ({
   columnWidths,
   pinnedColumnOffsets,
   isPinnedRow = false,
+  rowSpanMap,
+  gridColumns,
 }: RowRendererProps) => {
   const customClassName = getRowClassName?.({ row: row.original, rowIndex })
+  const visibleCells = row.getVisibleCells()
+
+  // Pre-compute colSpan skip set and colSpan values
+  const colSpanSkipSet = new Set<number>()
+  const colSpanValues = new Map<number, number>()
+
+  if (gridColumns) {
+    visibleCells.forEach((cell: any, cellIndex: number) => {
+      if (colSpanSkipSet.has(cellIndex)) return
+      const meta = cell.column.columnDef.meta as any
+      const colSpanDef = meta?.colSpan
+      if (colSpanDef) {
+        const value = cell.getValue()
+        let span: number | undefined
+        if (typeof colSpanDef === 'function') {
+          span = colSpanDef({ row: row.original, value, field: cell.column.id, rowIndex })
+        } else if (typeof colSpanDef === 'number') {
+          span = colSpanDef
+        }
+        if (span && span > 1) {
+          colSpanValues.set(cellIndex, span)
+          for (let j = 1; j < span && (cellIndex + j) < visibleCells.length; j++) {
+            colSpanSkipSet.add(cellIndex + j)
+          }
+        }
+      }
+    })
+  }
 
   return (
     <tr
@@ -1008,39 +1126,77 @@ const RowRenderer = ({
         }
       }}
     >
-      {row.getVisibleCells().map((cell: any) => {
+      {visibleCells.map((cell: any, cellIndex: number) => {
+        // Skip cells consumed by colSpan
+        if (colSpanSkipSet.has(cellIndex)) return null
+
+        // Check rowSpan
+        const colId = cell.column.id
+        if (rowSpanMap) {
+          const colRowSpan = rowSpanMap.get(colId)
+          if (colRowSpan) {
+            const spanValue = colRowSpan.get(rowIndex)
+            if (spanValue === 0) return null // This cell is consumed by a rowSpan above
+          }
+        }
+
         const meta = cell.column.columnDef.meta as any
         const align = meta?.align || 'left'
-        // Column-level wrapText overrides global setting
         const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
         const scrollable = meta?.scrollable || false
         const maxCellHeight = meta?.maxCellHeight || 100
         const cellClassName = meta?.cellClassName
 
-        // columnWidths already incorporates resized widths from columnSizing
         const colWidth = columnWidths.get(cell.column.id)
         const width = colWidth?.width || cell.column.getSize()
-
-        // Check if this column is pinned
         const pinnedInfo = pinnedColumnOffsets?.get(cell.column.id)
+
+        // Compute actual colSpan and rowSpan HTML attributes
+        const htmlColSpan = colSpanValues.get(cellIndex)
+        let htmlRowSpan: number | undefined
+        if (rowSpanMap) {
+          const colRowSpan = rowSpanMap.get(colId)
+          if (colRowSpan) {
+            const spanValue = colRowSpan.get(rowIndex)
+            if (spanValue && spanValue > 1) {
+              htmlRowSpan = spanValue
+            }
+          }
+        }
+
+        // Calculate width for colSpan (sum of spanned column widths)
+        let totalWidth = width
+        if (htmlColSpan && htmlColSpan > 1) {
+          for (let j = 1; j < htmlColSpan && (cellIndex + j) < visibleCells.length; j++) {
+            const spannedCell = visibleCells[cellIndex + j]
+            const spannedColWidth = columnWidths.get(spannedCell.column.id)
+            totalWidth += spannedColWidth?.width || spannedCell.column.getSize()
+          }
+        }
 
         return (
           <td
             key={cell.id}
+            colSpan={htmlColSpan}
+            rowSpan={htmlRowSpan}
             className={cn(
-              'px-4 overflow-hidden',
-              showCellVerticalBorder && 'border-r last:border-r-0 border-border',
+              'px-4 overflow-hidden border-b border-border',
+              showCellVerticalBorder && 'border-r border-border',
               pinnedInfo && 'sticky z-[1] bg-background',
               pinnedInfo?.side === 'left' && 'border-r border-border',
               pinnedInfo?.side === 'right' && 'border-l border-border',
+              htmlRowSpan && htmlRowSpan > 1 && 'align-middle',
             )}
             style={{
-              height: wrapText || scrollable ? 'auto' : rowHeight,
+              height: htmlRowSpan && htmlRowSpan > 1
+                ? rowHeight * htmlRowSpan
+                : wrapText || scrollable ? undefined : rowHeight,
               minHeight: rowHeight,
               textAlign: align,
-              width,
-              maxWidth: colWidth?.maxWidth || width,
+              width: htmlColSpan && htmlColSpan > 1 ? totalWidth : width,
+              maxWidth: htmlColSpan && htmlColSpan > 1 ? undefined : colWidth?.maxWidth || width,
               minWidth: colWidth?.minWidth || cell.column.columnDef.minSize,
+              verticalAlign: htmlRowSpan && htmlRowSpan > 1 ? 'middle' : undefined,
               ...(pinnedInfo ? {
                 position: 'sticky' as const,
                 [pinnedInfo.side]: pinnedInfo.offset,
@@ -1058,7 +1214,6 @@ const RowRenderer = ({
                 maxHeight: scrollable ? `${maxCellHeight}px` : undefined,
               }}
               title={
-                // Show tooltip for truncated simple text values (not for scrollable or wrapped content)
                 !wrapText && !scrollable && (typeof cell.getValue() === 'string' || typeof cell.getValue() === 'number')
                   ? String(cell.getValue())
                   : undefined
@@ -1086,6 +1241,8 @@ interface VirtualizedTableBodyProps {
   globalWrapText?: boolean
   columnWidths: Map<string, CalculatedColumnWidth>
   pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
+  rowSpanMap?: RowSpanMap
+  gridColumns?: GridColDef[]
 }
 
 const VirtualizedTableBody = ({
@@ -1100,6 +1257,8 @@ const VirtualizedTableBody = ({
   globalWrapText = false,
   columnWidths,
   pinnedColumnOffsets,
+  rowSpanMap,
+  gridColumns,
 }: VirtualizedTableBodyProps) => {
   const rows = table.getRowModel().rows
 
@@ -1160,6 +1319,8 @@ const VirtualizedTableBody = ({
             globalWrapText={globalWrapText}
             columnWidths={columnWidths}
             pinnedColumnOffsets={pinnedColumnOffsets}
+            rowSpanMap={rowSpanMap}
+            gridColumns={gridColumns}
           />
         )
       })}
@@ -1187,6 +1348,8 @@ interface StandardTableBodyProps {
   globalWrapText?: boolean
   columnWidths: Map<string, CalculatedColumnWidth>
   pinnedColumnOffsets?: Map<string, { side: 'left' | 'right'; offset: number }>
+  rowSpanMap?: RowSpanMap
+  gridColumns?: GridColDef[]
 }
 
 const StandardTableBody = ({
@@ -1199,6 +1362,8 @@ const StandardTableBody = ({
   globalWrapText = false,
   columnWidths,
   pinnedColumnOffsets,
+  rowSpanMap,
+  gridColumns,
 }: StandardTableBodyProps) => {
   const rows = table.getRowModel().rows
 
@@ -1232,6 +1397,8 @@ const StandardTableBody = ({
           globalWrapText={globalWrapText}
           columnWidths={columnWidths}
           pinnedColumnOffsets={pinnedColumnOffsets}
+          rowSpanMap={rowSpanMap}
+          gridColumns={gridColumns}
         />
       ))}
     </tbody>
@@ -1312,8 +1479,8 @@ const PinnedRowsRenderer = ({
                 <td
                   key={cell.id}
                   className={cn(
-                    'px-4 overflow-hidden bg-muted/60',
-                    showCellVerticalBorder && 'border-r last:border-r-0 border-border',
+                    'px-4 overflow-hidden bg-muted/60 border-b border-border',
+                    showCellVerticalBorder && 'border-r border-border',
                     pinnedInfo && 'sticky z-[3]',
                     pinnedInfo?.side === 'left' && 'border-r border-border',
                     pinnedInfo?.side === 'right' && 'border-l border-border',
@@ -1709,6 +1876,16 @@ export function DataGrid<TData extends Record<string, any>>({
   const customButtons = slotProps?.toolbar?.customButtons
   const moreOptions = slotProps?.toolbar?.moreOptions || []
 
+  // Compute row span map for columns that use rowSpan
+  const rowSpanMap = React.useMemo(() => {
+    const hasRowSpan = columns.some((col) => col.rowSpan)
+    if (!hasRowSpan) return undefined
+    return computeRowSpanMap(table.getRowModel().rows, columns)
+  }, [table.getRowModel().rows, columns])
+
+  // Check if any column uses colSpan (to pass gridColumns to RowRenderer)
+  const hasColSpan = React.useMemo(() => columns.some((col) => col.colSpan), [columns])
+
   // Calculate container style
   const containerStyle: React.CSSProperties = {
     ...sx,
@@ -1883,6 +2060,8 @@ export function DataGrid<TData extends Record<string, any>>({
               globalWrapText={wrapText}
               columnWidths={columnWidths}
               pinnedColumnOffsets={pinnedColumnOffsets}
+              rowSpanMap={rowSpanMap}
+              gridColumns={hasColSpan ? columns : undefined}
             />
           ) : (
             <StandardTableBody
@@ -1895,6 +2074,8 @@ export function DataGrid<TData extends Record<string, any>>({
               globalWrapText={wrapText}
               columnWidths={columnWidths}
               pinnedColumnOffsets={pinnedColumnOffsets}
+              rowSpanMap={rowSpanMap}
+              gridColumns={hasColSpan ? columns : undefined}
             />
           )}
 

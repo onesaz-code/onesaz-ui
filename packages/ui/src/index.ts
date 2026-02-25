@@ -227,6 +227,7 @@ export {
   type PinnedRowsModel,
   type PinnedColumnsModel,
   type ColumnGroupModel,
+  type GridSpanParams,
 } from './components/data-grid'
 export {
   List,

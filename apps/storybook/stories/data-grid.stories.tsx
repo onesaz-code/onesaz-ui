@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
-import { DataGrid, Badge, Button, type GridColDef, type GridRowSelectionModel, type ColumnVisibilityModel, type PinnedRowsModel, type PinnedColumnsModel, type ColumnGroupModel } from '@onesaz/ui'
+import { DataGrid, Badge, Button, type GridColDef, type GridRowSelectionModel, type ColumnVisibilityModel, type PinnedRowsModel, type PinnedColumnsModel, type ColumnGroupModel, type GridSpanParams } from '@onesaz/ui'
 
 const meta: Meta<typeof DataGrid> = {
   title: 'Components/DataGrid',
@@ -1222,6 +1222,201 @@ export const AllFeaturesCombined: Story = {
             right: ['total'],
           }}
           columnGroupingModel={columnGroupingModel}
+        />
+      </div>
+    )
+  },
+}
+
+// ============================================================
+// Row Spanning Story
+// ============================================================
+
+interface ClassSchedule {
+  id: number
+  day: string
+  period: string
+  subject: string
+  teacher: string
+  room: string
+}
+
+const scheduleData: ClassSchedule[] = [
+  { id: 1, day: 'Monday', period: '1st', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
+  { id: 2, day: 'Monday', period: '2nd', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
+  { id: 3, day: 'Monday', period: '3rd', subject: 'English', teacher: 'Ms. Patel', room: '203' },
+  { id: 4, day: 'Monday', period: '4th', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
+  { id: 5, day: 'Tuesday', period: '1st', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
+  { id: 6, day: 'Tuesday', period: '2nd', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
+  { id: 7, day: 'Tuesday', period: '3rd', subject: 'History', teacher: 'Ms. Singh', room: '105' },
+  { id: 8, day: 'Tuesday', period: '4th', subject: 'English', teacher: 'Ms. Patel', room: '203' },
+  { id: 9, day: 'Wednesday', period: '1st', subject: 'English', teacher: 'Ms. Patel', room: '203' },
+  { id: 10, day: 'Wednesday', period: '2nd', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
+  { id: 11, day: 'Wednesday', period: '3rd', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
+  { id: 12, day: 'Wednesday', period: '4th', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
+]
+
+export const RowSpanning: Story = {
+  render: () => {
+    const scheduleColumns: GridColDef<ClassSchedule>[] = [
+      { field: 'day', headerName: 'Day', width: 130, rowSpan: true },
+      { field: 'period', headerName: 'Period', width: 100 },
+      { field: 'subject', headerName: 'Subject', width: 130, rowSpan: true },
+      { field: 'teacher', headerName: 'Teacher', width: 150, rowSpan: true },
+      { field: 'room', headerName: 'Room', width: 100, rowSpan: true },
+    ]
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Row spanning automatically merges consecutive cells with the same value. The &quot;Day&quot;, &quot;Subject&quot;,
+          &quot;Teacher&quot;, and &quot;Room&quot; columns use <code>rowSpan: true</code> for auto-merging.
+        </p>
+        <DataGrid
+          rows={scheduleData}
+          columns={scheduleColumns}
+          getRowId={(row) => row.id}
+          height={500}
+          toolBar
+          title="Class Schedule (Row Spanning)"
+          hideFooter
+          showCellVerticalBorder
+        />
+      </div>
+    )
+  },
+}
+
+// ============================================================
+// Column Spanning Story
+// ============================================================
+
+interface ReportCard {
+  id: number
+  student: string
+  subject: string
+  theory: number
+  practical: number
+  total: number
+  grade: string
+  remarks: string
+}
+
+const reportData: ReportCard[] = [
+  { id: 1, student: 'Aarav', subject: 'Physics', theory: 78, practical: 42, total: 120, grade: 'A', remarks: 'Excellent work' },
+  { id: 2, student: 'Aarav', subject: 'Chemistry', theory: 65, practical: 38, total: 103, grade: 'B+', remarks: 'Good improvement' },
+  { id: 3, student: 'Priya', subject: 'Physics', theory: 88, practical: 45, total: 133, grade: 'A+', remarks: 'Outstanding performance in both theory and practical' },
+  { id: 4, student: 'Priya', subject: 'Chemistry', theory: 72, practical: 40, total: 112, grade: 'A', remarks: 'Very good' },
+  { id: 5, student: 'Rohan', subject: 'Physics', theory: 55, practical: 30, total: 85, grade: 'B', remarks: 'Needs to focus on theory concepts more' },
+  { id: 6, student: 'Rohan', subject: 'Chemistry', theory: 60, practical: 35, total: 95, grade: 'B+', remarks: 'Improving steadily' },
+]
+
+export const ColSpanning: Story = {
+  render: () => {
+    const reportColumns: GridColDef<ReportCard>[] = [
+      { field: 'student', headerName: 'Student', width: 120 },
+      { field: 'subject', headerName: 'Subject', width: 120 },
+      { field: 'theory', headerName: 'Theory', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'practical', headerName: 'Practical', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'total', headerName: 'Total', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'grade', headerName: 'Grade', width: 80, align: 'center', headerAlign: 'center' },
+      {
+        field: 'remarks',
+        headerName: 'Remarks',
+        width: 200,
+        wrapText: true,
+        // When remarks is long (>30 chars), span across 2 columns for more room
+        colSpan: ({ value }: GridSpanParams<ReportCard>) =>
+          typeof value === 'string' && value.length > 30 ? 2 : 1,
+      },
+    ]
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Column spanning allows a cell to stretch across multiple columns. Here, the &quot;Remarks&quot; column
+          uses a dynamic <code>colSpan</code> function — when remarks text is longer than 30 characters, it
+          spans 2 columns for more readable content.
+        </p>
+        <DataGrid
+          rows={reportData}
+          columns={reportColumns}
+          getRowId={(row) => row.id}
+          height={400}
+          toolBar
+          title="Report Card (Column Spanning)"
+          hideFooter
+          showCellVerticalBorder
+        />
+      </div>
+    )
+  },
+}
+
+// ============================================================
+// Row Span + Col Span Combined Story
+// ============================================================
+
+export const RowAndColSpanCombined: Story = {
+  render: () => {
+    interface TimeTable {
+      id: number
+      day: string
+      time: string
+      class10A: string
+      class10B: string
+      class10C: string
+      class10D: string
+    }
+
+    const timetableData: TimeTable[] = [
+      { id: 1, day: 'Monday', time: '9:00-10:00', class10A: 'Math', class10B: 'English', class10C: 'Science', class10D: 'Hindi' },
+      { id: 2, day: 'Monday', time: '10:00-11:00', class10A: 'Math', class10B: 'Science', class10C: 'English', class10D: 'Hindi' },
+      { id: 3, day: 'Monday', time: '11:00-12:00', class10A: 'English', class10B: 'Math', class10C: 'Hindi', class10D: 'Science' },
+      { id: 4, day: 'Tuesday', time: '9:00-10:00', class10A: 'Science', class10B: 'Hindi', class10C: 'Math', class10D: 'English' },
+      { id: 5, day: 'Tuesday', time: '10:00-11:00', class10A: 'Science', class10B: 'Hindi', class10C: 'Math', class10D: 'English' },
+      { id: 6, day: 'Tuesday', time: '11:00-12:00', class10A: 'Hindi', class10B: 'English', class10C: 'Science', class10D: 'Math' },
+      { id: 7, day: 'Wednesday', time: '9:00-10:00', class10A: 'English', class10B: 'Math', class10C: 'Hindi', class10D: 'Science' },
+      { id: 8, day: 'Wednesday', time: '10:00-11:00', class10A: 'Hindi', class10B: 'Science', class10C: 'Math', class10D: 'English' },
+      { id: 9, day: 'Wednesday', time: '11:00-12:00', class10A: 'Math', class10B: 'Hindi', class10C: 'English', class10D: 'Science' },
+    ]
+
+    const timetableColumns: GridColDef<TimeTable>[] = [
+      { field: 'day', headerName: 'Day', width: 120, rowSpan: true },
+      { field: 'time', headerName: 'Time', width: 130 },
+      { field: 'class10A', headerName: 'Class 10-A', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
+      { field: 'class10B', headerName: 'Class 10-B', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
+      { field: 'class10C', headerName: 'Class 10-C', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
+      { field: 'class10D', headerName: 'Class 10-D', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
+    ]
+
+    const columnGroupingModel: ColumnGroupModel[] = [
+      {
+        groupId: 'sections',
+        headerName: 'Sections',
+        children: [{ field: 'class10A' }, { field: 'class10B' }, { field: 'class10C' }, { field: 'class10D' }],
+        headerAlign: 'center',
+      },
+    ]
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Combining row spanning, column grouping, and pinned columns. The &quot;Day&quot; column auto-merges
+          consecutive same days. Subject cells that have the same value across consecutive periods are merged.
+          The &quot;Sections&quot; column group header spans all class columns.
+        </p>
+        <DataGrid
+          rows={timetableData}
+          columns={timetableColumns}
+          getRowId={(row) => row.id}
+          height={450}
+          toolBar
+          title="School Timetable (Row Span + Column Groups)"
+          hideFooter
+          showCellVerticalBorder
+          columnGroupingModel={columnGroupingModel}
+          pinnedColumns={{ left: ['day', 'time'] }}
         />
       </div>
     )
