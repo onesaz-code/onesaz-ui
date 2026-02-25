@@ -18,6 +18,9 @@
     "storybook": "npm run dev --workspace=@onesaz/storybook",
     "clean": "turbo run clean && rm -rf node_modules",
     "publish:packages": "npm run build && npm publish --workspace=@onesaz/tokens && npm publish --workspace=@onesaz/tailwind-config && npm publish --workspace=@onesaz/ui",
+    "publish:ui": "npm run build && npm publish --workspace=@onesaz/ui",
+    "publish:tailwind-config": "npm run build && npm publish --workspace=@onesaz/tailwind-config",
+    "publish:tokens": "npm run build && npm publish --workspace=@onesaz/tokens",
     "version:patch": "npm version patch --workspace=@onesaz/tokens --workspace=@onesaz/tailwind-config --workspace=@onesaz/ui --no-git-tag-version",
     "version:minor": "npm version minor --workspace=@onesaz/tokens --workspace=@onesaz/tailwind-config --workspace=@onesaz/ui --no-git-tag-version",
     "version:major": "npm version major --workspace=@onesaz/tokens --workspace=@onesaz/tailwind-config --workspace=@onesaz/ui --no-git-tag-version"

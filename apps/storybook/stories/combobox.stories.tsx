@@ -369,3 +369,213 @@ export const SingleVsMulti: Story = {
     </div>
   ),
 }
+
+// ============================================================================
+// Adornment Examples
+// ============================================================================
+
+// Inline SVG icons used across adornment stories
+const GlobeIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
+    <path d="M2 12h20" />
+  </svg>
+)
+
+const FilterIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+  </svg>
+)
+
+const CalendarIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+    <line x1="16" x2="16" y1="2" y2="6" />
+    <line x1="8" x2="8" y1="2" y2="6" />
+    <line x1="3" x2="21" y1="10" y2="10" />
+  </svg>
+)
+
+const InfoIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 16v-4" />
+    <path d="M12 8h.01" />
+  </svg>
+)
+
+/** Decorative start adornment — no click handler, rendered as a non-interactive span */
+export const WithStartAdornment: Story = {
+  render: () => (
+    <div className="grid w-[300px] items-center gap-1.5">
+      <Label>Country</Label>
+      <Combobox
+        options={countries}
+        placeholder="Select country..."
+        startAdornment={<GlobeIcon />}
+      />
+    </div>
+  ),
+}
+
+/** Decorative end adornment — no click handler */
+export const WithEndAdornment: Story = {
+  render: () => (
+    <div className="grid w-[300px] items-center gap-1.5">
+      <Label>Framework</Label>
+      <Combobox
+        options={frameworks}
+        placeholder="Select framework..."
+        endAdornment={<FilterIcon />}
+      />
+    </div>
+  ),
+}
+
+/** Both adornments as decorative icons */
+export const WithBothAdornments: Story = {
+  render: () => (
+    <div className="grid w-[300px] items-center gap-1.5">
+      <Label>Scheduled Date</Label>
+      <Combobox
+        options={frameworks}
+        placeholder="Select framework..."
+        startAdornment={<CalendarIcon />}
+        endAdornment={<InfoIcon />}
+      />
+    </div>
+  ),
+}
+
+/** Clickable start adornment — handler fires without opening the dropdown */
+export const WithClickableStartAdornment: Story = {
+  render: function WithClickableStartAdornment() {
+    const [log, setLog] = React.useState<string | null>(null)
+
+    return (
+      <div className="grid w-[300px] items-center gap-1.5">
+        <Label>Country (clickable globe)</Label>
+        <Combobox
+          options={countries}
+          placeholder="Select country..."
+          startAdornment={<GlobeIcon />}
+          onStartAdornmentClick={() => setLog('Globe clicked!')}
+        />
+        {log && (
+          <p className="text-xs text-[var(--muted-foreground)]">{log}</p>
+        )}
+      </div>
+    )
+  },
+}
+
+/** Clickable end adornment — demonstrates a custom action slot */
+export const WithClickableEndAdornment: Story = {
+  render: function WithClickableEndAdornment() {
+    const [log, setLog] = React.useState<string | null>(null)
+
+    return (
+      <div className="grid w-[300px] items-center gap-1.5">
+        <Label>Framework (clickable filter)</Label>
+        <Combobox
+          options={frameworks}
+          placeholder="Select framework..."
+          endAdornment={<FilterIcon />}
+          onEndAdornmentClick={() => setLog('Filter clicked!')}
+        />
+        {log && (
+          <p className="text-xs text-[var(--muted-foreground)]">{log}</p>
+        )}
+      </div>
+    )
+  },
+}
+
+/** Both adornments clickable — full API demonstration */
+export const WithBothClickableAdornments: Story = {
+  render: function WithBothClickableAdornments() {
+    const [log, setLog] = React.useState<string>('—')
+
+    return (
+      <div className="grid w-[320px] items-center gap-1.5">
+        <Label>Framework</Label>
+        <Combobox
+          options={frameworks}
+          placeholder="Select framework..."
+          startAdornment={<GlobeIcon />}
+          onStartAdornmentClick={() => setLog('Start adornment clicked')}
+          endAdornment={<FilterIcon />}
+          onEndAdornmentClick={() => setLog('End adornment clicked')}
+        />
+        <p className="text-xs text-[var(--muted-foreground)]">Last action: {log}</p>
+      </div>
+    )
+  },
+}
+
+/** Adornments work identically in multi-select mode */
+export const MultiSelectWithAdornments: Story = {
+  render: function MultiSelectWithAdornments() {
+    const [value, setValue] = React.useState<(typeof countries)[number][]>([])
+
+    return (
+      <div className="grid w-[350px] items-center gap-1.5">
+        <Label>Countries</Label>
+        <Combobox
+          multiple
+          options={countries}
+          value={value}
+          onChange={setValue}
+          placeholder="Select countries..."
+          startAdornment={<GlobeIcon />}
+          endAdornment={<FilterIcon />}
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {value.length} selected
+        </p>
+      </div>
+    )
+  },
+}

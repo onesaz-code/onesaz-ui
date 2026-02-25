@@ -18,19 +18,15 @@ type NormalizedOption<T> = {
 }
 
 // ============================================================================
-// Single Select Combobox Props
+// Shared Props (common to both single and multi)
 // ============================================================================
-export interface ComboboxSingleProps<T extends ComboboxOptionInput = ComboboxOptionInput> {
+interface ComboboxSharedProps<T extends ComboboxOptionInput = ComboboxOptionInput> {
   options: T[]
-  value?: T | null
-  defaultValue?: T | null
-  onChange?: (value: T | null) => void
   placeholder?: string
   searchPlaceholder?: string
   emptyMessage?: string
   disabled?: boolean
   className?: string
-  multiple?: false
   clearable?: boolean
   openOnFocus?: boolean
   inputValue?: string
@@ -38,33 +34,40 @@ export interface ComboboxSingleProps<T extends ComboboxOptionInput = ComboboxOpt
   simpleOptions?: boolean
   labelKey?: string
   valueKey?: string
+  /** Node rendered at the start (left) of the trigger button */
+  startAdornment?: React.ReactNode
+  /** Click handler for the start adornment — renders it as a button when provided */
+  onStartAdornmentClick?: (e: React.MouseEvent) => void
+  /** Node rendered at the end (right) of the trigger button, before the chevron */
+  endAdornment?: React.ReactNode
+  /** Click handler for the end adornment — renders it as a button when provided */
+  onEndAdornmentClick?: (e: React.MouseEvent) => void
+}
+
+// ============================================================================
+// Single Select Combobox Props
+// ============================================================================
+export interface ComboboxSingleProps<T extends ComboboxOptionInput = ComboboxOptionInput>
+  extends ComboboxSharedProps<T> {
+  value?: T | null
+  defaultValue?: T | null
+  onChange?: (value: T | null) => void
+  multiple?: false
 }
 
 // ============================================================================
 // Multi Select Combobox Props
 // ============================================================================
-export interface ComboboxMultipleProps<T extends ComboboxOptionInput = ComboboxOptionInput> {
-  options: T[]
+export interface ComboboxMultipleProps<T extends ComboboxOptionInput = ComboboxOptionInput>
+  extends ComboboxSharedProps<T> {
   value?: T[]
   defaultValue?: T[]
   onChange?: (value: T[]) => void
-  placeholder?: string
-  searchPlaceholder?: string
-  emptyMessage?: string
-  disabled?: boolean
-  className?: string
   multiple: true
-  clearable?: boolean
-  openOnFocus?: boolean
-  inputValue?: string
-  onInputChange?: (value: string) => void
   /** Show select-all option */
   selectAll?: boolean
   /** Label for select-all option */
   selectAllLabel?: string
-  simpleOptions?: boolean
-  labelKey?: string
-  valueKey?: string
   /** Maximum number of items to display as chips before showing "+N more" */
   maxDisplayItems?: number
 }
@@ -78,6 +81,39 @@ function isMultipleProps(props: ComboboxProps): props is ComboboxMultipleProps {
   return props.multiple === true
 }
 
+// ============================================================================
+// Adornment helper — renders as button (clickable) or span (decorative)
+// ============================================================================
+function Adornment({
+  children,
+  onClick,
+  className,
+}: {
+  children: React.ReactNode
+  onClick?: (e: React.MouseEvent) => void
+  className?: string
+}) {
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation()
+          onClick(e)
+        }}
+        className={cn('shrink-0 rounded p-0.5 hover:bg-muted', className)}
+      >
+        {children}
+      </button>
+    )
+  }
+  return (
+    <span className={cn('shrink-0 pointer-events-none opacity-50', className)}>
+      {children}
+    </span>
+  )
+}
+
 const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   (props, ref) => {
     const {
@@ -89,6 +125,10 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       clearable = true,
       openOnFocus = true,
       className,
+      startAdornment,
+      onStartAdornmentClick,
+      endAdornment,
+      onEndAdornmentClick,
     } = props
 
     const labelKey = props.labelKey ?? 'label'
@@ -302,6 +342,13 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
             className
           )}
         >
+          {/* Start adornment */}
+          {startAdornment && (
+            <Adornment onClick={onStartAdornmentClick} className="mr-1.5">
+              {startAdornment}
+            </Adornment>
+          )}
+
           {isMultiple ? (
             <div className="flex flex-1 flex-wrap items-center gap-1">
               {selectedOptions.length === 0 ? (
@@ -344,7 +391,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
               )}
             </div>
           ) : (
-            <span className={cn(!singleValue && 'text-muted-foreground')}>
+            <span className={cn('flex-1', !singleValue && 'text-muted-foreground')}>
               {singleValue ? getOptionLabel(singleValue) : placeholder}
             </span>
           )}
@@ -396,6 +443,14 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 </svg>
               </button>
             )}
+
+            {/* End adornment — sits before the chevron */}
+            {endAdornment && (
+              <Adornment onClick={onEndAdornmentClick}>
+                {endAdornment}
+              </Adornment>
+            )}
+
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
