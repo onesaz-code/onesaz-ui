@@ -1232,56 +1232,99 @@ export const AllFeaturesCombined: Story = {
 // Row Spanning Story
 // ============================================================
 
-interface ClassSchedule {
+interface Employee {
   id: number
-  day: string
-  period: string
-  subject: string
-  teacher: string
-  room: string
+  department: string
+  team: string
+  name: string
+  role: string
+  salary: number
 }
 
-const scheduleData: ClassSchedule[] = [
-  { id: 1, day: 'Monday', period: '1st', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
-  { id: 2, day: 'Monday', period: '2nd', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
-  { id: 3, day: 'Monday', period: '3rd', subject: 'English', teacher: 'Ms. Patel', room: '203' },
-  { id: 4, day: 'Monday', period: '4th', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
-  { id: 5, day: 'Tuesday', period: '1st', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
-  { id: 6, day: 'Tuesday', period: '2nd', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
-  { id: 7, day: 'Tuesday', period: '3rd', subject: 'History', teacher: 'Ms. Singh', room: '105' },
-  { id: 8, day: 'Tuesday', period: '4th', subject: 'English', teacher: 'Ms. Patel', room: '203' },
-  { id: 9, day: 'Wednesday', period: '1st', subject: 'English', teacher: 'Ms. Patel', room: '203' },
-  { id: 10, day: 'Wednesday', period: '2nd', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
-  { id: 11, day: 'Wednesday', period: '3rd', subject: 'Math', teacher: 'Mr. Sharma', room: '101' },
-  { id: 12, day: 'Wednesday', period: '4th', subject: 'Science', teacher: 'Dr. Kumar', room: 'Lab-1' },
+const employeeData: Employee[] = [
+  { id: 1, department: 'Engineering', team: 'Frontend', name: 'Aarav Sharma', role: 'Senior Developer', salary: 95000 },
+  { id: 2, department: 'Engineering', team: 'Frontend', name: 'Priya Patel', role: 'Developer', salary: 78000 },
+  { id: 3, department: 'Engineering', team: 'Frontend', name: 'Rohan Kumar', role: 'Junior Developer', salary: 55000 },
+  { id: 4, department: 'Engineering', team: 'Backend', name: 'Ananya Singh', role: 'Senior Developer', salary: 98000 },
+  { id: 5, department: 'Engineering', team: 'Backend', name: 'Dev Gupta', role: 'Developer', salary: 82000 },
+  { id: 6, department: 'Design', team: 'UI/UX', name: 'Meera Reddy', role: 'Lead Designer', salary: 88000 },
+  { id: 7, department: 'Design', team: 'UI/UX', name: 'Kavya Nair', role: 'Designer', salary: 65000 },
+  { id: 8, department: 'Design', team: 'Graphics', name: 'Arjun Iyer', role: 'Graphic Designer', salary: 60000 },
+  { id: 9, department: 'HR', team: 'Recruitment', name: 'Sanya Joshi', role: 'HR Manager', salary: 75000 },
+  { id: 10, department: 'HR', team: 'Recruitment', name: 'Ravi Mishra', role: 'Recruiter', salary: 52000 },
+  { id: 11, department: 'HR', team: 'Operations', name: 'Neha Verma', role: 'HR Specialist', salary: 58000 },
 ]
+
+const rowSpanCodeExample = `// Row Spanning — auto-merge consecutive identical values
+const columns: GridColDef[] = [
+  {
+    field: 'department',
+    headerName: 'Department',
+    width: 150,
+    rowSpan: true,  // ← auto-merges consecutive same values
+  },
+  {
+    field: 'team',
+    headerName: 'Team',
+    width: 130,
+    rowSpan: true,  // ← auto-merges within its own column
+  },
+  { field: 'name', headerName: 'Name', width: 160 },
+  { field: 'role', headerName: 'Role', width: 170 },
+  { field: 'salary', headerName: 'Salary', width: 120 },
+]
+
+<DataGrid
+  rows={employeeData}
+  columns={columns}
+  showCellVerticalBorder
+/>`
 
 export const RowSpanning: Story = {
   render: () => {
-    const scheduleColumns: GridColDef<ClassSchedule>[] = [
-      { field: 'day', headerName: 'Day', width: 130, rowSpan: true },
-      { field: 'period', headerName: 'Period', width: 100 },
-      { field: 'subject', headerName: 'Subject', width: 130, rowSpan: true },
-      { field: 'teacher', headerName: 'Teacher', width: 150, rowSpan: true },
-      { field: 'room', headerName: 'Room', width: 100, rowSpan: true },
+    const employeeColumns: GridColDef<Employee>[] = [
+      { field: 'department', headerName: 'Department', width: 150, rowSpan: true },
+      { field: 'team', headerName: 'Team', width: 130, rowSpan: true },
+      { field: 'name', headerName: 'Employee Name', width: 160 },
+      { field: 'role', headerName: 'Role', width: 170 },
+      {
+        field: 'salary',
+        headerName: 'Salary',
+        width: 130,
+        align: 'right',
+        headerAlign: 'right',
+        valueFormatter: ({ value }) => `₹${Number(value).toLocaleString()}`,
+      },
     ]
 
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Row spanning automatically merges consecutive cells with the same value. The &quot;Day&quot;, &quot;Subject&quot;,
-          &quot;Teacher&quot;, and &quot;Room&quot; columns use <code>rowSpan: true</code> for auto-merging.
-        </p>
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-base font-semibold mb-1">Row Spanning</h3>
+          <p className="text-sm text-muted-foreground">
+            Set <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">rowSpan: true</code> on a
+            column to auto-merge consecutive cells with the same value. &quot;Department&quot; and &quot;Team&quot;
+            columns are merged below.
+          </p>
+        </div>
         <DataGrid
-          rows={scheduleData}
-          columns={scheduleColumns}
+          rows={employeeData}
+          columns={employeeColumns}
           getRowId={(row) => row.id}
-          height={500}
+          height={480}
           toolBar
-          title="Class Schedule (Row Spanning)"
+          title="Employee Directory"
           hideFooter
           showCellVerticalBorder
         />
+        <details className="border border-border rounded-lg">
+          <summary className="px-4 py-2 cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+            Show Code
+          </summary>
+          <pre className="px-4 py-3 text-xs font-mono bg-muted/50 overflow-x-auto rounded-b-lg whitespace-pre">
+{rowSpanCodeExample}
+          </pre>
+        </details>
       </div>
     )
   },
@@ -1291,63 +1334,136 @@ export const RowSpanning: Story = {
 // Column Spanning Story
 // ============================================================
 
-interface ReportCard {
+interface ExamMarks {
   id: number
   student: string
   subject: string
+  hasLab: boolean
   theory: number
-  practical: number
+  practical: number | null
   total: number
   grade: string
-  remarks: string
 }
 
-const reportData: ReportCard[] = [
-  { id: 1, student: 'Aarav', subject: 'Physics', theory: 78, practical: 42, total: 120, grade: 'A', remarks: 'Excellent work' },
-  { id: 2, student: 'Aarav', subject: 'Chemistry', theory: 65, practical: 38, total: 103, grade: 'B+', remarks: 'Good improvement' },
-  { id: 3, student: 'Priya', subject: 'Physics', theory: 88, practical: 45, total: 133, grade: 'A+', remarks: 'Outstanding performance in both theory and practical' },
-  { id: 4, student: 'Priya', subject: 'Chemistry', theory: 72, practical: 40, total: 112, grade: 'A', remarks: 'Very good' },
-  { id: 5, student: 'Rohan', subject: 'Physics', theory: 55, practical: 30, total: 85, grade: 'B', remarks: 'Needs to focus on theory concepts more' },
-  { id: 6, student: 'Rohan', subject: 'Chemistry', theory: 60, practical: 35, total: 95, grade: 'B+', remarks: 'Improving steadily' },
+const examMarksData: ExamMarks[] = [
+  { id: 1, student: 'Aarav', subject: 'Physics', hasLab: true, theory: 78, practical: 42, total: 120, grade: 'A' },
+  { id: 2, student: 'Aarav', subject: 'Math', hasLab: false, theory: 92, practical: null, total: 92, grade: 'A+' },
+  { id: 3, student: 'Aarav', subject: 'Chemistry', hasLab: true, theory: 65, practical: 38, total: 103, grade: 'B+' },
+  { id: 4, student: 'Aarav', subject: 'English', hasLab: false, theory: 85, practical: null, total: 85, grade: 'A' },
+  { id: 5, student: 'Priya', subject: 'Physics', hasLab: true, theory: 88, practical: 45, total: 133, grade: 'A+' },
+  { id: 6, student: 'Priya', subject: 'Math', hasLab: false, theory: 95, practical: null, total: 95, grade: 'A+' },
+  { id: 7, student: 'Priya', subject: 'Chemistry', hasLab: true, theory: 72, practical: 40, total: 112, grade: 'A' },
+  { id: 8, student: 'Priya', subject: 'English', hasLab: false, theory: 88, practical: null, total: 88, grade: 'A' },
+  { id: 9, student: 'Rohan', subject: 'Physics', hasLab: true, theory: 55, practical: 30, total: 85, grade: 'B' },
+  { id: 10, student: 'Rohan', subject: 'Math', hasLab: false, theory: 70, practical: null, total: 70, grade: 'B+' },
+  { id: 11, student: 'Rohan', subject: 'Chemistry', hasLab: true, theory: 60, practical: 35, total: 95, grade: 'B+' },
+  { id: 12, student: 'Rohan', subject: 'English', hasLab: false, theory: 74, practical: null, total: 74, grade: 'B+' },
 ]
+
+const colSpanCodeExample = `// Column Spanning in the middle of the table
+// For subjects without a lab, the "Theory" cell spans
+// across both "Theory" and "Practical" columns.
+
+const columns: GridColDef<ExamMarks>[] = [
+  { field: 'student', headerName: 'Student', width: 130, rowSpan: true },
+  { field: 'subject', headerName: 'Subject', width: 130 },
+  {
+    field: 'theory',
+    headerName: 'Theory',
+    width: 120,
+    align: 'center',
+    // ⬇️ Dynamic colSpan: span 2 columns when no practical
+    colSpan: ({ row }) => row.hasLab ? 1 : 2,
+    // Show "92 (Theory only)" when spanning
+    renderCell: ({ row, value }) =>
+      row.hasLab ? value : \`\${value} (Theory only)\`,
+  },
+  {
+    field: 'practical',
+    headerName: 'Practical',
+    width: 120,
+    align: 'center',
+    // This cell is auto-skipped when theory has colSpan: 2
+  },
+  { field: 'total', headerName: 'Total', width: 100 },
+  { field: 'grade', headerName: 'Grade', width: 90 },
+]
+
+<DataGrid
+  rows={examMarksData}
+  columns={columns}
+  showCellVerticalBorder
+/>`
 
 export const ColSpanning: Story = {
   render: () => {
-    const reportColumns: GridColDef<ReportCard>[] = [
-      { field: 'student', headerName: 'Student', width: 120 },
-      { field: 'subject', headerName: 'Subject', width: 120 },
-      { field: 'theory', headerName: 'Theory', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'practical', headerName: 'Practical', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'total', headerName: 'Total', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'grade', headerName: 'Grade', width: 80, align: 'center', headerAlign: 'center' },
+    const examColumns: GridColDef<ExamMarks>[] = [
+      { field: 'student', headerName: 'Student', width: 130, rowSpan: true },
+      { field: 'subject', headerName: 'Subject', width: 130 },
       {
-        field: 'remarks',
-        headerName: 'Remarks',
-        width: 200,
-        wrapText: true,
-        // When remarks is long (>30 chars), span across 2 columns for more room
-        colSpan: ({ value }: GridSpanParams<ReportCard>) =>
-          typeof value === 'string' && value.length > 30 ? 2 : 1,
+        field: 'theory',
+        headerName: 'Theory',
+        width: 120,
+        align: 'center',
+        headerAlign: 'center',
+        // When the subject has no lab, span across Theory + Practical columns
+        colSpan: ({ row }: GridSpanParams<ExamMarks>) => row.hasLab ? 1 : 2,
+        renderCell: ({ row, value }) =>
+          row.hasLab ? value : <span className="text-muted-foreground italic">{value} (Theory only)</span>,
+      },
+      {
+        field: 'practical',
+        headerName: 'Practical',
+        width: 120,
+        align: 'center',
+        headerAlign: 'center',
+        // This cell gets auto-skipped when theory colSpan is 2
+      },
+      {
+        field: 'total',
+        headerName: 'Total',
+        width: 100,
+        align: 'center',
+        headerAlign: 'center',
+      },
+      {
+        field: 'grade',
+        headerName: 'Grade',
+        width: 90,
+        align: 'center',
+        headerAlign: 'center',
       },
     ]
 
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Column spanning allows a cell to stretch across multiple columns. Here, the &quot;Remarks&quot; column
-          uses a dynamic <code>colSpan</code> function — when remarks text is longer than 30 characters, it
-          spans 2 columns for more readable content.
-        </p>
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-base font-semibold mb-1">Column Spanning</h3>
+          <p className="text-sm text-muted-foreground">
+            Set <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan: number</code> for
+            static, or <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan: (params) =&gt; number</code> for
+            dynamic. Below, subjects <strong>without a lab</strong> (Math, English) have their &quot;Theory&quot;
+            cell span across both Theory and Practical columns in the middle of the table.
+          </p>
+        </div>
         <DataGrid
-          rows={reportData}
-          columns={reportColumns}
+          rows={examMarksData}
+          columns={examColumns}
           getRowId={(row) => row.id}
-          height={400}
+          height={520}
           toolBar
-          title="Report Card (Column Spanning)"
+          title="Exam Marks (Column Spanning)"
           hideFooter
           showCellVerticalBorder
         />
+        <details className="border border-border rounded-lg">
+          <summary className="px-4 py-2 cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+            Show Code
+          </summary>
+          <pre className="px-4 py-3 text-xs font-mono bg-muted/50 overflow-x-auto rounded-b-lg whitespace-pre">
+{colSpanCodeExample}
+          </pre>
+        </details>
       </div>
     )
   },
@@ -1359,65 +1475,120 @@ export const ColSpanning: Story = {
 
 export const RowAndColSpanCombined: Story = {
   render: () => {
-    interface TimeTable {
+    interface ClassResult {
       id: number
-      day: string
-      time: string
-      class10A: string
-      class10B: string
-      class10C: string
-      class10D: string
+      className: string
+      section: string
+      subject: string
+      hasLab: boolean
+      theory: number
+      practical: number | null
+      total: number
+      grade: string
     }
 
-    const timetableData: TimeTable[] = [
-      { id: 1, day: 'Monday', time: '9:00-10:00', class10A: 'Math', class10B: 'English', class10C: 'Science', class10D: 'Hindi' },
-      { id: 2, day: 'Monday', time: '10:00-11:00', class10A: 'Math', class10B: 'Science', class10C: 'English', class10D: 'Hindi' },
-      { id: 3, day: 'Monday', time: '11:00-12:00', class10A: 'English', class10B: 'Math', class10C: 'Hindi', class10D: 'Science' },
-      { id: 4, day: 'Tuesday', time: '9:00-10:00', class10A: 'Science', class10B: 'Hindi', class10C: 'Math', class10D: 'English' },
-      { id: 5, day: 'Tuesday', time: '10:00-11:00', class10A: 'Science', class10B: 'Hindi', class10C: 'Math', class10D: 'English' },
-      { id: 6, day: 'Tuesday', time: '11:00-12:00', class10A: 'Hindi', class10B: 'English', class10C: 'Science', class10D: 'Math' },
-      { id: 7, day: 'Wednesday', time: '9:00-10:00', class10A: 'English', class10B: 'Math', class10C: 'Hindi', class10D: 'Science' },
-      { id: 8, day: 'Wednesday', time: '10:00-11:00', class10A: 'Hindi', class10B: 'Science', class10C: 'Math', class10D: 'English' },
-      { id: 9, day: 'Wednesday', time: '11:00-12:00', class10A: 'Math', class10B: 'Hindi', class10C: 'English', class10D: 'Science' },
+    const classData: ClassResult[] = [
+      { id: 1, className: 'Class 10', section: 'A', subject: 'Physics', hasLab: true, theory: 78, practical: 42, total: 120, grade: 'A' },
+      { id: 2, className: 'Class 10', section: 'A', subject: 'Math', hasLab: false, theory: 85, practical: null, total: 85, grade: 'A' },
+      { id: 3, className: 'Class 10', section: 'A', subject: 'English', hasLab: false, theory: 81, practical: null, total: 81, grade: 'A' },
+      { id: 4, className: 'Class 10', section: 'B', subject: 'Physics', hasLab: true, theory: 65, practical: 35, total: 100, grade: 'B+' },
+      { id: 5, className: 'Class 10', section: 'B', subject: 'Math', hasLab: false, theory: 70, practical: null, total: 70, grade: 'B+' },
+      { id: 6, className: 'Class 10', section: 'B', subject: 'English', hasLab: false, theory: 74, practical: null, total: 74, grade: 'B+' },
+      { id: 7, className: 'Class 9', section: 'A', subject: 'Physics', hasLab: true, theory: 82, practical: 44, total: 126, grade: 'A+' },
+      { id: 8, className: 'Class 9', section: 'A', subject: 'Math', hasLab: false, theory: 90, practical: null, total: 90, grade: 'A+' },
+      { id: 9, className: 'Class 9', section: 'A', subject: 'English', hasLab: false, theory: 79, practical: null, total: 79, grade: 'A' },
     ]
 
-    const timetableColumns: GridColDef<TimeTable>[] = [
-      { field: 'day', headerName: 'Day', width: 120, rowSpan: true },
-      { field: 'time', headerName: 'Time', width: 130 },
-      { field: 'class10A', headerName: 'Class 10-A', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
-      { field: 'class10B', headerName: 'Class 10-B', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
-      { field: 'class10C', headerName: 'Class 10-C', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
-      { field: 'class10D', headerName: 'Class 10-D', width: 120, align: 'center', headerAlign: 'center', rowSpan: true },
-    ]
-
-    const columnGroupingModel: ColumnGroupModel[] = [
+    const classColumns: GridColDef<ClassResult>[] = [
+      { field: 'className', headerName: 'Class', width: 120, rowSpan: true },
+      { field: 'section', headerName: 'Section', width: 100, rowSpan: true },
+      { field: 'subject', headerName: 'Subject', width: 120 },
       {
-        groupId: 'sections',
-        headerName: 'Sections',
-        children: [{ field: 'class10A' }, { field: 'class10B' }, { field: 'class10C' }, { field: 'class10D' }],
+        field: 'theory',
+        headerName: 'Theory',
+        width: 120,
+        align: 'center',
         headerAlign: 'center',
+        // ColSpan in the MIDDLE: when no lab, span across Theory + Practical
+        colSpan: ({ row }: GridSpanParams<ClassResult>) => row.hasLab ? 1 : 2,
+        renderCell: ({ row, value }) =>
+          row.hasLab ? value : <span className="text-muted-foreground italic">{value} (Theory only)</span>,
       },
+      { field: 'practical', headerName: 'Practical', width: 120, align: 'center', headerAlign: 'center' },
+      { field: 'total', headerName: 'Total', width: 100, align: 'center', headerAlign: 'center' },
+      { field: 'grade', headerName: 'Grade', width: 90, align: 'center', headerAlign: 'center' },
     ]
+
+    const combinedCodeExample = `// Combining rowSpan + colSpan (in the middle) + column groups
+const columns: GridColDef[] = [
+  { field: 'className', headerName: 'Class', rowSpan: true },
+  { field: 'section', headerName: 'Section', rowSpan: true },
+  { field: 'subject', headerName: 'Subject' },
+  {
+    field: 'theory',
+    headerName: 'Theory',
+    // ColSpan in the middle — spans Theory + Practical when no lab
+    colSpan: ({ row }) => row.hasLab ? 1 : 2,
+    renderCell: ({ row, value }) =>
+      row.hasLab ? value : \`\${value} (Theory only)\`,
+  },
+  { field: 'practical', headerName: 'Practical' },
+  { field: 'total', headerName: 'Total' },
+  { field: 'grade', headerName: 'Grade' },
+]
+
+<DataGrid
+  rows={classData}
+  columns={columns}
+  showCellVerticalBorder
+  columnGroupingModel={[{
+    groupId: 'marks',
+    headerName: 'Marks Breakdown',
+    children: [
+      { field: 'theory' },
+      { field: 'practical' },
+      { field: 'total' },
+    ],
+  }]}
+/>`
 
     return (
-      <div className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Combining row spanning, column grouping, and pinned columns. The &quot;Day&quot; column auto-merges
-          consecutive same days. Subject cells that have the same value across consecutive periods are merged.
-          The &quot;Sections&quot; column group header spans all class columns.
-        </p>
+      <div className="space-y-6">
+        <div>
+          <h3 className="text-base font-semibold mb-1">Row Span + Column Span (Middle) + Column Groups</h3>
+          <p className="text-sm text-muted-foreground">
+            All features working together: <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">rowSpan: true</code> on
+            Class and Section, dynamic <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan</code> on
+            Theory (spanning across Practical in the middle), and a <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">columnGroupingModel</code> grouping
+            the marks columns.
+          </p>
+        </div>
         <DataGrid
-          rows={timetableData}
-          columns={timetableColumns}
+          rows={classData}
+          columns={classColumns}
           getRowId={(row) => row.id}
           height={450}
           toolBar
-          title="School Timetable (Row Span + Column Groups)"
+          title="Class Performance Summary"
           hideFooter
           showCellVerticalBorder
-          columnGroupingModel={columnGroupingModel}
-          pinnedColumns={{ left: ['day', 'time'] }}
+          columnGroupingModel={[
+            {
+              groupId: 'marks',
+              headerName: 'Marks Breakdown',
+              children: [{ field: 'theory' }, { field: 'practical' }, { field: 'total' }],
+              headerAlign: 'center',
+            },
+          ]}
         />
+        <details className="border border-border rounded-lg">
+          <summary className="px-4 py-2 cursor-pointer text-sm font-medium text-muted-foreground hover:text-foreground">
+            Show Code
+          </summary>
+          <pre className="px-4 py-3 text-xs font-mono bg-muted/50 overflow-x-auto rounded-b-lg whitespace-pre">
+{combinedCodeExample}
+          </pre>
+        </details>
       </div>
     )
   },
