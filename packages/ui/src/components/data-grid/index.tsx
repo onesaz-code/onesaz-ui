@@ -1451,6 +1451,33 @@ const PinnedRowsRenderer = ({
     <tbody>
       {pinnedRows.map((row: any, rowIndex: number) => {
         const customClassName = getRowClassName?.({ row: row.original, rowIndex })
+        const visibleCells = row.getVisibleCells()
+
+        // Pre-compute colSpan skip set and colSpan values (same logic as RowRenderer)
+        const colSpanSkipSet = new Set<number>()
+        const colSpanValues = new Map<number, number>()
+
+        visibleCells.forEach((cell: any, cellIndex: number) => {
+          if (colSpanSkipSet.has(cellIndex)) return
+          const meta = cell.column.columnDef.meta as any
+          const colSpanDef = meta?.colSpan
+          if (colSpanDef) {
+            const value = cell.getValue()
+            let span: number | undefined
+            if (typeof colSpanDef === 'function') {
+              span = colSpanDef({ row: row.original, value, field: cell.column.id, rowIndex })
+            } else if (typeof colSpanDef === 'number') {
+              span = colSpanDef
+            }
+            if (span && span > 1) {
+              colSpanValues.set(cellIndex, span)
+              for (let j = 1; j < span && (cellIndex + j) < visibleCells.length; j++) {
+                colSpanSkipSet.add(cellIndex + j)
+              }
+            }
+          }
+        })
+
         return (
           <tr
             key={row.id}
@@ -1461,7 +1488,10 @@ const PinnedRowsRenderer = ({
               customClassName
             )}
           >
-            {row.getVisibleCells().map((cell: any) => {
+            {visibleCells.map((cell: any, cellIndex: number) => {
+              // Skip cells consumed by colSpan
+              if (colSpanSkipSet.has(cellIndex)) return null
+
               const meta = cell.column.columnDef.meta as any
               const align = meta?.align || 'left'
               const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
@@ -1472,9 +1502,22 @@ const PinnedRowsRenderer = ({
               const width = colWidth?.width || cell.column.getSize()
               const pinnedInfo = pinnedColumnOffsets?.get(cell.column.id)
 
+              const htmlColSpan = colSpanValues.get(cellIndex)
+
+              // Calculate width for colSpan (sum of spanned column widths)
+              let totalWidth = width
+              if (htmlColSpan && htmlColSpan > 1) {
+                for (let j = 1; j < htmlColSpan && (cellIndex + j) < visibleCells.length; j++) {
+                  const spannedCell = visibleCells[cellIndex + j]
+                  const spannedColWidth = columnWidths.get(spannedCell.column.id)
+                  totalWidth += spannedColWidth?.width || spannedCell.column.getSize()
+                }
+              }
+
               return (
                 <td
                   key={cell.id}
+                  colSpan={htmlColSpan}
                   className={cn(
                     'px-4 overflow-hidden bg-muted border-b border-border',
                     showCellVerticalBorder && 'border-r border-border',
@@ -1486,8 +1529,8 @@ const PinnedRowsRenderer = ({
                     height: wrapText || scrollable ? 'auto' : rowHeight,
                     minHeight: rowHeight,
                     textAlign: align,
-                    width,
-                    maxWidth: colWidth?.maxWidth || width,
+                    width: htmlColSpan && htmlColSpan > 1 ? totalWidth : width,
+                    maxWidth: htmlColSpan && htmlColSpan > 1 ? undefined : colWidth?.maxWidth || width,
                     minWidth: colWidth?.minWidth || cell.column.columnDef.minSize,
                     ...(pinnedInfo ? {
                       position: 'sticky' as const,
@@ -1657,7 +1700,7 @@ export function DataGrid<TData extends Record<string, any>>({
   height = 400,
   minHeight,
   maxHeight,
-  density = 'standard',
+  density = 'compact',
   showCellVerticalBorder = false,
   showColumnVerticalBorder = false,
   hideFooter = false,

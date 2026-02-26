@@ -1052,6 +1052,101 @@ export const PinnedRows: Story = {
 }
 
 // ============================================================
+// Pinned Rows with ColSpan Story
+// ============================================================
+
+interface CollectionRow {
+  id: number | string
+  sNo: number | string
+  studentName: string
+  branch: string
+  paymentMode: string
+  amount: number | string
+  type?: 'date_start' | 'date_end' | 'grand_total' | 'summary_mode'
+}
+
+const collectionData: CollectionRow[] = [
+  { id: 1, sNo: 1, studentName: 'Aarav Sharma', branch: 'Main', paymentMode: 'Cash', amount: 15000 },
+  { id: 2, sNo: 2, studentName: 'Priya Patel', branch: 'Main', paymentMode: 'UPI', amount: 22000 },
+  { id: 3, sNo: 3, studentName: 'Rohan Kumar', branch: 'Main', paymentMode: 'Cash', amount: 18500 },
+  { id: 4, sNo: 4, studentName: 'Ananya Singh', branch: 'South', paymentMode: 'Cheque', amount: 30000 },
+  { id: 5, sNo: 5, studentName: 'Dev Gupta', branch: 'South', paymentMode: 'UPI', amount: 12000 },
+]
+
+const collectionSummaryRows: CollectionRow[] = [
+  { id: 'summary-cash', sNo: '', studentName: '', branch: '', paymentMode: 'Cash', amount: 33500, type: 'summary_mode' },
+  { id: 'summary-upi', sNo: '', studentName: '', branch: '', paymentMode: 'UPI', amount: 34000, type: 'summary_mode' },
+  { id: 'summary-cheque', sNo: '', studentName: '', branch: '', paymentMode: 'Cheque', amount: 30000, type: 'summary_mode' },
+  { id: 'grand-total', sNo: 'Grand Total', studentName: '', branch: '', paymentMode: '', amount: 97500, type: 'grand_total' },
+]
+
+const COL_COUNT_DEMO = 6
+
+const collectionColumns: GridColDef<CollectionRow>[] = [
+  {
+    field: 'sNo',
+    headerName: 'S.No',
+    width: 80,
+    colSpan: ({ row }: GridSpanParams<CollectionRow>) => {
+      if (row.type === 'grand_total') return COL_COUNT_DEMO - 1
+      return undefined
+    },
+    renderCell: ({ row, value }) => {
+      if (row.type === 'grand_total')
+        return <span className="font-bold text-right w-full block">{value}</span>
+      return value
+    },
+  },
+  { field: 'studentName', headerName: 'Student Name', width: 160 },
+  { field: 'branch', headerName: 'Branch', width: 120 },
+  {
+    field: 'paymentMode',
+    headerName: 'Payment Mode',
+    width: 140,
+    renderCell: ({ row, value }) => {
+      if (row.type === 'summary_mode')
+        return <span className="font-bold text-primary">{value}</span>
+      return value
+    },
+  },
+  { field: 'amount', headerName: 'Amount', width: 140, align: 'right', headerAlign: 'right',
+    renderCell: ({ row, value }) => {
+      if (row.type === 'grand_total' || row.type === 'summary_mode')
+        return <span className="font-bold text-green-600">₹{Number(value).toLocaleString()}</span>
+      return `₹${Number(value).toLocaleString()}`
+    },
+  },
+]
+
+export const PinnedRowsWithColSpan: Story = {
+  render: () => (
+    <div className="space-y-4">
+      <div>
+        <h3 className="text-base font-semibold mb-1">Pinned Rows with Column Spanning</h3>
+        <p className="text-sm text-muted-foreground">
+          Pinned bottom rows support <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan</code> just
+          like regular rows. The &quot;Grand Total&quot; row spans all columns except the last (amount) column.
+          Payment mode summary rows show the mode label and amount in pinned rows.
+        </p>
+      </div>
+      <DataGrid
+        rows={collectionData}
+        columns={collectionColumns}
+        getRowId={(row) => row.id}
+        height={400}
+        toolBar
+        title="Fee Collection Report"
+        showCellVerticalBorder
+        showColumnVerticalBorder
+        pinnedRows={{
+          bottom: collectionSummaryRows,
+        }}
+      />
+    </div>
+  ),
+}
+
+// ============================================================
 // Pinned Columns Story
 // ============================================================
 
