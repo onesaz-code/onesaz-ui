@@ -525,7 +525,7 @@ const ColumnVisibilityDropdown = ({
 
       {open && (
         <div className="absolute right-0 top-full mt-1 z-50 min-w-[180px] rounded-md border border-border bg-popover p-2 shadow-md">
-          <div className="text-sm font-medium text-foreground mb-2 px-2">Show/Hide Columns</div>
+          <div className="text-xs font-medium text-foreground mb-2 px-2">Show/Hide Columns</div>
           <div className="max-h-[300px] overflow-auto">
             {allColumns.map((column: any) => {
               const meta = column.columnDef.meta as any
@@ -540,7 +540,7 @@ const ColumnVisibilityDropdown = ({
                     checked={column.getIsVisible()}
                     onChange={(e) => column.toggleVisibility(e.target.checked)}
                   />
-                  <span className="text-sm">{headerName}</span>
+                  <span className="text-xs">{headerName}</span>
                 </label>
               )
             })}
@@ -631,12 +631,12 @@ const DataGridPagination = ({
   return (
     <div className="flex items-center justify-end gap-4 px-4 py-3 border-t border-border bg-background">
       {/* Rows per page */}
-      <div className="flex items-center gap-2 text-sm text-muted-foreground whitespace-nowrap">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
         <span>Rows per page:</span>
         <select
           value={pageSize}
           onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="h-8 rounded-md border border-border bg-background px-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         >
           {pageSizeOptions.map((size) => (
             <option key={size} value={size}>
@@ -647,7 +647,7 @@ const DataGridPagination = ({
       </div>
 
       {/* Row count info */}
-      <span className="text-sm text-muted-foreground whitespace-nowrap">
+      <span className="text-xs text-muted-foreground whitespace-nowrap">
         {startRow}-{endRow} of {totalRows}
       </span>
 
@@ -823,7 +823,7 @@ const ExportDropdown = ({
       {open && (
         <div className="absolute right-0 top-full mt-1 z-50 min-w-[140px] rounded-md border border-border bg-popover p-1 shadow-md">
           <button
-            className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-muted"
+            className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs hover:bg-muted"
             onClick={exportToCSV}
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -834,7 +834,7 @@ const ExportDropdown = ({
           </button>
           {onExport && (
             <button
-              className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-muted"
+              className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs hover:bg-muted"
               onClick={handleCustomExport}
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -891,7 +891,7 @@ const MoreOptionsDropdown = ({
           {options.map((option, index) => (
             <button
               key={index}
-              className="flex w-full items-center gap-2 rounded px-3 py-2 text-sm hover:bg-muted"
+              className="flex w-full items-center gap-2 rounded px-3 py-2 text-xs hover:bg-muted"
               onClick={() => {
                 option.onClick()
                 setOpen(false)
@@ -1603,13 +1603,13 @@ const ColumnGroupHeader = ({
   }, [fieldToGroup, gridColumns, columnWidths, columnVisibility, checkboxSelection, pinnedColumnOffsets])
 
   return (
-    <tr className="bg-muted border-b border-border">
+    <tr className="bg-muted">
       {groupCells.map((cell, idx) => (
         <th
           key={`group-${cell.groupId || 'ungrouped'}-${idx}`}
           colSpan={cell.colSpan}
           className={cn(
-            'px-4 text-center font-semibold text-muted-foreground border-b-2 border-border bg-muted overflow-hidden',
+            'px-4 text-center font-semibold text-muted-foreground border-b border-border bg-muted overflow-hidden',
             showColumnVerticalBorder && 'border-r last:border-r-0',
             cell.pinnedInfo && 'sticky z-[2]',
           )}
@@ -1901,7 +1901,7 @@ export function DataGrid<TData extends Record<string, any>>({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-background overflow-hidden flex flex-col',
+        'rounded-lg border border-border bg-background overflow-hidden flex flex-col text-xs',
         className
       )}
       style={containerStyle}
@@ -1937,7 +1937,7 @@ export function DataGrid<TData extends Record<string, any>>({
           </div>
         )}
 
-        <table className="w-full border-collapse table-fixed">
+        <table className="w-full border-separate border-spacing-0 table-fixed">
           {/* Column group for width control */}
           <colgroup>
             {table.getVisibleLeafColumns().map((column) => {
@@ -1983,7 +1983,7 @@ export function DataGrid<TData extends Record<string, any>>({
                     <th
                       key={header.id}
                       className={cn(
-                        'px-4 text-left font-medium text-muted-foreground border-b border-border bg-muted overflow-hidden relative',
+                        'px-4 text-left text-xs font-medium text-muted-foreground border-b border-border bg-muted overflow-hidden relative',
                         showColumnVerticalBorder && 'border-r last:border-r-0',
                         header.column.getCanSort() && 'cursor-pointer select-none hover:bg-muted/80',
                         // Add cursor class when resizing
@@ -2114,7 +2114,7 @@ export function DataGrid<TData extends Record<string, any>>({
       {/* Footer info for virtualized mode */}
       {effectiveVirtualized && !hideFooter && (
         <div className="flex items-center justify-end gap-4 px-4 py-3 border-t border-border bg-background">
-          <span className="text-sm text-muted-foreground whitespace-nowrap">
+          <span className="text-xs text-muted-foreground whitespace-nowrap">
             {table.getFilteredRowModel().rows.length} total rows (virtualized)
           </span>
         </div>
