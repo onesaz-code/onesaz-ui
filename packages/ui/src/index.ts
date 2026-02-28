@@ -258,6 +258,7 @@ export {
   ProgressDonut,
   MultiProgressDonut,
   ProgressCard,
+  PackedBubbleChart,
   type BarChartProps,
   type LineChartProps,
   type PieChartProps,
@@ -268,6 +269,8 @@ export {
   type ProgressDonutProps,
   type MultiProgressDonutProps,
   type ProgressCardProps,
+  type PackedBubbleChartProps,
+  type PackedBubbleDataItem,
 } from './components/charts'
 
 // Navigation

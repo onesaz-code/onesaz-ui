@@ -170,7 +170,7 @@ export const BarChart: React.FC<BarChartProps> = ({
         name={keyConfig.name || keyConfig.dataKey}
         radius={barProps.radius}
         maxBarSize={barProps.maxBarSize}
-        minPointSize={barProps.minPointSize}
+        {...(barProps.minPointSize !== undefined && { minPointSize: barProps.minPointSize })}
       >
         {labelList && (
           <LabelList
@@ -189,7 +189,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       name={name || dataKey}
       radius={barProps.radius}
       maxBarSize={barProps.maxBarSize}
-      minPointSize={barProps.minPointSize}
+      {...(barProps.minPointSize !== undefined && { minPointSize: barProps.minPointSize })}
     >
       {labelList && (
         <LabelList
@@ -1509,6 +1509,247 @@ export const MultiProgressDonut: React.FC<MultiProgressDonutProps> = ({
           </div>
         )
       })}
+    </div>
+  )
+}
+
+// ============================================================================
+// Packed Bubble Chart
+// ============================================================================
+
+export interface PackedBubbleDataItem {
+  /** Display name/label for the bubble */
+  name: string
+  /** Numeric value determining bubble size */
+  value: number
+  /** Optional custom color for this bubble */
+  color?: string
+  /** Optional additional data */
+  [key: string]: any
+}
+
+export interface PackedBubbleChartProps {
+  /** Chart data */
+  data: PackedBubbleDataItem[]
+  /** Title displayed above the chart */
+  title?: string
+  /** Height of the chart */
+  height?: number | string
+  /** Minimum bubble size as percentage */
+  minSize?: number
+  /** Maximum bubble size as percentage */
+  maxSize?: number
+  /** Default color for bubbles */
+  defaultColor?: string
+  /** Color function based on value */
+  colorByValue?: (value: number) => string
+  /** Show labels inside bubbles */
+  showLabels?: boolean
+  /** Show values inside bubbles */
+  showValues?: boolean
+  /** Click handler for bubbles */
+  onBubbleClick?: (item: PackedBubbleDataItem) => void
+  /** Title text style */
+  titleStyle?: React.CSSProperties
+  /** Additional CSS classes */
+  className?: string
+}
+
+// Simple force simulation for bubble packing
+const simulatePacking = (
+  data: PackedBubbleDataItem[],
+  width: number,
+  height: number,
+  minRadius: number,
+  maxRadius: number
+): Array<{ x: number; y: number; radius: number; data: PackedBubbleDataItem }> => {
+  if (data.length === 0) return []
+
+  const values = data.map((d) => d.value)
+  const minValue = Math.min(...values)
+  const maxValue = Math.max(...values)
+  const valueRange = maxValue - minValue || 1
+
+  // Calculate radii based on values
+  const nodes = data.map((item) => {
+    const normalizedValue = (item.value - minValue) / valueRange
+    const radius = minRadius + normalizedValue * (maxRadius - minRadius)
+    return {
+      x: width / 2 + (Math.random() - 0.5) * width * 0.3,
+      y: height / 2 + (Math.random() - 0.5) * height * 0.3,
+      radius,
+      data: item,
+      vx: 0,
+      vy: 0,
+    }
+  })
+
+  // Simple force simulation
+  const centerX = width / 2
+  const centerY = height / 2
+  const iterations = 100
+
+  for (let i = 0; i < iterations; i++) {
+    // Apply forces
+    for (const node of nodes) {
+      // Center gravity
+      node.vx += (centerX - node.x) * 0.01
+      node.vy += (centerY - node.y) * 0.01
+
+      // Collision detection
+      for (const other of nodes) {
+        if (node === other) continue
+        const dx = node.x - other.x
+        const dy = node.y - other.y
+        const distance = Math.sqrt(dx * dx + dy * dy)
+        const minDist = node.radius + other.radius + 2
+
+        if (distance < minDist && distance > 0) {
+          const force = ((minDist - distance) / distance) * 0.5
+          node.vx += dx * force
+          node.vy += dy * force
+        }
+      }
+    }
+
+    // Apply velocity with damping
+    for (const node of nodes) {
+      node.x += node.vx
+      node.y += node.vy
+      node.vx *= 0.8
+      node.vy *= 0.8
+
+      // Keep within bounds
+      node.x = Math.max(node.radius, Math.min(width - node.radius, node.x))
+      node.y = Math.max(node.radius, Math.min(height - node.radius, node.y))
+    }
+  }
+
+  return nodes.map(({ x, y, radius, data }) => ({ x, y, radius, data }))
+}
+
+export const PackedBubbleChart: React.FC<PackedBubbleChartProps> = ({
+  data,
+  title,
+  height = 300,
+  minSize = 30,
+  maxSize = 70,
+  defaultColor = '#3BBDED',
+  colorByValue,
+  showLabels = true,
+  showValues = false,
+  onBubbleClick,
+  titleStyle,
+  className,
+}) => {
+  const containerRef = React.useRef<HTMLDivElement>(null)
+  const [dimensions, setDimensions] = React.useState({ width: 400, height: 300 })
+  const [bubbles, setBubbles] = React.useState<
+    Array<{ x: number; y: number; radius: number; data: PackedBubbleDataItem }>
+  >([])
+
+  // Update dimensions on resize
+  React.useEffect(() => {
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect()
+        setDimensions({
+          width: rect.width || 400,
+          height: typeof height === 'number' ? height : 300,
+        })
+      }
+    }
+    updateDimensions()
+    window.addEventListener('resize', updateDimensions)
+    return () => window.removeEventListener('resize', updateDimensions)
+  }, [height])
+
+  // Calculate bubble positions
+  React.useEffect(() => {
+    if (data.length === 0) {
+      setBubbles([])
+      return
+    }
+
+    const minRadius = (Math.min(dimensions.width, dimensions.height) * minSize) / 200
+    const maxRadius = (Math.min(dimensions.width, dimensions.height) * maxSize) / 200
+
+    const result = simulatePacking(data, dimensions.width, dimensions.height, minRadius, maxRadius)
+    setBubbles(result)
+  }, [data, dimensions, minSize, maxSize])
+
+  const getBubbleColor = (item: PackedBubbleDataItem): string => {
+    if (item.color) return item.color
+    if (colorByValue) return colorByValue(item.value)
+    return defaultColor
+  }
+
+  return (
+    <div
+      ref={containerRef}
+      className={cn('relative w-full', className)}
+      style={{ height: typeof height === 'number' ? `${height}px` : height }}
+    >
+      {title && (
+        <div
+          className="text-center text-sm font-bold text-[#31456A] dark:text-slate-200"
+          style={titleStyle}
+        >
+          {title}
+        </div>
+      )}
+      <svg width="100%" height="100%" className="overflow-visible">
+        {bubbles.map((bubble, index) => (
+          <g
+            key={`bubble-${index}-${bubble.data.name}`}
+            onClick={() => onBubbleClick?.(bubble.data)}
+            style={{ cursor: onBubbleClick ? 'pointer' : 'default' }}
+          >
+            <circle
+              cx={bubble.x}
+              cy={bubble.y}
+              r={bubble.radius}
+              fill={getBubbleColor(bubble.data)}
+              opacity={0.85}
+              className="transition-all duration-200 hover:opacity-100"
+            />
+            {showLabels && (
+              <text
+                x={bubble.x}
+                y={showValues ? bubble.y - 6 : bubble.y}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="fill-current text-black dark:text-white"
+                style={{
+                  fontSize: Math.max(10, bubble.radius / 3),
+                  fontWeight: 'normal',
+                  pointerEvents: 'none',
+                }}
+              >
+                {bubble.data.name}
+              </text>
+            )}
+            {showValues && (
+              <text
+                x={bubble.x}
+                y={bubble.y + 8}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                className="fill-current text-black dark:text-white"
+                style={{
+                  fontSize: Math.max(8, bubble.radius / 4),
+                  fontWeight: 'bold',
+                  pointerEvents: 'none',
+                }}
+              >
+                {bubble.data.value}
+              </text>
+            )}
+            {/* Tooltip on hover */}
+            <title>{`${bubble.data.name}: ${bubble.data.value}`}</title>
+          </g>
+        ))}
+      </svg>
     </div>
   )
 }
