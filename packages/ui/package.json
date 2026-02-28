@@ -1,6 +1,6 @@
 {
   "name": "@onesaz/ui",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "Onesaz UI component library - React components with theming and Tailwind CSS",
   "type": "module",
   "license": "MIT",

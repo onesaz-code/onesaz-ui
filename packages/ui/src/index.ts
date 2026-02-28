@@ -54,6 +54,7 @@ export {
   type FormGroupProps,
 } from './components/form'
 export { Slider, type SliderProps } from './components/slider'
+export { RangeSlider, type RangeSliderProps } from './components/range-slider'
 
 // Display Components
 export {
