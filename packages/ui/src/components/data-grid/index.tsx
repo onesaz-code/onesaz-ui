@@ -742,11 +742,13 @@ const ExportDropdown = ({
   onExport,
   rows,
   columns,
+  pinnedRows,
   fileName = 'data-export',
 }: {
   onExport?: (data: any[], columns: GridColDef[]) => void
   rows: any[]
   columns: GridColDef[]
+  pinnedRows?: { top?: any[]; bottom?: any[] }
   fileName?: string
 }) => {
   const [open, setOpen] = React.useState(false)
@@ -768,7 +770,14 @@ const ExportDropdown = ({
     const headers = visibleColumns.map(col => col.headerName || col.field)
     const csvRows = [headers.join(',')]
 
-    rows.forEach(row => {
+    // Include pinned rows (top first, then main rows, then bottom)
+    const allRows = [
+      ...(pinnedRows?.top || []),
+      ...rows,
+      ...(pinnedRows?.bottom || []),
+    ]
+
+    allRows.forEach(row => {
       const values = visibleColumns.map(col => {
         // Use valueGetter if available, otherwise use direct field access
         let value;
@@ -799,7 +808,12 @@ const ExportDropdown = ({
 
   const handleCustomExport = () => {
     if (onExport) {
-      onExport(rows, columns)
+      const allRows = [
+        ...(pinnedRows?.top || []),
+        ...rows,
+        ...(pinnedRows?.bottom || []),
+      ]
+      onExport(allRows, columns)
     }
     setOpen(false)
   }
@@ -920,6 +934,7 @@ const DataGridToolbar = ({
   columns,
   onExport,
   exportFileName,
+  pinnedRows,
   customButtons,
   moreOptions = [],
 }: {
@@ -934,6 +949,7 @@ const DataGridToolbar = ({
   columns: GridColDef[]
   onExport?: (data: any[], columns: GridColDef[]) => void
   exportFileName?: string
+  pinnedRows?: { top?: any[]; bottom?: any[] }
   customButtons?: React.ReactNode
   moreOptions?: { label: string; onClick: () => void; icon?: React.ReactNode }[]
 }) => {
@@ -959,6 +975,7 @@ const DataGridToolbar = ({
             onExport={onExport}
             rows={rows}
             columns={columns}
+            pinnedRows={pinnedRows}
             fileName={exportFileName}
           />
         )}
@@ -1963,6 +1980,7 @@ export function DataGrid<TData extends Record<string, any>>({
           columns={columns}
           onExport={onExport}
           exportFileName={exportFileName}
+          pinnedRows={pinnedRows}
           customButtons={customButtons}
           moreOptions={moreOptions}
         />
