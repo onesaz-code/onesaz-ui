@@ -37,6 +37,7 @@ export const BarChartDefault: StoryObj<typeof BarChart> = {
     showTooltip: true,
     xAxis: { dataKey: 'name' },
   },
+  render: (args) => <BarChart {...args} />,
 }
 
 export const BarChartMultiple: StoryObj<typeof BarChart> = {
@@ -52,6 +53,7 @@ export const BarChartMultiple: StoryObj<typeof BarChart> = {
     showLegend: true,
     xAxis: { dataKey: 'name' },
   },
+  render: (args) => <BarChart {...args} />,
 }
 
 export const BarChartWithLabels: StoryObj<typeof BarChart> = {
@@ -71,6 +73,7 @@ export const BarChartWithLabels: StoryObj<typeof BarChart> = {
       formatter: (value: any) => `${value}`,
     },
   },
+  render: (args) => <BarChart {...args} />,
 }
 
 export const BarChartCustomTooltip: StoryObj<typeof BarChart> = {
@@ -91,6 +94,7 @@ export const BarChartCustomTooltip: StoryObj<typeof BarChart> = {
       },
     },
   },
+  render: (args) => <BarChart {...args} />,
 }
 
 export default barMeta

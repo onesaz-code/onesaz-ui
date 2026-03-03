@@ -371,6 +371,12 @@
  * IMPORTANT: Must be in @layer base for Tailwind v4 cascade to work!
  * ======================================== */
 @layer base {
+  /* Restore Tailwind v3 behaviour: default border-color to the theme token
+     instead of Tailwind v4's currentColor fallback */
+  *, ::before, ::after {
+    border-color: var(--border);
+  }
+
   /* Apply theme colors to body by default */
   body {
     background-color: var(--background);

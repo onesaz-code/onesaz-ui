@@ -233,18 +233,22 @@ export {
 export {
   List,
   ListItem,
+  ListItemButton,
   ListItemText,
   ListItemIcon,
   ListItemAvatar,
   ListSubheader,
   ListDivider,
+  VirtualList,
   type ListProps,
   type ListItemProps,
+  type ListItemButtonProps,
   type ListItemTextProps,
   type ListItemIconProps,
   type ListItemAvatarProps,
   type ListSubheaderProps,
   type ListDividerProps,
+  type VirtualListProps,
 } from './components/list'
 
 // Charts

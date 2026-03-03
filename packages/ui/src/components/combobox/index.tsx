@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
 import { cn } from '../../utils/cn'
 
 export interface ComboboxOption {
@@ -42,6 +43,10 @@ interface ComboboxSharedProps<T extends ComboboxOptionInput = ComboboxOptionInpu
   endAdornment?: React.ReactNode
   /** Click handler for the end adornment — renders it as a button when provided */
   onEndAdornmentClick?: (e: React.MouseEvent) => void
+  /** Enable virtual rendering for large option lists */
+  virtual?: boolean
+  /** Height of each option item in pixels (used for virtual rendering) */
+  virtualItemHeight?: number
 }
 
 // ============================================================================
@@ -114,6 +119,82 @@ function Adornment({
   )
 }
 
+// ============================================================================
+// Option item renderer (shared between virtual and normal list)
+// ============================================================================
+function OptionItem({
+  option,
+  isSelected,
+  isMultiple,
+  onSelect,
+}: {
+  option: NormalizedOption<ComboboxOptionInput>
+  isSelected: boolean
+  isMultiple: boolean
+  onSelect: () => void
+}) {
+  return (
+    <button
+      type="button"
+      disabled={option.disabled}
+      onClick={onSelect}
+      className={cn(
+        'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
+        'hover:bg-muted hover:text-foreground',
+        'focus:bg-muted focus:text-foreground',
+        'disabled:pointer-events-none disabled:opacity-50',
+        isSelected && 'bg-muted'
+      )}
+    >
+      <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
+        {isMultiple ? (
+          <div
+            className={cn(
+              'flex h-4 w-4 items-center justify-center rounded border border-input',
+              isSelected && 'bg-accent border-accent'
+            )}
+          >
+            {isSelected && (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="white"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="h-3 w-3"
+              >
+                <polyline points="20 6 9 17 4 12" />
+              </svg>
+            )}
+          </div>
+        ) : (
+          isSelected && (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="h-4 w-4"
+            >
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          )
+        )}
+      </span>
+      {option.label}
+    </button>
+  )
+}
+
 const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   (props, ref) => {
     const {
@@ -129,6 +210,8 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       onStartAdornmentClick,
       endAdornment,
       onEndAdornmentClick,
+      virtual = false,
+      virtualItemHeight = 36,
     } = props
 
     const labelKey = props.labelKey ?? 'label'
@@ -172,6 +255,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
     const [internalSearch, setInternalSearch] = React.useState('')
     const containerRef = React.useRef<HTMLDivElement>(null)
     const searchInputRef = React.useRef<HTMLInputElement | null>(null)
+    const listContainerRef = React.useRef<HTMLDivElement>(null)
 
     // Handle single vs multiple value state
     const isMultiple = isMultipleProps(props)
@@ -221,6 +305,16 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       isMultiple &&
       selectableOptions.length > 0 &&
       selectableOptions.every((option) => selectedValueKeys.has(option.value))
+
+    // ========================================================================
+    // Virtual list setup — always initialized, only used when virtual=true
+    // ========================================================================
+    const rowVirtualizer = useVirtualizer({
+      count: virtual ? filteredOptions.length : 0,
+      getScrollElement: () => listContainerRef.current,
+      estimateSize: () => virtualItemHeight,
+      overscan: 5,
+    })
 
     const handleSingleSelect = (option: ComboboxOptionInput) => {
       if (!isMultiple) {
@@ -505,126 +599,116 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 }}
               />
             </div>
-            <div className="max-h-[300px] overflow-y-auto p-1">
+
+            {/* Select all (always rendered outside virtual area) */}
+            {isMultiple && selectAll && filteredOptions.length > 0 && (
+              <div className="px-1 pt-1">
+                <button
+                  type="button"
+                  onClick={handleSelectAll}
+                  className={cn(
+                    'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
+                    'hover:bg-muted hover:text-foreground',
+                    'focus:bg-muted focus:text-foreground',
+                    allSelected && 'bg-muted'
+                  )}
+                >
+                  <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
+                    <div
+                      className={cn(
+                        'flex h-4 w-4 items-center justify-center rounded border border-input',
+                        allSelected && 'bg-accent border-accent'
+                      )}
+                    >
+                      {allSelected && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="white"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="h-3 w-3"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                      )}
+                    </div>
+                  </span>
+                  {selectAllLabel}
+                </button>
+              </div>
+            )}
+
+            {/* Options list */}
+            <div
+              ref={listContainerRef}
+              className="max-h-[300px] overflow-y-auto p-1"
+            >
               {filteredOptions.length === 0 ? (
                 <div className="py-6 text-center text-sm text-muted-foreground">
                   {emptyMessage}
                 </div>
-              ) : (
-                <>
-                  {isMultiple && selectAll && (
-                    <button
-                      type="button"
-                      onClick={handleSelectAll}
-                      className={cn(
-                        'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
-                        'hover:bg-muted hover:text-foreground',
-                        'focus:bg-muted focus:text-foreground',
-                        allSelected && 'bg-muted'
-                      )}
-                    >
-                      <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
-                        <div
-                          className={cn(
-                            'flex h-4 w-4 items-center justify-center rounded border border-input',
-                            allSelected && 'bg-accent border-accent'
-                          )}
-                        >
-                          {allSelected && (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="24"
-                              height="24"
-                              viewBox="0 0 24 24"
-                              fill="none"
-                              stroke="white"
-                              strokeWidth="3"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              className="h-3 w-3"
-                            >
-                              <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                          )}
-                        </div>
-                      </span>
-                      {selectAllLabel}
-                    </button>
-                  )}
-                  {filteredOptions.map((option) => {
+              ) : virtual ? (
+                // ── Virtual list ──────────────────────────────────────────
+                <div
+                  style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}
+                >
+                  {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                    const option = filteredOptions[virtualRow.index]
                     const isSelected = isMultiple
                       ? selectedValueKeys.has(option.value)
                       : option.value === singleValueKey
 
                     return (
-                      <button
-                        key={option.value}
-                        type="button"
-                        disabled={option.disabled}
-                        onClick={() =>
-                          isMultiple
-                            ? handleMultiSelect(option.raw)
-                            : handleSingleSelect(option.raw)
-                        }
-                        className={cn(
-                          'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
-                          'hover:bg-muted hover:text-foreground',
-                          'focus:bg-muted focus:text-foreground',
-                          'disabled:pointer-events-none disabled:opacity-50',
-                          isSelected && 'bg-muted'
-                        )}
+                      <div
+                        key={virtualRow.key}
+                        style={{
+                          position: 'absolute',
+                          top: virtualRow.start,
+                          left: 0,
+                          right: 0,
+                          height: virtualRow.size,
+                        }}
                       >
-                        <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
-                          {isMultiple ? (
-                            // Checkbox for multi-select
-                            <div
-                              className={cn(
-                                'flex h-4 w-4 items-center justify-center rounded border border-input',
-                                isSelected && 'bg-accent border-accent'
-                              )}
-                            >
-                              {isSelected && (
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="24"
-                                  height="24"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="white"
-                                  strokeWidth="3"
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  className="h-3 w-3"
-                                >
-                                  <polyline points="20 6 9 17 4 12" />
-                                </svg>
-                              )}
-                            </div>
-                          ) : (
-                            // Checkmark for single-select
-                            isSelected && (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                className="h-4 w-4"
-                              >
-                                <polyline points="20 6 9 17 4 12" />
-                              </svg>
-                            )
-                          )}
-                        </span>
-                        {option.label}
-                      </button>
+                        <OptionItem
+                          option={option}
+                          isSelected={isSelected}
+                          isMultiple={isMultiple}
+                          onSelect={() =>
+                            isMultiple
+                              ? handleMultiSelect(option.raw)
+                              : handleSingleSelect(option.raw)
+                          }
+                        />
+                      </div>
                     )
                   })}
-                </>
+                </div>
+              ) : (
+                // ── Normal list ───────────────────────────────────────────
+                filteredOptions.map((option) => {
+                  const isSelected = isMultiple
+                    ? selectedValueKeys.has(option.value)
+                    : option.value === singleValueKey
+
+                  return (
+                    <OptionItem
+                      key={option.value}
+                      option={option}
+                      isSelected={isSelected}
+                      isMultiple={isMultiple}
+                      onSelect={() =>
+                        isMultiple
+                          ? handleMultiSelect(option.raw)
+                          : handleSingleSelect(option.raw)
+                      }
+                    />
+                  )
+                })
               )}
             </div>
           </div>

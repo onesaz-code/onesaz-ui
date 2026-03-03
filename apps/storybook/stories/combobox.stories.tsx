@@ -555,6 +555,148 @@ export const WithBothClickableAdornments: Story = {
   },
 }
 
+// ============================================================================
+// Virtual Rendering Examples
+// ============================================================================
+
+// Generate a large option list to demonstrate virtual rendering
+const generateOptions = (count: number) =>
+  Array.from({ length: count }, (_, i) => ({
+    value: `item-${i}`,
+    label: `Option ${i + 1} — Item ${i}`,
+  }))
+
+const largeOptionList = generateOptions(10_000)
+
+export const VirtualSingleSelect: Story = {
+  name: 'Virtual — single select (10 000 options)',
+  render: function VirtualSingleSelect() {
+    const [value, setValue] = React.useState<(typeof largeOptionList)[number] | null>(null)
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Pick an option (virtual rendering)</Label>
+        <Combobox
+          virtual
+          options={largeOptionList}
+          value={value}
+          onChange={setValue}
+          placeholder="Select option..."
+          searchPlaceholder="Search 10 000 options..."
+        />
+        <p className="text-xs text-[var(--muted-foreground)]">
+          Selected: {value?.label ?? 'None'}
+        </p>
+        <p className="text-xs text-[var(--muted-foreground)]">
+          Only ~10 DOM nodes rendered at a time regardless of list size.
+        </p>
+      </div>
+    )
+  },
+}
+
+export const VirtualMultiSelect: Story = {
+  name: 'Virtual — multi select with select-all',
+  render: function VirtualMultiSelect() {
+    const [value, setValue] = React.useState<(typeof largeOptionList)[number][]>([])
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Pick options (virtual multi)</Label>
+        <Combobox
+          virtual
+          multiple
+          selectAll
+          options={largeOptionList}
+          value={value}
+          onChange={setValue}
+          placeholder="Select options..."
+          searchPlaceholder="Search 10 000 options..."
+          maxDisplayItems={3}
+        />
+        <p className="text-xs text-[var(--muted-foreground)]">
+          {value.length.toLocaleString()} of {largeOptionList.length.toLocaleString()} selected
+        </p>
+      </div>
+    )
+  },
+}
+
+export const VirtualVsNormal: Story = {
+  name: 'Virtual vs Normal — performance comparison',
+  render: function VirtualVsNormal() {
+    const smallList = generateOptions(50)
+    const [v1, setV1] = React.useState<(typeof largeOptionList)[number] | null>(null)
+    const [v2, setV2] = React.useState<(typeof smallList)[number] | null>(null)
+
+    return (
+      <div className="flex gap-6 items-start">
+        <div className="grid w-[280px] gap-1.5">
+          <Label>Virtual (10 000 options)</Label>
+          <p className="text-xs text-[var(--muted-foreground)] -mt-1">
+            Uses virtual rendering — scroll is instant
+          </p>
+          <Combobox
+            virtual
+            options={largeOptionList}
+            value={v1}
+            onChange={setV1}
+            placeholder="Select..."
+            searchPlaceholder="Search..."
+          />
+          <p className="text-xs text-[var(--muted-foreground)]">
+            {v1?.label ?? 'None'}
+          </p>
+        </div>
+        <div className="grid w-[280px] gap-1.5">
+          <Label>Normal (50 options)</Label>
+          <p className="text-xs text-[var(--muted-foreground)] -mt-1">
+            Renders all DOM nodes at once
+          </p>
+          <Combobox
+            options={smallList}
+            value={v2}
+            onChange={setV2}
+            placeholder="Select..."
+            searchPlaceholder="Search..."
+          />
+          <p className="text-xs text-[var(--muted-foreground)]">
+            {v2?.label ?? 'None'}
+          </p>
+        </div>
+      </div>
+    )
+  },
+}
+
+export const VirtualWithSearch: Story = {
+  name: 'Virtual — search filters virtual rows',
+  render: function VirtualWithSearch() {
+    // Controlled search — demonstrates that filtering + virtual work together
+    const [search, setSearch] = React.useState('')
+    const [value, setValue] = React.useState<(typeof largeOptionList)[number] | null>(null)
+
+    return (
+      <div className="grid w-[340px] gap-1.5">
+        <Label>Controlled search + virtual</Label>
+        <Combobox
+          virtual
+          options={largeOptionList}
+          value={value}
+          onChange={setValue}
+          inputValue={search}
+          onInputChange={setSearch}
+          placeholder="Select option..."
+          searchPlaceholder="Type to filter..."
+        />
+        <p className="text-xs text-[var(--muted-foreground)]">
+          Query: "{search}" · Selected: {value?.label ?? 'None'}
+        </p>
+      </div>
+    )
+  },
+}
+
 /** Adornments work identically in multi-select mode */
 export const MultiSelectWithAdornments: Story = {
   render: function MultiSelectWithAdornments() {
