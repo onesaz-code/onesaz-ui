@@ -28,17 +28,17 @@ interface User {
 
 const users: User[] = [
   { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'active', department: 'Engineering', salary: 120000, joinDate: '2023-01-15' },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 95000, joinDate: '2023-03-20' },
-  { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Designer', status: 'inactive', department: 'Design', salary: 85000, joinDate: '2022-11-10' },
-  { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'Manager', status: 'active', department: 'HR', salary: 110000, joinDate: '2022-06-05' },
-  { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'Developer', status: 'pending', department: 'Engineering', salary: 88000, joinDate: '2024-01-02' },
-  { id: 6, name: 'Diana Ross', email: 'diana@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 92000, joinDate: '2023-07-18' },
-  { id: 7, name: 'Edward King', email: 'edward@example.com', role: 'Designer', status: 'active', department: 'Design', salary: 78000, joinDate: '2023-09-25' },
-  { id: 8, name: 'Fiona Green', email: 'fiona@example.com', role: 'QA Engineer', status: 'active', department: 'Engineering', salary: 75000, joinDate: '2023-05-12' },
-  { id: 9, name: 'George White', email: 'george@example.com', role: 'DevOps', status: 'inactive', department: 'Operations', salary: 105000, joinDate: '2022-08-30' },
-  { id: 10, name: 'Hannah Black', email: 'hannah@example.com', role: 'Product Manager', status: 'active', department: 'Product', salary: 115000, joinDate: '2022-04-15' },
-  { id: 11, name: 'Ian Gray', email: 'ian@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 90000, joinDate: '2023-11-08' },
-  { id: 12, name: 'Julia Adams', email: 'julia@example.com', role: 'HR Specialist', status: 'active', department: 'HR', salary: 68000, joinDate: '2024-02-01' },
+  // { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 95000, joinDate: '2023-03-20' },
+  // { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Designer', status: 'inactive', department: 'Design', salary: 85000, joinDate: '2022-11-10' },
+  // { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'Manager', status: 'active', department: 'HR', salary: 110000, joinDate: '2022-06-05' },
+  // { id: 5, name: 'Charlie Wilson', email: 'charlie@example.com', role: 'Developer', status: 'pending', department: 'Engineering', salary: 88000, joinDate: '2024-01-02' },
+  // { id: 6, name: 'Diana Ross', email: 'diana@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 92000, joinDate: '2023-07-18' },
+  // { id: 7, name: 'Edward King', email: 'edward@example.com', role: 'Designer', status: 'active', department: 'Design', salary: 78000, joinDate: '2023-09-25' },
+  // { id: 8, name: 'Fiona Green', email: 'fiona@example.com', role: 'QA Engineer', status: 'active', department: 'Engineering', salary: 75000, joinDate: '2023-05-12' },
+  // { id: 9, name: 'George White', email: 'george@example.com', role: 'DevOps', status: 'inactive', department: 'Operations', salary: 105000, joinDate: '2022-08-30' },
+  // { id: 10, name: 'Hannah Black', email: 'hannah@example.com', role: 'Product Manager', status: 'active', department: 'Product', salary: 115000, joinDate: '2022-04-15' },
+  // { id: 11, name: 'Ian Gray', email: 'ian@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 90000, joinDate: '2023-11-08' },
+  // { id: 12, name: 'Julia Adams', email: 'julia@example.com', role: 'HR Specialist', status: 'active', department: 'HR', salary: 68000, joinDate: '2024-02-01' },
 ]
 
 const basicColumns: GridColDef<User>[] = [

@@ -494,7 +494,6 @@ const ColumnVisibilityDropdown = ({
   const [open, setOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -754,7 +753,6 @@ const ExportDropdown = ({
   const [open, setOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
 
-  // Close dropdown when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -1947,6 +1945,14 @@ export function DataGrid<TData extends Record<string, any>>({
   // Check if any column uses colSpan (to pass gridColumns to RowRenderer)
   const hasColSpan = React.useMemo(() => columns.some((col) => col.colSpan), [columns])
 
+  // Total width of all visible columns — drives horizontal scroll when columns exceed container
+  const totalColumnsWidth = React.useMemo(() => {
+    return table.getVisibleLeafColumns().reduce((sum, column) => {
+      const colWidth = columnWidths.get(column.id)
+      return sum + (colWidth?.width || column.getSize())
+    }, 0)
+  }, [table.getVisibleLeafColumns(), columnWidths])
+
   // Calculate container style
   const containerStyle: React.CSSProperties = {
     ...sx,
@@ -1961,7 +1967,7 @@ export function DataGrid<TData extends Record<string, any>>({
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-background overflow-hidden flex flex-col text-xs',
+        'rounded-lg border border-border bg-background flex flex-col text-xs',
         className
       )}
       style={containerStyle}
@@ -1986,7 +1992,8 @@ export function DataGrid<TData extends Record<string, any>>({
         />
       )}
 
-      {/* Table container */}
+      {/* Table container — overflow-hidden here clips table to rounded corners without affecting toolbar */}
+      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
       <div
         ref={tableContainerRef}
         className="relative flex-1 overflow-auto"
@@ -1998,7 +2005,10 @@ export function DataGrid<TData extends Record<string, any>>({
           </div>
         )}
 
-        <table className="w-full border-separate border-spacing-0 table-fixed">
+        <table
+          className="border-separate border-spacing-0 table-fixed"
+          style={{ width: totalColumnsWidth, minWidth: '100%' }}
+        >
           {/* Column group for width control */}
           <colgroup>
             {table.getVisibleLeafColumns().map((column) => {
@@ -2161,6 +2171,8 @@ export function DataGrid<TData extends Record<string, any>>({
           )}
         </table>
       </div>
+
+      </div>{/* end table overflow-hidden wrapper */}
 
       {/* Footer with pagination - only show when not virtualized */}
       {!effectiveVirtualized && !hideFooter && !hideFooterPagination && (
