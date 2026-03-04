@@ -1,33 +1,51 @@
-import type { Meta, StoryObj } from '@storybook/react'
-import { useState } from 'react'
-import { DataGrid, Badge, Button, type GridColDef, type GridRowSelectionModel, type ColumnVisibilityModel, type PinnedRowsModel, type PinnedColumnsModel, type ColumnGroupModel, type GridSpanParams } from '@onesaz/ui'
+import type { Meta, StoryObj } from "@storybook/react";
+import { useState } from "react";
+import {
+  DataGrid,
+  Badge,
+  Button,
+  type GridColDef,
+  type GridRowSelectionModel,
+  type ColumnVisibilityModel,
+  type ColumnGroupModel,
+  type GridSpanParams,
+} from "@onesaz/ui";
 
 const meta: Meta<typeof DataGrid> = {
-  title: 'Components/DataGrid',
+  title: "Components/DataGrid",
   component: DataGrid,
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof DataGrid>
+export default meta;
+type Story = StoryObj<typeof DataGrid>;
 
 // Sample data
 interface User {
-  id: number
-  name: string
-  email: string
-  role: string
-  status: 'active' | 'inactive' | 'pending'
-  department: string
-  salary: number
-  joinDate: string
+  id: number;
+  name: string;
+  email: string;
+  role: string;
+  status: "active" | "inactive" | "pending";
+  department: string;
+  salary: number;
+  joinDate: string;
 }
 
 const users: User[] = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', role: 'Admin', status: 'active', department: 'Engineering', salary: 120000, joinDate: '2023-01-15' },
+  {
+    id: 1,
+    name: "John Doe",
+    email: "john@example.com",
+    role: "Admin",
+    status: "active",
+    department: "Engineering",
+    salary: 120000,
+    joinDate: "2023-01-15",
+  },
   // { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 95000, joinDate: '2023-03-20' },
   // { id: 3, name: 'Bob Johnson', email: 'bob@example.com', role: 'Designer', status: 'inactive', department: 'Design', salary: 85000, joinDate: '2022-11-10' },
   // { id: 4, name: 'Alice Brown', email: 'alice@example.com', role: 'Manager', status: 'active', department: 'HR', salary: 110000, joinDate: '2022-06-05' },
@@ -39,15 +57,15 @@ const users: User[] = [
   // { id: 10, name: 'Hannah Black', email: 'hannah@example.com', role: 'Product Manager', status: 'active', department: 'Product', salary: 115000, joinDate: '2022-04-15' },
   // { id: 11, name: 'Ian Gray', email: 'ian@example.com', role: 'Developer', status: 'active', department: 'Engineering', salary: 90000, joinDate: '2023-11-08' },
   // { id: 12, name: 'Julia Adams', email: 'julia@example.com', role: 'HR Specialist', status: 'active', department: 'HR', salary: 68000, joinDate: '2024-02-01' },
-]
+];
 
 const basicColumns: GridColDef<User>[] = [
-  { field: 'id', headerName: 'ID', width: 70 },
-  { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
-  { field: 'email', headerName: 'Email', flex: 1, minWidth: 200 },
-  { field: 'role', headerName: 'Role', width: 120 },
-  { field: 'department', headerName: 'Department', width: 130 },
-]
+  { field: "id", headerName: "ID", width: 70 },
+  { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
+  { field: "email", headerName: "Email", flex: 1, minWidth: 200 },
+  { field: "role", headerName: "Role", width: 120 },
+  { field: "department", headerName: "Department", width: 130 },
+];
 
 export const Default: Story = {
   render: () => (
@@ -58,7 +76,7 @@ export const Default: Story = {
       height={400}
     />
   ),
-}
+};
 
 export const WithToolbar: Story = {
   render: () => (
@@ -71,11 +89,13 @@ export const WithToolbar: Story = {
       height={450}
     />
   ),
-}
+};
 
 export const WithCheckboxSelection: Story = {
   render: function CheckboxSelectionExample() {
-    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({})
+    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
+      {},
+    );
 
     return (
       <div className="space-y-4">
@@ -91,31 +111,34 @@ export const WithCheckboxSelection: Story = {
           height={450}
         />
         <div className="text-sm text-muted-foreground">
-          Selected IDs: {Object.keys(selectionModel).filter(k => selectionModel[k]).join(', ') || 'None'}
+          Selected IDs:{" "}
+          {Object.keys(selectionModel)
+            .filter((k) => selectionModel[k])
+            .join(", ") || "None"}
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 export const WithCustomCellRendering: Story = {
   render: () => {
     const columnsWithRenderers: GridColDef<User>[] = [
-      { field: 'id', headerName: 'ID', width: 70 },
-      { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
-      { field: 'email', headerName: 'Email', flex: 1, minWidth: 200 },
+      { field: "id", headerName: "ID", width: 70 },
+      { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
+      { field: "email", headerName: "Email", flex: 1, minWidth: 200 },
       {
-        field: 'status',
-        headerName: 'Status',
+        field: "status",
+        headerName: "Status",
         width: 120,
         renderCell: ({ value }) => (
           <Badge
             variant={
-              value === 'active'
-                ? 'default'
-                : value === 'pending'
-                ? 'secondary'
-                : 'destructive'
+              value === "active"
+                ? "default"
+                : value === "pending"
+                  ? "secondary"
+                  : "destructive"
             }
           >
             {value}
@@ -123,19 +146,19 @@ export const WithCustomCellRendering: Story = {
         ),
       },
       {
-        field: 'salary',
-        headerName: 'Salary',
+        field: "salary",
+        headerName: "Salary",
         width: 120,
-        align: 'right',
-        headerAlign: 'right',
+        align: "right",
+        headerAlign: "right",
         valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
       },
       {
-        field: 'actions',
-        headerName: 'Actions',
+        field: "actions",
+        headerName: "Actions",
         width: 150,
         sortable: false,
-        renderCell: ({ row }) => (
+        renderCell: () => (
           <div className="flex gap-2">
             <Button size="sm" variant="outline">
               Edit
@@ -146,7 +169,7 @@ export const WithCustomCellRendering: Story = {
           </div>
         ),
       },
-    ]
+    ];
 
     return (
       <DataGrid
@@ -157,36 +180,38 @@ export const WithCustomCellRendering: Story = {
         title="Users with Custom Cells"
         height={450}
       />
-    )
+    );
   },
-}
+};
 
 export const WithValueGetter: Story = {
   render: () => {
     const columnsWithValueGetter: GridColDef<User>[] = [
-      { field: 'id', headerName: 'ID', width: 70 },
-      { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
+      { field: "id", headerName: "ID", width: 70 },
+      { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
       {
-        field: 'fullInfo',
-        headerName: 'Full Info',
+        field: "fullInfo",
+        headerName: "Full Info",
         flex: 1,
         minWidth: 250,
-        valueGetter: ({ row }) => `${row.name} (${row.role}) - ${row.department}`,
+        valueGetter: ({ row }) =>
+          `${row.name} (${row.role}) - ${row.department}`,
       },
       {
-        field: 'yearsEmployed',
-        headerName: 'Years Employed',
+        field: "yearsEmployed",
+        headerName: "Years Employed",
         width: 150,
-        align: 'center',
-        headerAlign: 'center',
+        align: "center",
+        headerAlign: "center",
         valueGetter: ({ row }) => {
-          const joinDate = new Date(row.joinDate)
-          const now = new Date()
-          const years = (now.getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24 * 365)
-          return years.toFixed(1)
+          const joinDate = new Date(row.joinDate);
+          const now = new Date();
+          const years =
+            (now.getTime() - joinDate.getTime()) / (1000 * 60 * 60 * 24 * 365);
+          return years.toFixed(1);
         },
       },
-    ]
+    ];
 
     return (
       <DataGrid
@@ -195,9 +220,9 @@ export const WithValueGetter: Story = {
         getRowId={(row) => row.id}
         height={400}
       />
-    )
+    );
   },
-}
+};
 
 export const LoadingState: Story = {
   render: () => (
@@ -211,7 +236,7 @@ export const LoadingState: Story = {
       height={400}
     />
   ),
-}
+};
 
 export const EmptyState: Story = {
   render: () => (
@@ -224,7 +249,7 @@ export const EmptyState: Story = {
       height={400}
     />
   ),
-}
+};
 
 export const DifferentDensities: Story = {
   render: () => (
@@ -261,7 +286,7 @@ export const DifferentDensities: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const WithBorders: Story = {
   render: () => (
@@ -276,7 +301,7 @@ export const WithBorders: Story = {
       height={400}
     />
   ),
-}
+};
 
 export const CustomPageSizes: Story = {
   render: () => (
@@ -291,7 +316,7 @@ export const CustomPageSizes: Story = {
       height={400}
     />
   ),
-}
+};
 
 export const WithRowClassName: Story = {
   render: () => (
@@ -300,14 +325,14 @@ export const WithRowClassName: Story = {
       columns={basicColumns}
       getRowId={(row) => row.id}
       getRowClassName={({ row }) =>
-        row.status === 'inactive' ? 'opacity-50' : ''
+        row.status === "inactive" ? "opacity-50" : ""
       }
       toolBar
       title="Highlighted Rows"
       height={400}
     />
   ),
-}
+};
 
 export const HiddenFooter: Story = {
   render: () => (
@@ -321,7 +346,7 @@ export const HiddenFooter: Story = {
       height={350}
     />
   ),
-}
+};
 
 export const AutoHeight: Story = {
   render: () => (
@@ -334,29 +359,35 @@ export const AutoHeight: Story = {
       title="Auto Height Table"
     />
   ),
-}
+};
 
 // Server-side pagination example
 export const ServerSidePagination: Story = {
   render: function ServerPaginationExample() {
-    const [paginationModel, setPaginationModel] = useState({ page: 0, pageSize: 5 })
-    const [loading, setLoading] = useState(false)
+    const [paginationModel, setPaginationModel] = useState({
+      page: 0,
+      pageSize: 5,
+    });
+    const [loading, setLoading] = useState(false);
 
     // Simulate server-side data
-    const totalRows = 100
+    const totalRows = 100;
     const paginatedData = users.slice(
       paginationModel.page * paginationModel.pageSize,
-      (paginationModel.page + 1) * paginationModel.pageSize
-    )
+      (paginationModel.page + 1) * paginationModel.pageSize,
+    );
 
-    const handlePaginationChange = (model: { page: number; pageSize: number }) => {
-      setLoading(true)
+    const handlePaginationChange = (model: {
+      page: number;
+      pageSize: number;
+    }) => {
+      setLoading(true);
       // Simulate API call
       setTimeout(() => {
-        setPaginationModel(model)
-        setLoading(false)
-      }, 500)
-    }
+        setPaginationModel(model);
+        setLoading(false);
+      }, 500);
+    };
 
     return (
       <DataGrid
@@ -373,22 +404,23 @@ export const ServerSidePagination: Story = {
         title="Server-side Pagination"
         height={400}
       />
-    )
+    );
   },
-}
+};
 
 // Column visibility example
 export const WithColumnVisibility: Story = {
   render: function ColumnVisibilityExample() {
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityModel>({
-      department: false, // Hide department by default
-    })
+    const [columnVisibility, setColumnVisibility] =
+      useState<ColumnVisibilityModel>({
+        department: false, // Hide department by default
+      });
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Click the "Columns" button in the toolbar to show/hide columns.
-          The "Department" column is hidden by default.
+          Click the "Columns" button in the toolbar to show/hide columns. The
+          "Department" column is hidden by default.
         </p>
         <DataGrid
           rows={users}
@@ -401,15 +433,16 @@ export const WithColumnVisibility: Story = {
           height={450}
         />
         <div className="text-sm text-muted-foreground">
-          Hidden columns: {Object.entries(columnVisibility)
+          Hidden columns:{" "}
+          {Object.entries(columnVisibility)
             .filter(([, hidden]) => hidden === false)
             .map(([col]) => col)
-            .join(', ') || 'None'}
+            .join(", ") || "None"}
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 // Different heights example
 export const DifferentHeights: Story = {
@@ -444,21 +477,50 @@ export const DifferentHeights: Story = {
       </div>
     </div>
   ),
-}
+};
 
 // Cell content truncation vs wrapping
 export const CellContentHandling: Story = {
   render: () => {
     const dataWithLongContent: User[] = [
-      { id: 1, name: 'John Doe with a very long name that should be truncated', email: 'john.doe.with.a.very.long.email.address@example-company.com', role: 'Senior Software Developer', status: 'active', department: 'Engineering & Research', salary: 120000, joinDate: '2023-01-15' },
-      { id: 2, name: 'Jane Smith', email: 'jane@example.com', role: 'Lead Designer', status: 'active', department: 'Design', salary: 95000, joinDate: '2023-03-20' },
-      { id: 3, name: 'Bob Johnson with another extremely long name for testing purposes', email: 'bob.johnson.with.a.very.long.email@another-example-company.org', role: 'Principal Engineer', status: 'inactive', department: 'Platform Engineering', salary: 85000, joinDate: '2022-11-10' },
-    ]
+      {
+        id: 1,
+        name: "John Doe with a very long name that should be truncated",
+        email: "john.doe.with.a.very.long.email.address@example-company.com",
+        role: "Senior Software Developer",
+        status: "active",
+        department: "Engineering & Research",
+        salary: 120000,
+        joinDate: "2023-01-15",
+      },
+      {
+        id: 2,
+        name: "Jane Smith",
+        email: "jane@example.com",
+        role: "Lead Designer",
+        status: "active",
+        department: "Design",
+        salary: 95000,
+        joinDate: "2023-03-20",
+      },
+      {
+        id: 3,
+        name: "Bob Johnson with another extremely long name for testing purposes",
+        email: "bob.johnson.with.a.very.long.email@another-example-company.org",
+        role: "Principal Engineer",
+        status: "inactive",
+        department: "Platform Engineering",
+        salary: 85000,
+        joinDate: "2022-11-10",
+      },
+    ];
 
     return (
       <div className="space-y-8">
         <div>
-          <h3 className="text-lg font-semibold mb-2">Truncated (default) - hover for tooltip</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            Truncated (default) - hover for tooltip
+          </h3>
           <DataGrid
             rows={dataWithLongContent}
             columns={basicColumns}
@@ -477,9 +539,9 @@ export const CellContentHandling: Story = {
           />
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 // Virtualization example with large dataset
 export const Virtualized: Story = {
@@ -489,18 +551,21 @@ export const Virtualized: Story = {
       id: i + 1,
       name: `User ${i + 1}`,
       email: `user${i + 1}@example.com`,
-      role: ['Admin', 'Developer', 'Designer', 'Manager', 'QA Engineer'][i % 5],
-      status: (['active', 'inactive', 'pending'] as const)[i % 3],
-      department: ['Engineering', 'Design', 'HR', 'Product', 'Operations'][i % 5],
+      role: ["Admin", "Developer", "Designer", "Manager", "QA Engineer"][i % 5],
+      status: (["active", "inactive", "pending"] as const)[i % 3],
+      department: ["Engineering", "Design", "HR", "Product", "Operations"][
+        i % 5
+      ],
       salary: 50000 + Math.floor(Math.random() * 100000),
-      joinDate: `202${(i % 4)}-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
-    }))
+      joinDate: `202${i % 4}-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+    }));
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          This DataGrid is virtualized with 10,000 rows. Only visible rows are rendered for optimal performance.
-          Scroll to see the virtualization in action.
+          This DataGrid is virtualized with 10,000 rows. Only visible rows are
+          rendered for optimal performance. Scroll to see the virtualization in
+          action.
         </p>
         <DataGrid
           rows={largeDataset}
@@ -513,9 +578,9 @@ export const Virtualized: Story = {
           height={500}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // Virtualization with custom cell rendering
 export const VirtualizedWithCustomCells: Story = {
@@ -524,29 +589,31 @@ export const VirtualizedWithCustomCells: Story = {
       id: i + 1,
       name: `User ${i + 1}`,
       email: `user${i + 1}@example.com`,
-      role: ['Admin', 'Developer', 'Designer', 'Manager', 'QA Engineer'][i % 5],
-      status: (['active', 'inactive', 'pending'] as const)[i % 3],
-      department: ['Engineering', 'Design', 'HR', 'Product', 'Operations'][i % 5],
+      role: ["Admin", "Developer", "Designer", "Manager", "QA Engineer"][i % 5],
+      status: (["active", "inactive", "pending"] as const)[i % 3],
+      department: ["Engineering", "Design", "HR", "Product", "Operations"][
+        i % 5
+      ],
       salary: 50000 + Math.floor(Math.random() * 100000),
-      joinDate: `202${(i % 4)}-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
-    }))
+      joinDate: `202${i % 4}-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+    }));
 
     const columnsWithRenderers: GridColDef<User>[] = [
-      { field: 'id', headerName: 'ID', width: 70 },
-      { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
-      { field: 'email', headerName: 'Email', flex: 1, minWidth: 200 },
+      { field: "id", headerName: "ID", width: 70 },
+      { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
+      { field: "email", headerName: "Email", flex: 1, minWidth: 200 },
       {
-        field: 'status',
-        headerName: 'Status',
+        field: "status",
+        headerName: "Status",
         width: 120,
         renderCell: ({ value }) => (
           <Badge
             variant={
-              value === 'active'
-                ? 'default'
-                : value === 'pending'
-                ? 'secondary'
-                : 'destructive'
+              value === "active"
+                ? "default"
+                : value === "pending"
+                  ? "secondary"
+                  : "destructive"
             }
           >
             {value}
@@ -554,20 +621,21 @@ export const VirtualizedWithCustomCells: Story = {
         ),
       },
       {
-        field: 'salary',
-        headerName: 'Salary',
+        field: "salary",
+        headerName: "Salary",
         width: 120,
-        align: 'right',
-        headerAlign: 'right',
+        align: "right",
+        headerAlign: "right",
         valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
       },
-      { field: 'department', headerName: 'Department', width: 130 },
-    ]
+      { field: "department", headerName: "Department", width: 130 },
+    ];
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Virtualized DataGrid with 5,000 rows and custom cell renderers (Badge for status, formatted salary).
+          Virtualized DataGrid with 5,000 rows and custom cell renderers (Badge
+          for status, formatted salary).
         </p>
         <DataGrid
           rows={largeDataset}
@@ -579,48 +647,49 @@ export const VirtualizedWithCustomCells: Story = {
           height={500}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // MUI DataGrid compatibility demo
 export const MUICompatibility: Story = {
-  name: 'MUI DataGrid API Compatibility',
+  name: "MUI DataGrid API Compatibility",
   render: () => {
     // This demonstrates that the API is compatible with MUI DataGrid
     const muiStyleColumns: GridColDef<User>[] = [
-      { field: 'id', headerName: 'ID', width: 70, sortable: true },
-      { field: 'name', headerName: 'Full Name', flex: 1, minWidth: 150 },
-      { field: 'email', headerName: 'Email Address', flex: 1, minWidth: 200 },
+      { field: "id", headerName: "ID", width: 70, sortable: true },
+      { field: "name", headerName: "Full Name", flex: 1, minWidth: 150 },
+      { field: "email", headerName: "Email Address", flex: 1, minWidth: 200 },
       {
-        field: 'status',
-        headerName: 'Status',
+        field: "status",
+        headerName: "Status",
         width: 120,
-        align: 'center',
-        headerAlign: 'center',
+        align: "center",
+        headerAlign: "center",
         renderCell: ({ value }) => (
-          <Badge variant={value === 'active' ? 'default' : 'secondary'}>
+          <Badge variant={value === "active" ? "default" : "secondary"}>
             {value}
           </Badge>
         ),
       },
       {
-        field: 'salary',
-        headerName: 'Salary',
+        field: "salary",
+        headerName: "Salary",
         width: 120,
-        type: 'number',
-        align: 'right',
-        headerAlign: 'right',
+        type: "number",
+        align: "right",
+        headerAlign: "right",
         valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
       },
-    ]
+    ];
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          This DataGrid uses the same API as MUI X DataGrid, making migration easier.
-          Props like <code>field</code>, <code>headerName</code>, <code>renderCell</code>,{' '}
-          <code>valueFormatter</code>, <code>flex</code>, and <code>align</code> all work the same way.
+          This DataGrid uses the same API as MUI X DataGrid, making migration
+          easier. Props like <code>field</code>, <code>headerName</code>,{" "}
+          <code>renderCell</code>, <code>valueFormatter</code>,{" "}
+          <code>flex</code>, and <code>align</code> all work the same way.
         </p>
         <DataGrid
           rows={users}
@@ -635,30 +704,33 @@ export const MUICompatibility: Story = {
           height={450}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // 100k rows virtualization stress test
 export const VirtualizedLargeDataset: Story = {
-  name: 'Virtualized 100k Rows',
+  name: "Virtualized 100k Rows",
   render: () => {
     // Generate 100,000 rows for stress testing
     const largeDataset: User[] = Array.from({ length: 100000 }, (_, i) => ({
       id: i + 1,
       name: `User ${i + 1}`,
       email: `user${i + 1}@example.com`,
-      role: ['Admin', 'Developer', 'Designer', 'Manager', 'QA Engineer'][i % 5],
-      status: (['active', 'inactive', 'pending'] as const)[i % 3],
-      department: ['Engineering', 'Design', 'HR', 'Product', 'Operations'][i % 5],
+      role: ["Admin", "Developer", "Designer", "Manager", "QA Engineer"][i % 5],
+      status: (["active", "inactive", "pending"] as const)[i % 3],
+      department: ["Engineering", "Design", "HR", "Product", "Operations"][
+        i % 5
+      ],
       salary: 50000 + Math.floor(Math.random() * 100000),
-      joinDate: `202${(i % 4)}-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
-    }))
+      joinDate: `202${i % 4}-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+    }));
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Stress test with 100,000 rows. Virtualization ensures smooth scrolling by only rendering visible rows.
+          Stress test with 100,000 rows. Virtualization ensures smooth scrolling
+          by only rendering visible rows.
         </p>
         <DataGrid
           rows={largeDataset}
@@ -671,22 +743,26 @@ export const VirtualizedLargeDataset: Story = {
           height={600}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // Export functionality demo
 export const WithExport: Story = {
   render: () => {
     const handleCustomExport = (data: User[], columns: typeof basicColumns) => {
-      console.log('Custom export triggered:', { rowCount: data.length, columns })
-      alert(`Custom export: ${data.length} rows`)
-    }
+      console.log("Custom export triggered:", {
+        rowCount: data.length,
+        columns,
+      });
+      alert(`Custom export: ${data.length} rows`);
+    };
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Click the "Export" button in the toolbar to download data as CSV or JSON.
+          Click the "Export" button in the toolbar to download data as CSV or
+          JSON.
         </p>
         <DataGrid
           rows={users}
@@ -699,9 +775,9 @@ export const WithExport: Story = {
           height={400}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // Custom toolbar buttons demo
 export const WithCustomToolbar: Story = {
@@ -712,9 +788,15 @@ export const WithCustomToolbar: Story = {
           variant="outline"
           size="sm"
           className="h-9 gap-2"
-          onClick={() => alert('Add new user')}
+          onClick={() => alert("Add new user")}
         >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M12 5v14M5 12h14" />
           </svg>
           Add User
@@ -723,22 +805,72 @@ export const WithCustomToolbar: Story = {
           variant="outline"
           size="sm"
           className="h-9 gap-2"
-          onClick={() => alert('Refresh data')}
+          onClick={() => alert("Refresh data")}
         >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
             <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
             <path d="M21 3v5h-5" />
           </svg>
           Refresh
         </Button>
       </>
-    )
+    );
 
     const moreOptions = [
-      { label: 'Print', onClick: () => alert('Print'), icon: <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" /></svg> },
-      { label: 'Settings', onClick: () => alert('Settings'), icon: <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" /></svg> },
-      { label: 'Help', onClick: () => alert('Help'), icon: <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10" /><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" /></svg> },
-    ]
+      {
+        label: "Print",
+        onClick: () => alert("Print"),
+        icon: (
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" />
+          </svg>
+        ),
+      },
+      {
+        label: "Settings",
+        onClick: () => alert("Settings"),
+        icon: (
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+        ),
+      },
+      {
+        label: "Help",
+        onClick: () => alert("Help"),
+        icon: (
+          <svg
+            className="h-4 w-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" />
+          </svg>
+        ),
+      },
+    ];
 
     return (
       <div className="space-y-4">
@@ -760,9 +892,9 @@ export const WithCustomToolbar: Story = {
           height={400}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // Column resizing demo
 export const WithColumnResizing: Story = {
@@ -770,7 +902,8 @@ export const WithColumnResizing: Story = {
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Drag the edge of column headers to resize them. Hover over the right edge of a header to see the resize cursor.
+          Drag the edge of column headers to resize them. Hover over the right
+          edge of a header to see the resize cursor.
         </p>
         <DataGrid
           rows={users}
@@ -781,65 +914,73 @@ export const WithColumnResizing: Story = {
           title="Resizable Columns"
           height={400}
           onColumnResize={(columnId, width) => {
-            console.log(`Column ${columnId} resized to ${width}px`)
+            console.log(`Column ${columnId} resized to ${width}px`);
           }}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // Full featured demo
 export const FullFeatured: Story = {
   render: function FullFeaturedExample() {
-    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>({})
-    const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityModel>({})
+    const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>(
+      {},
+    );
+    const [columnVisibility, setColumnVisibility] =
+      useState<ColumnVisibilityModel>({});
 
     const fullColumns: GridColDef<User>[] = [
-      { field: 'id', headerName: 'ID', width: 70 },
-      { field: 'name', headerName: 'Name', flex: 1, minWidth: 150 },
-      { field: 'email', headerName: 'Email', flex: 1, minWidth: 200 },
+      { field: "id", headerName: "ID", width: 70 },
+      { field: "name", headerName: "Name", flex: 1, minWidth: 150 },
+      { field: "email", headerName: "Email", flex: 1, minWidth: 200 },
       {
-        field: 'status',
-        headerName: 'Status',
+        field: "status",
+        headerName: "Status",
         width: 120,
         renderCell: ({ value }) => (
           <Badge
             variant={
-              value === 'active' ? 'default' : value === 'pending' ? 'secondary' : 'destructive'
+              value === "active"
+                ? "default"
+                : value === "pending"
+                  ? "secondary"
+                  : "destructive"
             }
           >
             {value}
           </Badge>
         ),
       },
-      { field: 'role', headerName: 'Role', width: 130 },
-      { field: 'department', headerName: 'Department', width: 130 },
+      { field: "role", headerName: "Role", width: 130 },
+      { field: "department", headerName: "Department", width: 130 },
       {
-        field: 'salary',
-        headerName: 'Salary',
+        field: "salary",
+        headerName: "Salary",
         width: 120,
-        align: 'right',
-        headerAlign: 'right',
+        align: "right",
+        headerAlign: "right",
         valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
       },
-    ]
+    ];
 
     const customButtons = (
       <Button variant="outline" size="sm" className="h-9">
         Add User
       </Button>
-    )
+    );
 
     const moreOptions = [
-      { label: 'Print', onClick: () => console.log('Print') },
-      { label: 'Settings', onClick: () => console.log('Settings') },
-    ]
+      { label: "Print", onClick: () => console.log("Print") },
+      { label: "Settings", onClick: () => console.log("Settings") },
+    ];
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Full-featured DataGrid with: checkbox selection, column visibility, export, custom buttons, more options menu, and resizable columns.
+          Full-featured DataGrid with: checkbox selection, column visibility,
+          export, custom buttons, more options menu, and resizable columns.
         </p>
         <DataGrid
           rows={users}
@@ -862,34 +1003,39 @@ export const FullFeatured: Story = {
           height={500}
         />
         <div className="text-sm text-muted-foreground">
-          Selected: {Object.keys(selectionModel).filter(k => selectionModel[k]).length} rows
+          Selected:{" "}
+          {Object.keys(selectionModel).filter((k) => selectionModel[k]).length}{" "}
+          rows
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 // Virtualized with column resizing
 export const VirtualizedWithResizing: Story = {
-  name: 'Virtualized + Resizable Columns',
+  name: "Virtualized + Resizable Columns",
   render: () => {
     // Generate 50,000 rows for stress testing
     const largeDataset: User[] = Array.from({ length: 50000 }, (_, i) => ({
       id: i + 1,
       name: `User ${i + 1}`,
       email: `user${i + 1}@example.com`,
-      role: ['Admin', 'Developer', 'Designer', 'Manager', 'QA Engineer'][i % 5],
-      status: (['active', 'inactive', 'pending'] as const)[i % 3],
-      department: ['Engineering', 'Design', 'HR', 'Product', 'Operations'][i % 5],
+      role: ["Admin", "Developer", "Designer", "Manager", "QA Engineer"][i % 5],
+      status: (["active", "inactive", "pending"] as const)[i % 3],
+      department: ["Engineering", "Design", "HR", "Product", "Operations"][
+        i % 5
+      ],
       salary: 50000 + Math.floor(Math.random() * 100000),
-      joinDate: `202${(i % 4)}-${String((i % 12) + 1).padStart(2, '0')}-${String((i % 28) + 1).padStart(2, '0')}`,
-    }))
+      joinDate: `202${i % 4}-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+    }));
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Virtualized DataGrid (50,000 rows) with resizable columns. Drag the right edge of column headers to resize.
-          Both features should work together smoothly.
+          Virtualized DataGrid (50,000 rows) with resizable columns. Drag the
+          right edge of column headers to resize. Both features should work
+          together smoothly.
         </p>
         <DataGrid
           rows={largeDataset}
@@ -902,13 +1048,13 @@ export const VirtualizedWithResizing: Story = {
           title="Virtualized + Resizable (50k rows)"
           height={500}
           onColumnResize={(columnId, width) => {
-            console.log(`Column ${columnId} resized to ${width}px`)
+            console.log(`Column ${columnId} resized to ${width}px`);
           }}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 export const WithScrollableBadges: Story = {
   render: () => {
@@ -916,27 +1062,121 @@ export const WithScrollableBadges: Story = {
     const itemsWithManyBadges = [
       {
         id: 1,
-        name: 'Project Alpha',
-        tags: ['React', 'TypeScript', 'Tailwind', 'Vite', 'ESLint', 'Prettier', 'Jest', 'Cypress', 'Storybook', 'Figma', 'Adobe XD', 'Sketch', 'InVision', 'Zeplin', 'Miro', 'Notion', 'Slack', 'Discord', 'GitHub', 'GitLab', 'Bitbucket', 'Jira', 'Trello', 'Asana', 'Monday.com', 'ClickUp', 'Linear', 'Shortcut', 'Clubhouse', 'Pivotal Tracker', 'Azure DevOps', 'Team Foundation Server', 'Jenkins', 'GitHub Actions', 'GitLab CI', 'CircleCI', 'Travis CI', 'AppVeyor', 'Buildkite', 'Semaphore', 'Codeship', 'Bamboo', 'TeamCity', 'GoCD', 'Concourse', 'Drone', 'Woodpecker', 'Argo CD', 'Flux', 'Tekton']
+        name: "Project Alpha",
+        tags: [
+          "React",
+          "TypeScript",
+          "Tailwind",
+          "Vite",
+          "ESLint",
+          "Prettier",
+          "Jest",
+          "Cypress",
+          "Storybook",
+          "Figma",
+          "Adobe XD",
+          "Sketch",
+          "InVision",
+          "Zeplin",
+          "Miro",
+          "Notion",
+          "Slack",
+          "Discord",
+          "GitHub",
+          "GitLab",
+          "Bitbucket",
+          "Jira",
+          "Trello",
+          "Asana",
+          "Monday.com",
+          "ClickUp",
+          "Linear",
+          "Shortcut",
+          "Clubhouse",
+          "Pivotal Tracker",
+          "Azure DevOps",
+          "Team Foundation Server",
+          "Jenkins",
+          "GitHub Actions",
+          "GitLab CI",
+          "CircleCI",
+          "Travis CI",
+          "AppVeyor",
+          "Buildkite",
+          "Semaphore",
+          "Codeship",
+          "Bamboo",
+          "TeamCity",
+          "GoCD",
+          "Concourse",
+          "Drone",
+          "Woodpecker",
+          "Argo CD",
+          "Flux",
+          "Tekton",
+        ],
       },
       {
         id: 2,
-        name: 'Project Beta',
-        tags: ['Vue', 'JavaScript', 'Bootstrap', 'Webpack', 'Babel', 'PostCSS', 'Sass', 'Less', 'Stylus', 'Pug', 'Handlebars', 'EJS', 'Nunjucks', 'Liquid', 'Twig', 'Blade', 'Slim', 'Haml', 'ERB', 'JSP', 'ASP.NET', 'Razor', 'Thymeleaf', 'FreeMarker', 'Velocity', 'Mustache', 'Dust.js', 'Swig', 'Eco', 'Jade', 'Hogan.js', 'doT', 'Underscore', 'Lodash', 'Ramda', 'Immutable.js', 'Moment.js', 'Day.js', 'date-fns', 'Luxon']
+        name: "Project Beta",
+        tags: [
+          "Vue",
+          "JavaScript",
+          "Bootstrap",
+          "Webpack",
+          "Babel",
+          "PostCSS",
+          "Sass",
+          "Less",
+          "Stylus",
+          "Pug",
+          "Handlebars",
+          "EJS",
+          "Nunjucks",
+          "Liquid",
+          "Twig",
+          "Blade",
+          "Slim",
+          "Haml",
+          "ERB",
+          "JSP",
+          "ASP.NET",
+          "Razor",
+          "Thymeleaf",
+          "FreeMarker",
+          "Velocity",
+          "Mustache",
+          "Dust.js",
+          "Swig",
+          "Eco",
+          "Jade",
+          "Hogan.js",
+          "doT",
+          "Underscore",
+          "Lodash",
+          "Ramda",
+          "Immutable.js",
+          "Moment.js",
+          "Day.js",
+          "date-fns",
+          "Luxon",
+        ],
       },
       {
         id: 3,
-        name: 'Project Gamma',
-        tags: ['Angular', 'RxJS', 'NgRx', 'Angular Material']
-      }
-    ]
+        name: "Project Gamma",
+        tags: ["Angular", "RxJS", "NgRx", "Angular Material"],
+      },
+    ];
 
-    const columnsWithScrollableBadges: GridColDef<typeof itemsWithManyBadges[0]>[] = [
-      { field: 'id', headerName: 'ID', width: 70 },
-      { field: 'name', headerName: 'Project Name', flex: 1, minWidth: 150 },
+    const columnsWithScrollableBadges: GridColDef<
+      (typeof itemsWithManyBadges)[0]
+    >[] = [
+      { field: "id", headerName: "ID", width: 70 },
+      { field: "name", headerName: "Project Name", flex: 1, minWidth: 150 },
       {
-        field: 'tags',
-        headerName: 'Tags',
+        field: "tags",
+        headerName: "Tags",
         width: 300,
         scrollable: true,
         maxCellHeight: 120,
@@ -950,13 +1190,14 @@ export const WithScrollableBadges: Story = {
           </div>
         ),
       },
-    ]
+    ];
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          DataGrid with scrollable cells containing many badges. The tags column has scrollable: true and maxCellHeight: 120px,
-          allowing users to scroll through all badges when they overflow the cell height.
+          DataGrid with scrollable cells containing many badges. The tags column
+          has scrollable: true and maxCellHeight: 120px, allowing users to
+          scroll through all badges when they overflow the cell height.
         </p>
         <DataGrid
           rows={itemsWithManyBadges}
@@ -967,70 +1208,170 @@ export const WithScrollableBadges: Story = {
           title="Scrollable Badges Example"
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // ============================================================
 // Pinned Rows Story
 // ============================================================
 
 interface SalesRow {
-  id: number
-  region: string
-  q1: number
-  q2: number
-  q3: number
-  q4: number
-  total: number
+  id: number;
+  region: string;
+  q1: number;
+  q2: number;
+  q3: number;
+  q4: number;
+  total: number;
 }
 
 const salesData: SalesRow[] = [
-  { id: 1, region: 'North', q1: 12000, q2: 15000, q3: 13500, q4: 18000, total: 58500 },
-  { id: 2, region: 'South', q1: 9500, q2: 11000, q3: 10200, q4: 14000, total: 44700 },
-  { id: 3, region: 'East', q1: 14000, q2: 16500, q3: 15800, q4: 19500, total: 65800 },
-  { id: 4, region: 'West', q1: 11200, q2: 13000, q3: 12100, q4: 16000, total: 52300 },
-  { id: 5, region: 'Central', q1: 8800, q2: 9500, q3: 9200, q4: 12500, total: 40000 },
-  { id: 6, region: 'Northeast', q1: 7500, q2: 8200, q3: 7900, q4: 10500, total: 34100 },
-  { id: 7, region: 'Southeast', q1: 10200, q2: 11800, q3: 11000, q4: 14800, total: 47800 },
-  { id: 8, region: 'Northwest', q1: 6800, q2: 7500, q3: 7200, q4: 9800, total: 31300 },
-]
+  {
+    id: 1,
+    region: "North",
+    q1: 12000,
+    q2: 15000,
+    q3: 13500,
+    q4: 18000,
+    total: 58500,
+  },
+  {
+    id: 2,
+    region: "South",
+    q1: 9500,
+    q2: 11000,
+    q3: 10200,
+    q4: 14000,
+    total: 44700,
+  },
+  {
+    id: 3,
+    region: "East",
+    q1: 14000,
+    q2: 16500,
+    q3: 15800,
+    q4: 19500,
+    total: 65800,
+  },
+  {
+    id: 4,
+    region: "West",
+    q1: 11200,
+    q2: 13000,
+    q3: 12100,
+    q4: 16000,
+    total: 52300,
+  },
+  {
+    id: 5,
+    region: "Central",
+    q1: 8800,
+    q2: 9500,
+    q3: 9200,
+    q4: 12500,
+    total: 40000,
+  },
+  {
+    id: 6,
+    region: "Northeast",
+    q1: 7500,
+    q2: 8200,
+    q3: 7900,
+    q4: 10500,
+    total: 34100,
+  },
+  {
+    id: 7,
+    region: "Southeast",
+    q1: 10200,
+    q2: 11800,
+    q3: 11000,
+    q4: 14800,
+    total: 47800,
+  },
+  {
+    id: 8,
+    region: "Northwest",
+    q1: 6800,
+    q2: 7500,
+    q3: 7200,
+    q4: 9800,
+    total: 31300,
+  },
+];
 
 const salesColumns: GridColDef<SalesRow>[] = [
-  { field: 'region', headerName: 'Region', width: 150 },
-  { field: 'q1', headerName: 'Q1', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-  { field: 'q2', headerName: 'Q2', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-  { field: 'q3', headerName: 'Q3', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-  { field: 'q4', headerName: 'Q4', width: 120, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-  { field: 'total', headerName: 'Total', width: 140, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-]
+  { field: "region", headerName: "Region", width: 150 },
+  {
+    field: "q1",
+    headerName: "Q1",
+    width: 120,
+    align: "right",
+    headerAlign: "right",
+    valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+  },
+  {
+    field: "q2",
+    headerName: "Q2",
+    width: 120,
+    align: "right",
+    headerAlign: "right",
+    valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+  },
+  {
+    field: "q3",
+    headerName: "Q3",
+    width: 120,
+    align: "right",
+    headerAlign: "right",
+    valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+  },
+  {
+    field: "q4",
+    headerName: "Q4",
+    width: 120,
+    align: "right",
+    headerAlign: "right",
+    valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+  },
+  {
+    field: "total",
+    headerName: "Total",
+    width: 140,
+    align: "right",
+    headerAlign: "right",
+    valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+  },
+];
 
 const grandTotalRow: SalesRow = {
   id: 999,
-  region: 'Grand Total',
+  region: "Grand Total",
   q1: salesData.reduce((sum, r) => sum + r.q1, 0),
   q2: salesData.reduce((sum, r) => sum + r.q2, 0),
   q3: salesData.reduce((sum, r) => sum + r.q3, 0),
   q4: salesData.reduce((sum, r) => sum + r.q4, 0),
   total: salesData.reduce((sum, r) => sum + r.total, 0),
-}
+};
 
 const averageRow: SalesRow = {
   id: 998,
-  region: 'Average',
+  region: "Average",
   q1: Math.round(grandTotalRow.q1 / salesData.length),
   q2: Math.round(grandTotalRow.q2 / salesData.length),
   q3: Math.round(grandTotalRow.q3 / salesData.length),
   q4: Math.round(grandTotalRow.q4 / salesData.length),
   total: Math.round(grandTotalRow.total / salesData.length),
-}
+};
 
 export const PinnedRows: Story = {
   render: () => (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Pinned rows stay fixed at the top or bottom of the table while the main body scrolls.
-        The &quot;Average&quot; row is pinned to the top and the &quot;Grand Total&quot; row is pinned to the bottom.
+        Pinned rows stay fixed at the top or bottom of the table while the main
+        body scrolls. The &quot;Average&quot; row is pinned to the top and the
+        &quot;Grand Total&quot; row is pinned to the bottom.
       </p>
       <DataGrid
         rows={salesData}
@@ -1044,89 +1385,173 @@ export const PinnedRows: Story = {
           bottom: [grandTotalRow],
         }}
         getRowClassName={({ row }) =>
-          row.id === 999 ? 'font-bold' : row.id === 998 ? 'italic' : ''
+          row.id === 999 ? "font-bold" : row.id === 998 ? "italic" : ""
         }
       />
     </div>
   ),
-}
+};
 
 // ============================================================
 // Pinned Rows with ColSpan Story
 // ============================================================
 
 interface CollectionRow {
-  id: number | string
-  sNo: number | string
-  studentName: string
-  branch: string
-  paymentMode: string
-  amount: number | string
-  type?: 'date_start' | 'date_end' | 'grand_total' | 'summary_mode'
+  id: number | string;
+  sNo: number | string;
+  studentName: string;
+  branch: string;
+  paymentMode: string;
+  amount: number | string;
+  type?: "date_start" | "date_end" | "grand_total" | "summary_mode";
 }
 
 const collectionData: CollectionRow[] = [
-  { id: 1, sNo: 1, studentName: 'Aarav Sharma', branch: 'Main', paymentMode: 'Cash', amount: 15000 },
-  { id: 2, sNo: 2, studentName: 'Priya Patel', branch: 'Main', paymentMode: 'UPI', amount: 22000 },
-  { id: 3, sNo: 3, studentName: 'Rohan Kumar', branch: 'Main', paymentMode: 'Cash', amount: 18500 },
-  { id: 4, sNo: 4, studentName: 'Ananya Singh', branch: 'South', paymentMode: 'Cheque', amount: 30000 },
-  { id: 5, sNo: 5, studentName: 'Dev Gupta', branch: 'South', paymentMode: 'UPI', amount: 12000 },
-]
+  {
+    id: 1,
+    sNo: 1,
+    studentName: "Aarav Sharma",
+    branch: "Main",
+    paymentMode: "Cash",
+    amount: 15000,
+  },
+  {
+    id: 2,
+    sNo: 2,
+    studentName: "Priya Patel",
+    branch: "Main",
+    paymentMode: "UPI",
+    amount: 22000,
+  },
+  {
+    id: 3,
+    sNo: 3,
+    studentName: "Rohan Kumar",
+    branch: "Main",
+    paymentMode: "Cash",
+    amount: 18500,
+  },
+  {
+    id: 4,
+    sNo: 4,
+    studentName: "Ananya Singh",
+    branch: "South",
+    paymentMode: "Cheque",
+    amount: 30000,
+  },
+  {
+    id: 5,
+    sNo: 5,
+    studentName: "Dev Gupta",
+    branch: "South",
+    paymentMode: "UPI",
+    amount: 12000,
+  },
+];
 
 const collectionSummaryRows: CollectionRow[] = [
-  { id: 'summary-cash', sNo: '', studentName: '', branch: '', paymentMode: 'Cash', amount: 33500, type: 'summary_mode' },
-  { id: 'summary-upi', sNo: '', studentName: '', branch: '', paymentMode: 'UPI', amount: 34000, type: 'summary_mode' },
-  { id: 'summary-cheque', sNo: '', studentName: '', branch: '', paymentMode: 'Cheque', amount: 30000, type: 'summary_mode' },
-  { id: 'grand-total', sNo: 'Grand Total', studentName: '', branch: '', paymentMode: '', amount: 97500, type: 'grand_total' },
-]
+  {
+    id: "summary-cash",
+    sNo: "",
+    studentName: "",
+    branch: "",
+    paymentMode: "Cash",
+    amount: 33500,
+    type: "summary_mode",
+  },
+  {
+    id: "summary-upi",
+    sNo: "",
+    studentName: "",
+    branch: "",
+    paymentMode: "UPI",
+    amount: 34000,
+    type: "summary_mode",
+  },
+  {
+    id: "summary-cheque",
+    sNo: "",
+    studentName: "",
+    branch: "",
+    paymentMode: "Cheque",
+    amount: 30000,
+    type: "summary_mode",
+  },
+  {
+    id: "grand-total",
+    sNo: "Grand Total",
+    studentName: "",
+    branch: "",
+    paymentMode: "",
+    amount: 97500,
+    type: "grand_total",
+  },
+];
 
-const COL_COUNT_DEMO = 6
+const COL_COUNT_DEMO = 6;
 
 const collectionColumns: GridColDef<CollectionRow>[] = [
   {
-    field: 'sNo',
-    headerName: 'S.No',
+    field: "sNo",
+    headerName: "S.No",
     width: 80,
     colSpan: ({ row }: GridSpanParams<CollectionRow>) => {
-      if (row.type === 'grand_total') return COL_COUNT_DEMO - 1
-      return undefined
+      if (row.type === "grand_total") return COL_COUNT_DEMO - 1;
+      return undefined;
     },
     renderCell: ({ row, value }) => {
-      if (row.type === 'grand_total')
-        return <span className="font-bold text-right w-full block">{value}</span>
-      return value
+      if (row.type === "grand_total")
+        return (
+          <span className="font-bold text-right w-full block">{value}</span>
+        );
+      return value;
     },
   },
-  { field: 'studentName', headerName: 'Student Name', width: 160 },
-  { field: 'branch', headerName: 'Branch', width: 120 },
+  { field: "studentName", headerName: "Student Name", width: 160 },
+  { field: "branch", headerName: "Branch", width: 120 },
   {
-    field: 'paymentMode',
-    headerName: 'Payment Mode',
+    field: "paymentMode",
+    headerName: "Payment Mode",
     width: 140,
     renderCell: ({ row, value }) => {
-      if (row.type === 'summary_mode')
-        return <span className="font-bold text-primary">{value}</span>
-      return value
+      if (row.type === "summary_mode")
+        return <span className="font-bold text-primary">{value}</span>;
+      return value;
     },
   },
-  { field: 'amount', headerName: 'Amount', width: 140, align: 'right', headerAlign: 'right',
+  {
+    field: "amount",
+    headerName: "Amount",
+    width: 140,
+    align: "right",
+    headerAlign: "right",
     renderCell: ({ row, value }) => {
-      if (row.type === 'grand_total' || row.type === 'summary_mode')
-        return <span className="font-bold text-green-600">₹{Number(value).toLocaleString()}</span>
-      return `₹${Number(value).toLocaleString()}`
+      if (row.type === "grand_total" || row.type === "summary_mode")
+        return (
+          <span className="font-bold text-green-600">
+            ₹{Number(value).toLocaleString()}
+          </span>
+        );
+      return `₹${Number(value).toLocaleString()}`;
     },
   },
-]
+];
 
 export const PinnedRowsWithColSpan: Story = {
   render: () => (
     <div className="space-y-4">
       <div>
-        <h3 className="text-base font-semibold mb-1">Pinned Rows with Column Spanning</h3>
+        <h3 className="text-base font-semibold mb-1">
+          Pinned Rows with Column Spanning
+        </h3>
         <p className="text-sm text-muted-foreground">
-          Pinned bottom rows support <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan</code> just
-          like regular rows. The &quot;Grand Total&quot; row spans all columns except the last (amount) column.
-          Payment mode summary rows show the mode label and amount in pinned rows.
+          Pinned bottom rows support{" "}
+          <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+            colSpan
+          </code>{" "}
+          just like regular rows. The &quot;Grand Total&quot; row spans all
+          columns except the last (amount) column. Payment mode summary rows
+          show the mode label and amount in pinned rows.
         </p>
       </div>
       <DataGrid
@@ -1144,55 +1569,175 @@ export const PinnedRowsWithColSpan: Story = {
       />
     </div>
   ),
-}
+};
 
 // ============================================================
 // Pinned Columns Story
 // ============================================================
 
 interface StudentScore {
-  id: number
-  name: string
-  rollNo: string
-  math: number
-  science: number
-  english: number
-  history: number
-  geography: number
-  physics: number
-  chemistry: number
-  biology: number
-  total: number
+  id: number;
+  name: string;
+  rollNo: string;
+  math: number;
+  science: number;
+  english: number;
+  history: number;
+  geography: number;
+  physics: number;
+  chemistry: number;
+  biology: number;
+  total: number;
 }
 
 const studentScores: StudentScore[] = [
-  { id: 1, name: 'Aarav Sharma', rollNo: 'A001', math: 92, science: 88, english: 75, history: 82, geography: 78, physics: 85, chemistry: 90, biology: 87, total: 677 },
-  { id: 2, name: 'Priya Patel', rollNo: 'A002', math: 85, science: 92, english: 88, history: 76, geography: 83, physics: 91, chemistry: 86, biology: 93, total: 694 },
-  { id: 3, name: 'Rohan Kumar', rollNo: 'A003', math: 78, science: 75, english: 82, history: 90, geography: 87, physics: 72, chemistry: 79, biology: 80, total: 643 },
-  { id: 4, name: 'Ananya Singh', rollNo: 'A004', math: 95, science: 90, english: 92, history: 85, geography: 88, physics: 93, chemistry: 91, biology: 89, total: 723 },
-  { id: 5, name: 'Dev Gupta', rollNo: 'A005', math: 70, science: 72, english: 68, history: 74, geography: 71, physics: 69, chemistry: 73, biology: 75, total: 572 },
-]
+  {
+    id: 1,
+    name: "Aarav Sharma",
+    rollNo: "A001",
+    math: 92,
+    science: 88,
+    english: 75,
+    history: 82,
+    geography: 78,
+    physics: 85,
+    chemistry: 90,
+    biology: 87,
+    total: 677,
+  },
+  {
+    id: 2,
+    name: "Priya Patel",
+    rollNo: "A002",
+    math: 85,
+    science: 92,
+    english: 88,
+    history: 76,
+    geography: 83,
+    physics: 91,
+    chemistry: 86,
+    biology: 93,
+    total: 694,
+  },
+  {
+    id: 3,
+    name: "Rohan Kumar",
+    rollNo: "A003",
+    math: 78,
+    science: 75,
+    english: 82,
+    history: 90,
+    geography: 87,
+    physics: 72,
+    chemistry: 79,
+    biology: 80,
+    total: 643,
+  },
+  {
+    id: 4,
+    name: "Ananya Singh",
+    rollNo: "A004",
+    math: 95,
+    science: 90,
+    english: 92,
+    history: 85,
+    geography: 88,
+    physics: 93,
+    chemistry: 91,
+    biology: 89,
+    total: 723,
+  },
+  {
+    id: 5,
+    name: "Dev Gupta",
+    rollNo: "A005",
+    math: 70,
+    science: 72,
+    english: 68,
+    history: 74,
+    geography: 71,
+    physics: 69,
+    chemistry: 73,
+    biology: 75,
+    total: 572,
+  },
+];
 
 const studentColumns: GridColDef<StudentScore>[] = [
-  { field: 'rollNo', headerName: 'Roll No', width: 100 },
-  { field: 'name', headerName: 'Student Name', width: 160 },
-  { field: 'math', headerName: 'Math', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'science', headerName: 'Science', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'english', headerName: 'English', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'history', headerName: 'History', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'geography', headerName: 'Geography', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'physics', headerName: 'Physics', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'chemistry', headerName: 'Chemistry', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'biology', headerName: 'Biology', width: 100, align: 'center', headerAlign: 'center' },
-  { field: 'total', headerName: 'Total', width: 120, align: 'right', headerAlign: 'right' },
-]
+  { field: "rollNo", headerName: "Roll No", width: 100 },
+  { field: "name", headerName: "Student Name", width: 160 },
+  {
+    field: "math",
+    headerName: "Math",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "science",
+    headerName: "Science",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "english",
+    headerName: "English",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "history",
+    headerName: "History",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "geography",
+    headerName: "Geography",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "physics",
+    headerName: "Physics",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "chemistry",
+    headerName: "Chemistry",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "biology",
+    headerName: "Biology",
+    width: 100,
+    align: "center",
+    headerAlign: "center",
+  },
+  {
+    field: "total",
+    headerName: "Total",
+    width: 120,
+    align: "right",
+    headerAlign: "right",
+  },
+];
 
 export const PinnedColumns: Story = {
   render: () => (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
-        Pinned columns remain visible when scrolling horizontally. &quot;Roll No&quot; and &quot;Student Name&quot; are pinned to
-        the left, while &quot;Total&quot; is pinned to the right.
+        Pinned columns remain visible when scrolling horizontally. &quot;Roll
+        No&quot; and &quot;Student Name&quot; are pinned to the left, while
+        &quot;Total&quot; is pinned to the right.
       </p>
       <DataGrid
         rows={studentScores}
@@ -1202,13 +1747,13 @@ export const PinnedColumns: Story = {
         toolBar
         title="Student Scores"
         pinnedColumns={{
-          left: ['rollNo', 'name'],
-          right: ['total'],
+          left: ["rollNo", "name"],
+          right: ["total"],
         }}
       />
     </div>
   ),
-}
+};
 
 // ============================================================
 // Column Grouping Story
@@ -1217,40 +1762,105 @@ export const PinnedColumns: Story = {
 export const ColumnGrouping: Story = {
   render: () => {
     const groupingColumns: GridColDef[] = [
-      { field: 'rollNo', headerName: 'Roll No', width: 100 },
-      { field: 'name', headerName: 'Student Name', width: 160 },
-      { field: 'math', headerName: 'Math', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'science', headerName: 'Science', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'english', headerName: 'English', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'history', headerName: 'History', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'geography', headerName: 'Geography', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'physics', headerName: 'Physics', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'chemistry', headerName: 'Chemistry', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'biology', headerName: 'Biology', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'total', headerName: 'Total', width: 120, align: 'right', headerAlign: 'right' },
-    ]
+      { field: "rollNo", headerName: "Roll No", width: 100 },
+      { field: "name", headerName: "Student Name", width: 160 },
+      {
+        field: "math",
+        headerName: "Math",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "science",
+        headerName: "Science",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "english",
+        headerName: "English",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "history",
+        headerName: "History",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "geography",
+        headerName: "Geography",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "physics",
+        headerName: "Physics",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "chemistry",
+        headerName: "Chemistry",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "biology",
+        headerName: "Biology",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "total",
+        headerName: "Total",
+        width: 120,
+        align: "right",
+        headerAlign: "right",
+      },
+    ];
 
     const columnGroupingModel: ColumnGroupModel[] = [
       {
-        groupId: 'stem',
-        headerName: 'STEM Subjects',
-        children: [{ field: 'math' }, { field: 'science' }, { field: 'physics' }, { field: 'chemistry' }, { field: 'biology' }],
-        headerAlign: 'center',
+        groupId: "stem",
+        headerName: "STEM Subjects",
+        children: [
+          { field: "math" },
+          { field: "science" },
+          { field: "physics" },
+          { field: "chemistry" },
+          { field: "biology" },
+        ],
+        headerAlign: "center",
       },
       {
-        groupId: 'humanities',
-        headerName: 'Humanities',
-        children: [{ field: 'english' }, { field: 'history' }, { field: 'geography' }],
-        headerAlign: 'center',
+        groupId: "humanities",
+        headerName: "Humanities",
+        children: [
+          { field: "english" },
+          { field: "history" },
+          { field: "geography" },
+        ],
+        headerAlign: "center",
       },
-    ]
+    ];
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          Column grouping adds a header row above the column headers that groups related columns together.
-          &quot;STEM Subjects&quot; groups Math, Science, Physics, Chemistry and Biology.
-          &quot;Humanities&quot; groups English, History, and Geography.
+          Column grouping adds a header row above the column headers that groups
+          related columns together. &quot;STEM Subjects&quot; groups Math,
+          Science, Physics, Chemistry and Biology. &quot;Humanities&quot; groups
+          English, History, and Geography.
         </p>
         <DataGrid
           rows={studentScores}
@@ -1262,9 +1872,9 @@ export const ColumnGrouping: Story = {
           columnGroupingModel={columnGroupingModel}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // ============================================================
 // Combined: Pinned Rows + Pinned Columns + Column Grouping
@@ -1273,34 +1883,70 @@ export const ColumnGrouping: Story = {
 export const AllFeaturesCombined: Story = {
   render: () => {
     const combinedColumns: GridColDef<SalesRow>[] = [
-      { field: 'region', headerName: 'Region', width: 150 },
-      { field: 'q1', headerName: 'Q1', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-      { field: 'q2', headerName: 'Q2', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-      { field: 'q3', headerName: 'Q3', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-      { field: 'q4', headerName: 'Q4', width: 130, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-      { field: 'total', headerName: 'Total', width: 150, align: 'right', headerAlign: 'right', valueFormatter: ({ value }) => `$${value.toLocaleString()}` },
-    ]
+      { field: "region", headerName: "Region", width: 150 },
+      {
+        field: "q1",
+        headerName: "Q1",
+        width: 130,
+        align: "right",
+        headerAlign: "right",
+        valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+      },
+      {
+        field: "q2",
+        headerName: "Q2",
+        width: 130,
+        align: "right",
+        headerAlign: "right",
+        valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+      },
+      {
+        field: "q3",
+        headerName: "Q3",
+        width: 130,
+        align: "right",
+        headerAlign: "right",
+        valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+      },
+      {
+        field: "q4",
+        headerName: "Q4",
+        width: 130,
+        align: "right",
+        headerAlign: "right",
+        valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+      },
+      {
+        field: "total",
+        headerName: "Total",
+        width: 150,
+        align: "right",
+        headerAlign: "right",
+        valueFormatter: ({ value }) => `$${value.toLocaleString()}`,
+      },
+    ];
 
     const columnGroupingModel: ColumnGroupModel[] = [
       {
-        groupId: 'firstHalf',
-        headerName: '1st Half',
-        children: [{ field: 'q1' }, { field: 'q2' }],
-        headerAlign: 'center',
+        groupId: "firstHalf",
+        headerName: "1st Half",
+        children: [{ field: "q1" }, { field: "q2" }],
+        headerAlign: "center",
       },
       {
-        groupId: 'secondHalf',
-        headerName: '2nd Half',
-        children: [{ field: 'q3' }, { field: 'q4' }],
-        headerAlign: 'center',
+        groupId: "secondHalf",
+        headerName: "2nd Half",
+        children: [{ field: "q3" }, { field: "q4" }],
+        headerAlign: "center",
       },
-    ]
+    ];
 
     return (
       <div className="space-y-4">
         <p className="text-sm text-muted-foreground">
-          All three features combined: &quot;Region&quot; is pinned left, &quot;Total&quot; is pinned right,
-          Grand Total is a pinned bottom row, and quarters are grouped into 1st/2nd Half.
+          All three features combined: &quot;Region&quot; is pinned left,
+          &quot;Total&quot; is pinned right, Grand Total is a pinned bottom row,
+          and quarters are grouped into 1st/2nd Half.
         </p>
         <DataGrid
           rows={salesData}
@@ -1313,42 +1959,119 @@ export const AllFeaturesCombined: Story = {
             bottom: [grandTotalRow],
           }}
           pinnedColumns={{
-            left: ['region'],
-            right: ['total'],
+            left: ["region"],
+            right: ["total"],
           }}
           columnGroupingModel={columnGroupingModel}
         />
       </div>
-    )
+    );
   },
-}
+};
 
 // ============================================================
 // Row Spanning Story
 // ============================================================
 
 interface Employee {
-  id: number
-  department: string
-  team: string
-  name: string
-  role: string
-  salary: number
+  id: number;
+  department: string;
+  team: string;
+  name: string;
+  role: string;
+  salary: number;
 }
 
 const employeeData: Employee[] = [
-  { id: 1, department: 'Engineering', team: 'Frontend', name: 'Aarav Sharma', role: 'Senior Developer', salary: 95000 },
-  { id: 2, department: 'Engineering', team: 'Frontend', name: 'Priya Patel', role: 'Developer', salary: 78000 },
-  { id: 3, department: 'Engineering', team: 'Frontend', name: 'Rohan Kumar', role: 'Junior Developer', salary: 55000 },
-  { id: 4, department: 'Engineering', team: 'Backend', name: 'Ananya Singh', role: 'Senior Developer', salary: 98000 },
-  { id: 5, department: 'Engineering', team: 'Backend', name: 'Dev Gupta', role: 'Developer', salary: 82000 },
-  { id: 6, department: 'Design', team: 'UI/UX', name: 'Meera Reddy', role: 'Lead Designer', salary: 88000 },
-  { id: 7, department: 'Design', team: 'UI/UX', name: 'Kavya Nair', role: 'Designer', salary: 65000 },
-  { id: 8, department: 'Design', team: 'Graphics', name: 'Arjun Iyer', role: 'Graphic Designer', salary: 60000 },
-  { id: 9, department: 'HR', team: 'Recruitment', name: 'Sanya Joshi', role: 'HR Manager', salary: 75000 },
-  { id: 10, department: 'HR', team: 'Recruitment', name: 'Ravi Mishra', role: 'Recruiter', salary: 52000 },
-  { id: 11, department: 'HR', team: 'Operations', name: 'Neha Verma', role: 'HR Specialist', salary: 58000 },
-]
+  {
+    id: 1,
+    department: "Engineering",
+    team: "Frontend",
+    name: "Aarav Sharma",
+    role: "Senior Developer",
+    salary: 95000,
+  },
+  {
+    id: 2,
+    department: "Engineering",
+    team: "Frontend",
+    name: "Priya Patel",
+    role: "Developer",
+    salary: 78000,
+  },
+  {
+    id: 3,
+    department: "Engineering",
+    team: "Frontend",
+    name: "Rohan Kumar",
+    role: "Junior Developer",
+    salary: 55000,
+  },
+  {
+    id: 4,
+    department: "Engineering",
+    team: "Backend",
+    name: "Ananya Singh",
+    role: "Senior Developer",
+    salary: 98000,
+  },
+  {
+    id: 5,
+    department: "Engineering",
+    team: "Backend",
+    name: "Dev Gupta",
+    role: "Developer",
+    salary: 82000,
+  },
+  {
+    id: 6,
+    department: "Design",
+    team: "UI/UX",
+    name: "Meera Reddy",
+    role: "Lead Designer",
+    salary: 88000,
+  },
+  {
+    id: 7,
+    department: "Design",
+    team: "UI/UX",
+    name: "Kavya Nair",
+    role: "Designer",
+    salary: 65000,
+  },
+  {
+    id: 8,
+    department: "Design",
+    team: "Graphics",
+    name: "Arjun Iyer",
+    role: "Graphic Designer",
+    salary: 60000,
+  },
+  {
+    id: 9,
+    department: "HR",
+    team: "Recruitment",
+    name: "Sanya Joshi",
+    role: "HR Manager",
+    salary: 75000,
+  },
+  {
+    id: 10,
+    department: "HR",
+    team: "Recruitment",
+    name: "Ravi Mishra",
+    role: "Recruiter",
+    salary: 52000,
+  },
+  {
+    id: 11,
+    department: "HR",
+    team: "Operations",
+    name: "Neha Verma",
+    role: "HR Specialist",
+    salary: 58000,
+  },
+];
 
 const rowSpanCodeExample = `// Row Spanning — auto-merge consecutive identical values
 const columns: GridColDef[] = [
@@ -1373,33 +2096,42 @@ const columns: GridColDef[] = [
   rows={employeeData}
   columns={columns}
   showCellVerticalBorder
-/>`
+/>`;
 
 export const RowSpanning: Story = {
   render: () => {
     const employeeColumns: GridColDef<Employee>[] = [
-      { field: 'department', headerName: 'Department', width: 150, rowSpan: true },
-      { field: 'team', headerName: 'Team', width: 130, rowSpan: true },
-      { field: 'name', headerName: 'Employee Name', width: 160 },
-      { field: 'role', headerName: 'Role', width: 170 },
       {
-        field: 'salary',
-        headerName: 'Salary',
+        field: "department",
+        headerName: "Department",
+        width: 150,
+        rowSpan: true,
+      },
+      { field: "team", headerName: "Team", width: 130, rowSpan: true },
+      { field: "name", headerName: "Employee Name", width: 160 },
+      { field: "role", headerName: "Role", width: 170 },
+      {
+        field: "salary",
+        headerName: "Salary",
         width: 130,
-        align: 'right',
-        headerAlign: 'right',
+        align: "right",
+        headerAlign: "right",
         valueFormatter: ({ value }) => `₹${Number(value).toLocaleString()}`,
       },
-    ]
+    ];
 
     return (
       <div className="space-y-6">
         <div>
           <h3 className="text-base font-semibold mb-1">Row Spanning</h3>
           <p className="text-sm text-muted-foreground">
-            Set <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">rowSpan: true</code> on a
-            column to auto-merge consecutive cells with the same value. &quot;Department&quot; and &quot;Team&quot;
-            columns are merged below.
+            Set{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+              rowSpan: true
+            </code>{" "}
+            on a column to auto-merge consecutive cells with the same value.
+            &quot;Department&quot; and &quot;Team&quot; columns are merged
+            below.
           </p>
         </div>
         <DataGrid
@@ -1417,43 +2149,151 @@ export const RowSpanning: Story = {
             Show Code
           </summary>
           <pre className="px-4 py-3 text-xs font-mono bg-muted/50 overflow-x-auto rounded-b-lg whitespace-pre">
-{rowSpanCodeExample}
+            {rowSpanCodeExample}
           </pre>
         </details>
       </div>
-    )
+    );
   },
-}
+};
 
 // ============================================================
 // Column Spanning Story
 // ============================================================
 
 interface ExamMarks {
-  id: number
-  student: string
-  subject: string
-  hasLab: boolean
-  theory: number
-  practical: number | null
-  total: number
-  grade: string
+  id: number;
+  student: string;
+  subject: string;
+  hasLab: boolean;
+  theory: number;
+  practical: number | null;
+  total: number;
+  grade: string;
 }
 
 const examMarksData: ExamMarks[] = [
-  { id: 1, student: 'Aarav', subject: 'Physics', hasLab: true, theory: 78, practical: 42, total: 120, grade: 'A' },
-  { id: 2, student: 'Aarav', subject: 'Math', hasLab: false, theory: 92, practical: null, total: 92, grade: 'A+' },
-  { id: 3, student: 'Aarav', subject: 'Chemistry', hasLab: true, theory: 65, practical: 38, total: 103, grade: 'B+' },
-  { id: 4, student: 'Aarav', subject: 'English', hasLab: false, theory: 85, practical: null, total: 85, grade: 'A' },
-  { id: 5, student: 'Priya', subject: 'Physics', hasLab: true, theory: 88, practical: 45, total: 133, grade: 'A+' },
-  { id: 6, student: 'Priya', subject: 'Math', hasLab: false, theory: 95, practical: null, total: 95, grade: 'A+' },
-  { id: 7, student: 'Priya', subject: 'Chemistry', hasLab: true, theory: 72, practical: 40, total: 112, grade: 'A' },
-  { id: 8, student: 'Priya', subject: 'English', hasLab: false, theory: 88, practical: null, total: 88, grade: 'A' },
-  { id: 9, student: 'Rohan', subject: 'Physics', hasLab: true, theory: 55, practical: 30, total: 85, grade: 'B' },
-  { id: 10, student: 'Rohan', subject: 'Math', hasLab: false, theory: 70, practical: null, total: 70, grade: 'B+' },
-  { id: 11, student: 'Rohan', subject: 'Chemistry', hasLab: true, theory: 60, practical: 35, total: 95, grade: 'B+' },
-  { id: 12, student: 'Rohan', subject: 'English', hasLab: false, theory: 74, practical: null, total: 74, grade: 'B+' },
-]
+  {
+    id: 1,
+    student: "Aarav",
+    subject: "Physics",
+    hasLab: true,
+    theory: 78,
+    practical: 42,
+    total: 120,
+    grade: "A",
+  },
+  {
+    id: 2,
+    student: "Aarav",
+    subject: "Math",
+    hasLab: false,
+    theory: 92,
+    practical: null,
+    total: 92,
+    grade: "A+",
+  },
+  {
+    id: 3,
+    student: "Aarav",
+    subject: "Chemistry",
+    hasLab: true,
+    theory: 65,
+    practical: 38,
+    total: 103,
+    grade: "B+",
+  },
+  {
+    id: 4,
+    student: "Aarav",
+    subject: "English",
+    hasLab: false,
+    theory: 85,
+    practical: null,
+    total: 85,
+    grade: "A",
+  },
+  {
+    id: 5,
+    student: "Priya",
+    subject: "Physics",
+    hasLab: true,
+    theory: 88,
+    practical: 45,
+    total: 133,
+    grade: "A+",
+  },
+  {
+    id: 6,
+    student: "Priya",
+    subject: "Math",
+    hasLab: false,
+    theory: 95,
+    practical: null,
+    total: 95,
+    grade: "A+",
+  },
+  {
+    id: 7,
+    student: "Priya",
+    subject: "Chemistry",
+    hasLab: true,
+    theory: 72,
+    practical: 40,
+    total: 112,
+    grade: "A",
+  },
+  {
+    id: 8,
+    student: "Priya",
+    subject: "English",
+    hasLab: false,
+    theory: 88,
+    practical: null,
+    total: 88,
+    grade: "A",
+  },
+  {
+    id: 9,
+    student: "Rohan",
+    subject: "Physics",
+    hasLab: true,
+    theory: 55,
+    practical: 30,
+    total: 85,
+    grade: "B",
+  },
+  {
+    id: 10,
+    student: "Rohan",
+    subject: "Math",
+    hasLab: false,
+    theory: 70,
+    practical: null,
+    total: 70,
+    grade: "B+",
+  },
+  {
+    id: 11,
+    student: "Rohan",
+    subject: "Chemistry",
+    hasLab: true,
+    theory: 60,
+    practical: 35,
+    total: 95,
+    grade: "B+",
+  },
+  {
+    id: 12,
+    student: "Rohan",
+    subject: "English",
+    hasLab: false,
+    theory: 74,
+    practical: null,
+    total: 74,
+    grade: "B+",
+  },
+];
 
 const colSpanCodeExample = `// Column Spanning in the middle of the table
 // For subjects without a lab, the "Theory" cell spans
@@ -1488,57 +2328,70 @@ const columns: GridColDef<ExamMarks>[] = [
   rows={examMarksData}
   columns={columns}
   showCellVerticalBorder
-/>`
+/>`;
 
 export const ColSpanning: Story = {
   render: () => {
     const examColumns: GridColDef<ExamMarks>[] = [
-      { field: 'student', headerName: 'Student', width: 130, rowSpan: true },
-      { field: 'subject', headerName: 'Subject', width: 130 },
+      { field: "student", headerName: "Student", width: 130, rowSpan: true },
+      { field: "subject", headerName: "Subject", width: 130 },
       {
-        field: 'theory',
-        headerName: 'Theory',
+        field: "theory",
+        headerName: "Theory",
         width: 120,
-        align: 'center',
-        headerAlign: 'center',
+        align: "center",
+        headerAlign: "center",
         // When the subject has no lab, span across Theory + Practical columns
-        colSpan: ({ row }: GridSpanParams<ExamMarks>) => row.hasLab ? 1 : 2,
+        colSpan: ({ row }: GridSpanParams<ExamMarks>) => (row.hasLab ? 1 : 2),
         renderCell: ({ row, value }) =>
-          row.hasLab ? value : <span className="text-muted-foreground italic">{value} (Theory only)</span>,
+          row.hasLab ? (
+            value
+          ) : (
+            <span className="text-muted-foreground italic">
+              {value} (Theory only)
+            </span>
+          ),
       },
       {
-        field: 'practical',
-        headerName: 'Practical',
+        field: "practical",
+        headerName: "Practical",
         width: 120,
-        align: 'center',
-        headerAlign: 'center',
+        align: "center",
+        headerAlign: "center",
         // This cell gets auto-skipped when theory colSpan is 2
       },
       {
-        field: 'total',
-        headerName: 'Total',
+        field: "total",
+        headerName: "Total",
         width: 100,
-        align: 'center',
-        headerAlign: 'center',
+        align: "center",
+        headerAlign: "center",
       },
       {
-        field: 'grade',
-        headerName: 'Grade',
+        field: "grade",
+        headerName: "Grade",
         width: 90,
-        align: 'center',
-        headerAlign: 'center',
+        align: "center",
+        headerAlign: "center",
       },
-    ]
+    ];
 
     return (
       <div className="space-y-6">
         <div>
           <h3 className="text-base font-semibold mb-1">Column Spanning</h3>
           <p className="text-sm text-muted-foreground">
-            Set <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan: number</code> for
-            static, or <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan: (params) =&gt; number</code> for
-            dynamic. Below, subjects <strong>without a lab</strong> (Math, English) have their &quot;Theory&quot;
-            cell span across both Theory and Practical columns in the middle of the table.
+            Set{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+              colSpan: number
+            </code>{" "}
+            for static, or{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+              colSpan: (params) =&gt; number
+            </code>{" "}
+            for dynamic. Below, subjects <strong>without a lab</strong> (Math,
+            English) have their &quot;Theory&quot; cell span across both Theory
+            and Practical columns in the middle of the table.
           </p>
         </div>
         <DataGrid
@@ -1556,13 +2409,13 @@ export const ColSpanning: Story = {
             Show Code
           </summary>
           <pre className="px-4 py-3 text-xs font-mono bg-muted/50 overflow-x-auto rounded-b-lg whitespace-pre">
-{colSpanCodeExample}
+            {colSpanCodeExample}
           </pre>
         </details>
       </div>
-    )
+    );
   },
-}
+};
 
 // ============================================================
 // Row Span + Col Span Combined Story
@@ -1571,48 +2424,162 @@ export const ColSpanning: Story = {
 export const RowAndColSpanCombined: Story = {
   render: () => {
     interface ClassResult {
-      id: number
-      className: string
-      section: string
-      subject: string
-      hasLab: boolean
-      theory: number
-      practical: number | null
-      total: number
-      grade: string
+      id: number;
+      className: string;
+      section: string;
+      subject: string;
+      hasLab: boolean;
+      theory: number;
+      practical: number | null;
+      total: number;
+      grade: string;
     }
 
     const classData: ClassResult[] = [
-      { id: 1, className: 'Class 10', section: 'A', subject: 'Physics', hasLab: true, theory: 78, practical: 42, total: 120, grade: 'A' },
-      { id: 2, className: 'Class 10', section: 'A', subject: 'Math', hasLab: false, theory: 85, practical: null, total: 85, grade: 'A' },
-      { id: 3, className: 'Class 10', section: 'A', subject: 'English', hasLab: false, theory: 81, practical: null, total: 81, grade: 'A' },
-      { id: 4, className: 'Class 10', section: 'B', subject: 'Physics', hasLab: true, theory: 65, practical: 35, total: 100, grade: 'B+' },
-      { id: 5, className: 'Class 10', section: 'B', subject: 'Math', hasLab: false, theory: 70, practical: null, total: 70, grade: 'B+' },
-      { id: 6, className: 'Class 10', section: 'B', subject: 'English', hasLab: false, theory: 74, practical: null, total: 74, grade: 'B+' },
-      { id: 7, className: 'Class 9', section: 'A', subject: 'Physics', hasLab: true, theory: 82, practical: 44, total: 126, grade: 'A+' },
-      { id: 8, className: 'Class 9', section: 'A', subject: 'Math', hasLab: false, theory: 90, practical: null, total: 90, grade: 'A+' },
-      { id: 9, className: 'Class 9', section: 'A', subject: 'English', hasLab: false, theory: 79, practical: null, total: 79, grade: 'A' },
-    ]
+      {
+        id: 1,
+        className: "Class 10",
+        section: "A",
+        subject: "Physics",
+        hasLab: true,
+        theory: 78,
+        practical: 42,
+        total: 120,
+        grade: "A",
+      },
+      {
+        id: 2,
+        className: "Class 10",
+        section: "A",
+        subject: "Math",
+        hasLab: false,
+        theory: 85,
+        practical: null,
+        total: 85,
+        grade: "A",
+      },
+      {
+        id: 3,
+        className: "Class 10",
+        section: "A",
+        subject: "English",
+        hasLab: false,
+        theory: 81,
+        practical: null,
+        total: 81,
+        grade: "A",
+      },
+      {
+        id: 4,
+        className: "Class 10",
+        section: "B",
+        subject: "Physics",
+        hasLab: true,
+        theory: 65,
+        practical: 35,
+        total: 100,
+        grade: "B+",
+      },
+      {
+        id: 5,
+        className: "Class 10",
+        section: "B",
+        subject: "Math",
+        hasLab: false,
+        theory: 70,
+        practical: null,
+        total: 70,
+        grade: "B+",
+      },
+      {
+        id: 6,
+        className: "Class 10",
+        section: "B",
+        subject: "English",
+        hasLab: false,
+        theory: 74,
+        practical: null,
+        total: 74,
+        grade: "B+",
+      },
+      {
+        id: 7,
+        className: "Class 9",
+        section: "A",
+        subject: "Physics",
+        hasLab: true,
+        theory: 82,
+        practical: 44,
+        total: 126,
+        grade: "A+",
+      },
+      {
+        id: 8,
+        className: "Class 9",
+        section: "A",
+        subject: "Math",
+        hasLab: false,
+        theory: 90,
+        practical: null,
+        total: 90,
+        grade: "A+",
+      },
+      {
+        id: 9,
+        className: "Class 9",
+        section: "A",
+        subject: "English",
+        hasLab: false,
+        theory: 79,
+        practical: null,
+        total: 79,
+        grade: "A",
+      },
+    ];
 
     const classColumns: GridColDef<ClassResult>[] = [
-      { field: 'className', headerName: 'Class', width: 120, rowSpan: true },
-      { field: 'section', headerName: 'Section', width: 100, rowSpan: true },
-      { field: 'subject', headerName: 'Subject', width: 120 },
+      { field: "className", headerName: "Class", width: 120, rowSpan: true },
+      { field: "section", headerName: "Section", width: 100, rowSpan: true },
+      { field: "subject", headerName: "Subject", width: 120 },
       {
-        field: 'theory',
-        headerName: 'Theory',
+        field: "theory",
+        headerName: "Theory",
         width: 120,
-        align: 'center',
-        headerAlign: 'center',
+        align: "center",
+        headerAlign: "center",
         // ColSpan in the MIDDLE: when no lab, span across Theory + Practical
-        colSpan: ({ row }: GridSpanParams<ClassResult>) => row.hasLab ? 1 : 2,
+        colSpan: ({ row }: GridSpanParams<ClassResult>) => (row.hasLab ? 1 : 2),
         renderCell: ({ row, value }) =>
-          row.hasLab ? value : <span className="text-muted-foreground italic">{value} (Theory only)</span>,
+          row.hasLab ? (
+            value
+          ) : (
+            <span className="text-muted-foreground italic">
+              {value} (Theory only)
+            </span>
+          ),
       },
-      { field: 'practical', headerName: 'Practical', width: 120, align: 'center', headerAlign: 'center' },
-      { field: 'total', headerName: 'Total', width: 100, align: 'center', headerAlign: 'center' },
-      { field: 'grade', headerName: 'Grade', width: 90, align: 'center', headerAlign: 'center' },
-    ]
+      {
+        field: "practical",
+        headerName: "Practical",
+        width: 120,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "total",
+        headerName: "Total",
+        width: 100,
+        align: "center",
+        headerAlign: "center",
+      },
+      {
+        field: "grade",
+        headerName: "Grade",
+        width: 90,
+        align: "center",
+        headerAlign: "center",
+      },
+    ];
 
     const combinedCodeExample = `// Combining rowSpan + colSpan (in the middle) + column groups
 const columns: GridColDef[] = [
@@ -1645,17 +2612,28 @@ const columns: GridColDef[] = [
       { field: 'total' },
     ],
   }]}
-/>`
+/>`;
 
     return (
       <div className="space-y-6">
         <div>
-          <h3 className="text-base font-semibold mb-1">Row Span + Column Span (Middle) + Column Groups</h3>
+          <h3 className="text-base font-semibold mb-1">
+            Row Span + Column Span (Middle) + Column Groups
+          </h3>
           <p className="text-sm text-muted-foreground">
-            All features working together: <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">rowSpan: true</code> on
-            Class and Section, dynamic <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">colSpan</code> on
-            Theory (spanning across Practical in the middle), and a <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">columnGroupingModel</code> grouping
-            the marks columns.
+            All features working together:{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+              rowSpan: true
+            </code>{" "}
+            on Class and Section, dynamic{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+              colSpan
+            </code>{" "}
+            on Theory (spanning across Practical in the middle), and a{" "}
+            <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono">
+              columnGroupingModel
+            </code>{" "}
+            grouping the marks columns.
           </p>
         </div>
         <DataGrid
@@ -1669,10 +2647,14 @@ const columns: GridColDef[] = [
           showCellVerticalBorder
           columnGroupingModel={[
             {
-              groupId: 'marks',
-              headerName: 'Marks Breakdown',
-              children: [{ field: 'theory' }, { field: 'practical' }, { field: 'total' }],
-              headerAlign: 'center',
+              groupId: "marks",
+              headerName: "Marks Breakdown",
+              children: [
+                { field: "theory" },
+                { field: "practical" },
+                { field: "total" },
+              ],
+              headerAlign: "center",
             },
           ]}
         />
@@ -1681,10 +2663,10 @@ const columns: GridColDef[] = [
             Show Code
           </summary>
           <pre className="px-4 py-3 text-xs font-mono bg-muted/50 overflow-x-auto rounded-b-lg whitespace-pre">
-{combinedCodeExample}
+            {combinedCodeExample}
           </pre>
         </details>
       </div>
-    )
+    );
   },
-}
+};
