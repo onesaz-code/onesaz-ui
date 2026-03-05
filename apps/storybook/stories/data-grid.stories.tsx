@@ -2670,3 +2670,323 @@ const columns: GridColDef[] = [
     );
   },
 };
+
+// ─── Virtualization + dynamic row height stories ──────────────────────────────
+
+// 500-row dataset with varying-length descriptions
+const descriptions = [
+  "Short note.",
+  "A medium length description that spans about one and a half lines in a standard column.",
+  "This is a much longer description that will definitely wrap across multiple lines when rendered inside a fixed-width column. It contains enough text to force at least three lines of wrapping, which is the whole point of this story.",
+  "Brief.",
+  "The student demonstrated excellent understanding of the subject matter and consistently performed above expectations throughout the entire assessment period.",
+  "N/A",
+  "Requires follow-up. The issue was escalated to the senior team and is currently pending resolution. A status update is expected by the end of the week.",
+  "Good progress.",
+  "No comments at this time.",
+  "Outstanding contributor — recognised by peers and management alike for going above and beyond on multiple high-impact projects this quarter.",
+]
+
+const tags = [
+  ["react", "typescript"],
+  ["design", "ux"],
+  ["backend", "node"],
+  ["devops", "docker", "k8s"],
+  ["react", "testing"],
+  ["python", "ml"],
+  ["design"],
+  ["backend", "postgres"],
+  ["react", "performance"],
+  ["security", "auth"],
+]
+
+const departments = ["Engineering", "Design", "Product", "HR", "Operations", "Finance", "Marketing"]
+const roles = ["Lead", "Senior", "Mid", "Junior", "Intern", "Manager", "Director"]
+const statuses = ["active", "inactive", "pending", "review"] as const
+
+interface DynamicRow {
+  id: number
+  name: string
+  email: string
+  department: string
+  role: string
+  status: typeof statuses[number]
+  score: number
+  description: string
+  tags: string[]
+  joinDate: string
+}
+
+function generateRows(count: number): DynamicRow[] {
+  const firstNames = ["Alice", "Bob", "Charlie", "Diana", "Edward", "Fiona", "George", "Hannah", "Ian", "Julia",
+    "Kevin", "Laura", "Mike", "Nina", "Oscar", "Paula", "Quinn", "Rachel", "Steve", "Tara"]
+  const lastNames = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Wilson", "Taylor"]
+  return Array.from({ length: count }, (_, i) => {
+    const firstName = firstNames[i % firstNames.length]
+    const lastName = lastNames[Math.floor(i / firstNames.length) % lastNames.length]
+    return {
+      id: i + 1,
+      name: `${firstName} ${lastName}`,
+      email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i > 19 ? i : ""}@company.com`,
+      department: departments[i % departments.length],
+      role: roles[i % roles.length],
+      status: statuses[i % statuses.length],
+      score: 40 + (i * 17 + 31) % 61,
+      description: descriptions[i % descriptions.length],
+      tags: tags[i % tags.length],
+      joinDate: `202${(i % 4) + 1}-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+    }
+  })
+}
+
+const dynamicRows = generateRows(500)
+
+const statusVariant: Record<string, "default" | "secondary" | "outline" | "destructive"> = {
+  active: "default",
+  inactive: "outline",
+  pending: "secondary",
+  review: "destructive",
+}
+
+// Story 1: wrapText + virtualized
+export const VirtualizedWithWrapText: Story = {
+  name: "Virtualized — wrapText",
+  render: () => (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        500 rows, <code className="bg-muted px-1 rounded font-mono text-xs">virtualized</code> enabled,{" "}
+        <code className="bg-muted px-1 rounded font-mono text-xs">wrapText</code> on the Description column.
+        Rows expand to their natural height — the virtualizer measures each rendered row and corrects scroll math automatically.
+      </p>
+      <DataGrid
+        rows={dynamicRows}
+        columns={[
+          { field: "id", headerName: "ID", width: 60 },
+          { field: "name", headerName: "Name", width: 150 },
+          { field: "department", headerName: "Dept", width: 110 },
+          { field: "role", headerName: "Role", width: 90 },
+          {
+            field: "description",
+            headerName: "Description",
+            flex: 1,
+            minWidth: 220,
+            wrapText: true,
+          },
+          { field: "joinDate", headerName: "Joined", width: 100 },
+        ] satisfies GridColDef<DynamicRow>[]}
+        getRowId={(row) => row.id}
+        virtualized
+        height={500}
+        toolBar
+        title="Employees (wrapText + virtualized)"
+        slotProps={{ toolbar: { showQuickFilter: true } }}
+      />
+    </div>
+  ),
+}
+
+// Story 2: JSX renderCell + virtualized
+export const VirtualizedWithJSXCells: Story = {
+  name: "Virtualized — JSX renderCell",
+  render: () => (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        500 rows, <code className="bg-muted px-1 rounded font-mono text-xs">virtualized</code> enabled.
+        Cells render dynamic JSX: badges, tag lists, and a stacked name+email cell — all variable height.
+      </p>
+      <DataGrid
+        rows={dynamicRows}
+        columns={[
+          { field: "id", headerName: "ID", width: 60 },
+          {
+            field: "name",
+            headerName: "Employee",
+            flex: 1,
+            minWidth: 180,
+            renderCell: ({ row }) => (
+              <div className="py-1.5">
+                <div className="font-medium text-foreground">{row.name}</div>
+                <div className="text-muted-foreground text-[11px]">{row.email}</div>
+              </div>
+            ),
+          },
+          { field: "department", headerName: "Dept", width: 110 },
+          {
+            field: "status",
+            headerName: "Status",
+            width: 100,
+            renderCell: ({ value }) => (
+              <Badge variant={statusVariant[value]}>{value}</Badge>
+            ),
+          },
+          {
+            field: "score",
+            headerName: "Score",
+            width: 90,
+            renderCell: ({ value }) => (
+              <div className="w-full py-1">
+                <div className="flex justify-between text-[11px] mb-0.5">
+                  <span>{value}%</span>
+                </div>
+                <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-accent"
+                    style={{ width: `${value}%` }}
+                  />
+                </div>
+              </div>
+            ),
+          },
+          {
+            field: "tags",
+            headerName: "Tags",
+            flex: 1,
+            minWidth: 160,
+            renderCell: ({ value }: { value: string[] }) => (
+              <div className="flex flex-wrap gap-1 py-1.5">
+                {value.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center rounded-full border border-border px-2 py-0.5 text-[11px] font-medium text-foreground"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            ),
+          },
+        ] satisfies GridColDef<DynamicRow>[]}
+        getRowId={(row) => row.id}
+        virtualized
+        height={500}
+        toolBar
+        title="Employees (JSX cells + virtualized)"
+        slotProps={{ toolbar: { showQuickFilter: true } }}
+      />
+    </div>
+  ),
+}
+
+// Story 3: mixed — some fixed, some wrapText, some JSX, all virtualized
+export const VirtualizedMixedContent: Story = {
+  name: "Virtualized — mixed content",
+  render: () => (
+    <div className="space-y-3">
+      <p className="text-sm text-muted-foreground">
+        500 rows, <code className="bg-muted px-1 rounded font-mono text-xs">virtualized</code> enabled.
+        Mix of fixed-height columns, a <code className="bg-muted px-1 rounded font-mono text-xs">wrapText</code> description,
+        and JSX tag chips — all in one grid. Each row can be a different height.
+      </p>
+      <DataGrid
+        rows={dynamicRows}
+        columns={[
+          { field: "id", headerName: "ID", width: 60 },
+          {
+            field: "name",
+            headerName: "Employee",
+            width: 170,
+            renderCell: ({ row }) => (
+              <div className="py-1">
+                <div className="font-medium">{row.name}</div>
+                <div className="text-muted-foreground text-[11px]">{row.role}</div>
+              </div>
+            ),
+          },
+          { field: "department", headerName: "Dept", width: 110 },
+          {
+            field: "status",
+            headerName: "Status",
+            width: 90,
+            renderCell: ({ value }) => (
+              <Badge variant={statusVariant[value]}>{value}</Badge>
+            ),
+          },
+          {
+            field: "tags",
+            headerName: "Skills",
+            width: 200,
+            renderCell: ({ value }: { value: string[] }) => (
+              <div className="flex flex-wrap gap-1 py-1.5">
+                {value.map((tag) => (
+                  <span
+                    key={tag}
+                    className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-[11px] font-medium"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+            ),
+          },
+          {
+            field: "description",
+            headerName: "Notes",
+            flex: 1,
+            minWidth: 200,
+            wrapText: true,
+          },
+        ] satisfies GridColDef<DynamicRow>[]}
+        getRowId={(row) => row.id}
+        virtualized
+        overscan={8}
+        height={500}
+        density="standard"
+        toolBar
+        title="Mixed content (virtualized)"
+        slotProps={{ toolbar: { showQuickFilter: true } }}
+      />
+    </div>
+  ),
+}
+
+// ─── Responsive toolbar & pagination story ────────────────────────────────────
+
+export const ResponsiveNarrowWidth: Story = {
+  name: "Responsive — narrow widths",
+  render: () => {
+    const cols: GridColDef<DynamicRow>[] = [
+      { field: "id", headerName: "ID", width: 60 },
+      { field: "name", headerName: "Name", width: 140 },
+      { field: "department", headerName: "Dept", width: 110 },
+      { field: "role", headerName: "Role", width: 90 },
+      {
+        field: "status",
+        headerName: "Status",
+        width: 100,
+        renderCell: ({ value }) => (
+          <Badge variant={statusVariant[value]}>{value}</Badge>
+        ),
+      },
+      { field: "score", headerName: "Score", width: 70, align: "right", headerAlign: "right" },
+      { field: "joinDate", headerName: "Joined", width: 100 },
+    ]
+
+    return (
+      <div className="space-y-10">
+        <p className="text-sm text-muted-foreground">
+          The same DataGrid at 300 px, 420 px, and 600 px. The table scrolls horizontally
+          as expected. Toolbar and pagination wrap instead of overflowing.
+        </p>
+
+        {([300, 420, 600] as const).map((w) => (
+          <div key={w} className="space-y-1">
+            <p className="text-xs font-mono text-muted-foreground">{w}px</p>
+            <div style={{ width: w }}>
+              <DataGrid
+                rows={dynamicRows.slice(0, 50)}
+                columns={cols}
+                getRowId={(row) => row.id}
+                height={340}
+                toolBar
+                title="Employees"
+                slotProps={{ toolbar: { showQuickFilter: true } }}
+                pageSizeOptions={[5, 10, 25]}
+                paginationModel={{ page: 0, pageSize: 5 }}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
+    )
+  },
+}

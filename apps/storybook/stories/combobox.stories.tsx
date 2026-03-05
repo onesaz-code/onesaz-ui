@@ -721,3 +721,52 @@ export const MultiSelectWithAdornments: Story = {
     )
   },
 }
+
+// ─── Long label story — verifies text stays left-aligned when wrapping ────────
+
+const longLabelOptions = [
+  { value: '1', label: 'Short label' },
+  { value: '2', label: 'A medium length option that fits on one line' },
+  { value: '3', label: 'This is a significantly longer label that will wrap across multiple lines inside the dropdown menu and should remain left-aligned throughout' },
+  { value: '4', label: 'Another short one' },
+  { value: '5', label: 'Yet another long option label that forces wrapping — the text must start from the left on every wrapped line without centering' },
+  { value: '6', label: 'Brief' },
+  { value: '7', label: 'Medium option label that may or may not wrap depending on the container width' },
+]
+
+export const LongLabels: Story = {
+  name: 'Long labels (wrap alignment)',
+  render: function LongLabels() {
+    const [single, setSingle] = React.useState<typeof longLabelOptions[number] | null>(null)
+    const [multi, setMulti] = React.useState<typeof longLabelOptions[number][]>([])
+
+    return (
+      <div className="flex flex-col gap-6 w-[320px]">
+        <p className="text-xs text-muted-foreground">
+          Labels that wrap to multiple lines must remain left-aligned — not centered.
+        </p>
+
+        <div className="grid gap-1.5">
+          <Label>Single select</Label>
+          <Combobox
+            options={longLabelOptions}
+            value={single}
+            onChange={setSingle}
+            placeholder="Pick an option..."
+          />
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Multi select</Label>
+          <Combobox
+            multiple
+            options={longLabelOptions}
+            value={multi}
+            onChange={setMulti}
+            placeholder="Pick options..."
+          />
+        </div>
+      </div>
+    )
+  },
+}

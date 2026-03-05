@@ -26,7 +26,7 @@ export {
 } from './components/typography'
 
 // Form Components
-export { Button, IconButton, type ButtonProps, type IconButtonProps } from './components/button'
+export { Button, IconButton, ButtonGroup, type ButtonProps, type IconButtonProps, type ButtonGroupProps } from './components/button'
 export { Input, type InputProps } from './components/input'
 export { InputAdornment, type InputAdornmentProps } from './components/input-adornment'
 export { Textarea, type TextareaProps } from './components/textarea'
@@ -279,6 +279,12 @@ export {
 } from './components/charts'
 
 // Navigation
+export {
+  BottomNavigation,
+  BottomNavigationAction,
+  type BottomNavigationProps,
+  type BottomNavigationActionProps,
+} from './components/bottom-navigation'
 export {
   Breadcrumbs,
   BreadcrumbItem,
