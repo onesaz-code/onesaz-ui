@@ -589,34 +589,22 @@ const DataGridPagination = ({
   const pageSize = table.getState().pagination.pageSize
 
   // Generate page numbers to display.
-  // Max 3 visible page numbers (current ± 1) so the nav row stays compact at narrow widths.
-  const getPageNumbers = () => {
+  // maxVisible=5 on desktop, 3 on narrow — caller passes the value.
+  const getPageNumbers = (maxVisible: number) => {
     const pages: (number | 'ellipsis')[] = []
-    const maxVisible = 3
 
     if (pageCount <= maxVisible) {
       for (let i = 0; i < pageCount; i++) pages.push(i)
     } else {
-      // Always show first page
+      const half = Math.floor(maxVisible / 2)
+      const start = Math.max(1, currentPage - half)
+      const end = Math.min(pageCount - 2, currentPage + half)
+
       pages.push(0)
-
-      if (currentPage > 1) {
-        pages.push('ellipsis')
-      }
-
-      // Show only current page (flanked by first/last which are always shown)
-      if (currentPage !== 0 && currentPage !== pageCount - 1) {
-        pages.push(currentPage)
-      }
-
-      if (currentPage < pageCount - 2) {
-        pages.push('ellipsis')
-      }
-
-      // Always show last page
-      if (!pages.includes(pageCount - 1)) {
-        pages.push(pageCount - 1)
-      }
+      if (start > 1) pages.push('ellipsis')
+      for (let i = start; i <= end; i++) pages.push(i)
+      if (end < pageCount - 2) pages.push('ellipsis')
+      pages.push(pageCount - 1)
     }
 
     return pages
@@ -625,113 +613,90 @@ const DataGridPagination = ({
   const startRow = currentPage * pageSize + 1
   const endRow = Math.min((currentPage + 1) * pageSize, totalRows)
 
-  return (
-    <div className="flex flex-col gap-1 px-4 py-2 border-t border-border bg-background">
-      {/* Row 1: rows-per-page + count info */}
-      <div className="flex items-center justify-end gap-4 flex-wrap">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
-          <span>Rows per page:</span>
-          <select
-            value={pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+  const renderPageNumbers = (maxVisible: number) =>
+    getPageNumbers(maxVisible).map((page, idx) =>
+      page === 'ellipsis' ? (
+        <PaginationItem key={`ellipsis-${idx}`}>
+          <PaginationEllipsis />
+        </PaginationItem>
+      ) : (
+        <PaginationItem key={page}>
+          <PaginationLink
+            isActive={page === currentPage}
+            onClick={() => table.setPageIndex(page)}
           >
-            {pageSizeOptions.map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-        </div>
-        <span className="text-xs text-muted-foreground whitespace-nowrap">
-          {startRow}–{endRow} of {totalRows}
-        </span>
+            {page + 1}
+          </PaginationLink>
+        </PaginationItem>
+      )
+    )
+
+  const infoSection = (
+    <div className="flex items-center gap-4 flex-wrap">
+      <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
+        <span>Rows per page:</span>
+        <select
+          value={pageSize}
+          onChange={(e) => table.setPageSize(Number(e.target.value))}
+          className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        >
+          {pageSizeOptions.map((size) => (
+            <option key={size} value={size}>
+              {size}
+            </option>
+          ))}
+        </select>
       </div>
+      <span className="text-xs text-muted-foreground whitespace-nowrap">
+        {startRow}–{endRow} of {totalRows}
+      </span>
+    </div>
+  )
 
-      {/* Row 2: page navigation */}
-      <div className="flex items-center justify-end">
-        <Pagination className="mx-0 w-auto">
-          <PaginationContent>
-            {/* First page */}
-            <PaginationItem>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => table.setPageIndex(0)}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
-                </svg>
-              </Button>
-            </PaginationItem>
+  const navSection = (maxVisible: number) => (
+    <Pagination className="mx-0 w-auto">
+      <PaginationContent>
+        <PaginationItem>
+          <Button variant="outline" size="icon" className="h-8 w-8"
+            onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
+            </svg>
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <Button variant="outline" size="icon" className="h-8 w-8"
+            onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          </Button>
+        </PaginationItem>
+        {renderPageNumbers(maxVisible)}
+        <PaginationItem>
+          <Button variant="outline" size="icon" className="h-8 w-8"
+            onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </Button>
+        </PaginationItem>
+        <PaginationItem>
+          <Button variant="outline" size="icon" className="h-8 w-8"
+            onClick={() => table.setPageIndex(pageCount - 1)} disabled={!table.getCanNextPage()}>
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />
+            </svg>
+          </Button>
+        </PaginationItem>
+      </PaginationContent>
+    </Pagination>
+  )
 
-            {/* Previous page */}
-            <PaginationItem>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-              >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M15 18l-6-6 6-6" />
-                </svg>
-              </Button>
-            </PaginationItem>
-
-            {/* Page numbers — max 3 visible (current ± 1) to stay compact at all widths */}
-            {getPageNumbers().map((page, idx) =>
-              page === 'ellipsis' ? (
-                <PaginationItem key={`ellipsis-${idx}`}>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              ) : (
-                <PaginationItem key={page}>
-                  <PaginationLink
-                    isActive={page === currentPage}
-                    onClick={() => table.setPageIndex(page)}
-                  >
-                    {page + 1}
-                  </PaginationLink>
-                </PaginationItem>
-              )
-            )}
-
-            {/* Next page */}
-            <PaginationItem>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-              >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 18l6-6-6-6" />
-                </svg>
-              </Button>
-            </PaginationItem>
-
-            {/* Last page */}
-            <PaginationItem>
-              <Button
-                variant="outline"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => table.setPageIndex(pageCount - 1)}
-                disabled={!table.getCanNextPage()}
-              >
-                <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />
-                </svg>
-              </Button>
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 border-t border-border bg-background">
+      {infoSection}
+      <div className="ml-auto">{navSection(5)}</div>
     </div>
   )
 }
@@ -2066,6 +2031,7 @@ export function DataGrid<TData extends Record<string, any>>({
                   return (
                     <th
                       key={header.id}
+                      title={meta?.headerName}
                       className={cn(
                         'px-4 text-left text-xs font-medium text-muted-foreground border-b border-border bg-muted overflow-hidden relative',
                         showColumnVerticalBorder && 'border-r last:border-r-0',
@@ -2090,14 +2056,16 @@ export function DataGrid<TData extends Record<string, any>>({
                       }}
                       onClick={header.column.getToggleSortingHandler()}
                     >
-                      <div className={cn(
-                        'flex items-center gap-1 truncate',
-                        align === 'center' && 'justify-center',
-                        align === 'right' && 'justify-end'
-                      )}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
+                      <div className="flex items-center gap-1 min-w-0">
+                        <div className={cn(
+                          'flex-1 truncate min-w-0',
+                          align === 'center' && 'text-center',
+                          align === 'right' && 'text-right',
+                        )}>
+                          {header.isPlaceholder
+                            ? null
+                            : flexRender(header.column.columnDef.header, header.getContext())}
+                        </div>
                         {header.column.getCanSort() && (
                           <SortIcon direction={header.column.getIsSorted()} />
                         )}

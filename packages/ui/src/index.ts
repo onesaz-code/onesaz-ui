@@ -251,6 +251,18 @@ export {
   type VirtualListProps,
 } from './components/list'
 
+// Data List
+export {
+  DataList,
+  DataListItem,
+  DataListLabel,
+  DataListValue,
+  type DataListProps,
+  type DataListItemProps,
+  type DataListLabelProps,
+  type DataListValueProps,
+} from './components/data-list'
+
 // Charts
 export {
   BarChart,
