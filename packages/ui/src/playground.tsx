@@ -271,9 +271,10 @@ const PlaygroundContent = () => {
         <Section title="Badge">
           <div className="flex flex-wrap gap-4">
             <Badge>Default</Badge>
-            <Badge variant="secondary">Secondary</Badge>
-            <Badge variant="destructive">Destructive</Badge>
-            <Badge variant="outline">Outline</Badge>
+            <Badge color="success">Success</Badge>
+            <Badge color="warning">Warning</Badge>
+            <Badge color="error" variant="outlined">Error</Badge>
+            <Badge color="destructive" variant="text">Destructive</Badge>
           </div>
         </Section>
 
@@ -385,19 +386,19 @@ const PlaygroundContent = () => {
             <TableBody>
               <TableRow>
                 <TableCell>INV001</TableCell>
-                <TableCell><Badge>Paid</Badge></TableCell>
+                <TableCell><Badge color="success">Paid</Badge></TableCell>
                 <TableCell>Credit Card</TableCell>
                 <TableCell className="text-right">$250.00</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>INV002</TableCell>
-                <TableCell><Badge variant="secondary">Pending</Badge></TableCell>
+                <TableCell><Badge color="warning" variant="outlined">Pending</Badge></TableCell>
                 <TableCell>PayPal</TableCell>
                 <TableCell className="text-right">$150.00</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>INV003</TableCell>
-                <TableCell><Badge variant="destructive">Failed</Badge></TableCell>
+                <TableCell><Badge color="error" variant="outlined">Failed</Badge></TableCell>
                 <TableCell>Bank Transfer</TableCell>
                 <TableCell className="text-right">$350.00</TableCell>
               </TableRow>

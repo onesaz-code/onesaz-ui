@@ -171,9 +171,14 @@ const IconRail = React.forwardRef<HTMLDivElement, IconRailProps>(
         <div
           className={cn(
             'flex flex-col bg-card border-r border-border h-full',
-            'transition-[width] duration-200',
-            overlayRail && isExpanded
-              ? 'absolute left-0 top-0 z-30 w-[var(--rail-expanded-width)] shadow-lg'
+            'transition-[width,box-shadow] duration-200',
+            overlayRail && expandableRail
+              ? cn(
+                  'absolute left-0 top-0 z-30',
+                  isExpanded
+                    ? 'w-[var(--rail-expanded-width)] shadow-lg'
+                    : 'w-[var(--rail-width)] shadow-none'
+                )
               : 'w-full',
             className
           )}

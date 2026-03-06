@@ -49,20 +49,20 @@ const variantStyles = {
     border: '',
   },
   destructive: {
-    icon: 'text-red-500',
-    border: 'border-l-4 border-l-red-500',
+    icon: 'text-error-500',
+    border: 'border-l-4 border-l-error-500',
   },
   success: {
-    icon: 'text-green-500',
-    border: 'border-l-4 border-l-green-500',
+    icon: 'text-success-500',
+    border: 'border-l-4 border-l-success-500',
   },
   warning: {
-    icon: 'text-yellow-500',
-    border: 'border-l-4 border-l-yellow-500',
+    icon: 'text-warning-500',
+    border: 'border-l-4 border-l-warning-500',
   },
   info: {
-    icon: 'text-blue-500',
-    border: 'border-l-4 border-l-blue-500',
+    icon: 'text-info-500',
+    border: 'border-l-4 border-l-info-500',
   },
 }
 

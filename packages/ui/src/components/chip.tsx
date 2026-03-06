@@ -1,142 +1,228 @@
 import * as React from 'react'
 import { cn } from '../utils/cn'
 
-export interface ChipProps extends React.HTMLAttributes<HTMLDivElement> {
+// ============================================================================
+// Types
+// ============================================================================
+
+export type ChipColor   = 'default' | 'success' | 'warning' | 'error' | 'destructive'
+export type ChipVariant = 'filled' | 'outlined'
+export type ChipSize    = 'small' | 'medium'
+
+export interface ChipProps extends React.HTMLAttributes<HTMLElement> {
   /** The text content of the chip */
   label?: string
   /** Visual style variant */
-  variant?: 'filled' | 'outlined'
+  variant?: ChipVariant
   /** Color scheme */
-  color?:
-    | 'default'
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'warning'
-    | 'error'
-    | 'info'
+  color?: ChipColor
   /** Size of the chip */
-  size?: 'small' | 'medium'
+  size?: ChipSize
   /** Icon element displayed before the label */
   icon?: React.ReactNode
   /** Avatar element displayed before the label */
   avatar?: React.ReactNode
-  /** If provided, renders a delete icon and calls this on click */
-  onDelete?: (event: React.MouseEvent) => void
+  /** If provided, renders a delete icon and calls this on click.
+   *  Also triggered by pressing Delete or Backspace when the chip is focused. */
+  onDelete?: (event: React.SyntheticEvent) => void
   /** Custom delete icon */
   deleteIcon?: React.ReactNode
-  /** Whether the chip is clickable */
+  /** Makes the chip act as a button (adds role, cursor, keyboard support) */
   clickable?: boolean
   /** Whether the chip is disabled */
   disabled?: boolean
+  /** Render as a link chip — sets the underlying element to <a> */
+  href?: string
+  /** HTML element or React component to render as. Overrides href-based inference. */
+  component?: React.ElementType
 }
 
-const filledColorClasses: Record<string, string> = {
-  default: 'bg-muted text-foreground',
-  primary: 'bg-accent text-accent-foreground',
-  secondary: 'bg-muted text-muted-foreground',
-  success: 'bg-green-100 text-green-800',
-  warning: 'bg-yellow-100 text-yellow-800',
-  error: 'bg-red-100 text-red-800',
-  info: 'bg-blue-100 text-blue-800',
+// ============================================================================
+// Color maps
+// ============================================================================
+
+const filledClasses: Record<ChipColor, string> = {
+  default:     'bg-accent text-accent-foreground',
+  success:     'bg-success-500 text-white dark:bg-success-600',
+  warning:     'bg-warning-500 text-white dark:bg-warning-600',
+  error:       'bg-error-500 text-white dark:bg-error-600',
+  destructive: 'bg-destructive text-destructive-foreground',
 }
 
-const outlinedColorClasses: Record<string, string> = {
-  default: 'border-border text-foreground',
-  primary: 'border-accent text-accent',
-  secondary: 'border-muted-foreground text-muted-foreground',
-  success: 'border-green-500 text-green-700',
-  warning: 'border-yellow-500 text-yellow-700',
-  error: 'border-red-500 text-red-700',
-  info: 'border-blue-500 text-blue-700',
+const filledHoverClasses: Record<ChipColor, string> = {
+  default:     'hover:bg-accent-hover',
+  success:     'hover:bg-success-600 dark:hover:bg-success-500',
+  warning:     'hover:bg-warning-600 dark:hover:bg-warning-500',
+  error:       'hover:bg-error-600 dark:hover:bg-error-500',
+  destructive: 'hover:bg-destructive/90',
 }
 
-const sizeClasses: Record<string, string> = {
-  small: 'h-6 text-xs px-2',
-  medium: 'h-8 text-sm px-3',
+const outlinedClasses: Record<ChipColor, string> = {
+  default:     'border-accent text-accent',
+  success:     'border-success-500 text-success-600 dark:border-success-400 dark:text-success-400',
+  warning:     'border-warning-500 text-warning-600 dark:border-warning-400 dark:text-warning-400',
+  error:       'border-error-500 text-error-600 dark:border-error-400 dark:text-error-400',
+  destructive: 'border-destructive text-destructive',
 }
 
-const Chip = React.forwardRef<HTMLDivElement, ChipProps>(
+const outlinedHoverClasses: Record<ChipColor, string> = {
+  default:     'hover:bg-accent/10',
+  success:     'hover:bg-success-500/10',
+  warning:     'hover:bg-warning-500/10',
+  error:       'hover:bg-error-500/10',
+  destructive: 'hover:bg-destructive/10',
+}
+
+// ============================================================================
+// Size maps
+// ============================================================================
+
+const sizeClasses: Record<ChipSize, string> = {
+  small:  'h-6 text-xs px-2 gap-1',
+  medium: 'h-8 text-sm px-3 gap-1.5',
+}
+
+const iconSizeClasses: Record<ChipSize, string> = {
+  small:  '[&>svg]:h-3 [&>svg]:w-3',
+  medium: '[&>svg]:h-4 [&>svg]:w-4',
+}
+
+const avatarSizeClasses: Record<ChipSize, string> = {
+  small:  '[&>*]:h-4 [&>*]:w-4',
+  medium: '[&>*]:h-5 [&>*]:w-5',
+}
+
+const deleteBtnSizeClasses: Record<ChipSize, string> = {
+  small:  'h-3.5 w-3.5',
+  medium: 'h-4 w-4',
+}
+
+// ============================================================================
+// Delete icon
+// ============================================================================
+
+const DefaultDeleteIcon = ({ size }: { size: ChipSize }) => (
+  <svg viewBox="0 0 20 20" fill="currentColor" className={deleteBtnSizeClasses[size]}>
+    <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
+  </svg>
+)
+
+// ============================================================================
+// Chip
+// ============================================================================
+
+const Chip = React.forwardRef<HTMLElement, ChipProps>(
   (
     {
       className,
       label,
-      variant = 'filled',
-      color = 'default',
-      size = 'medium',
+      variant  = 'filled',
+      color    = 'default',
+      size     = 'medium',
       icon,
       avatar,
       onDelete,
       deleteIcon,
       clickable = false,
-      disabled = false,
+      disabled  = false,
+      href,
+      component,
       children,
       onClick,
+      onKeyDown,
       ...props
     },
     ref
   ) => {
-    const isClickable = clickable || !!onClick
-    const content = label ?? children
+    const content    = label ?? children
+    const isClickable = clickable || !!onClick || !!href
+    const Component: React.ElementType = component ?? (href ? 'a' : 'div')
+
+    const colorClass  = variant === 'filled'
+      ? (filledClasses[color]   ?? filledClasses.default)
+      : (outlinedClasses[color] ?? outlinedClasses.default)
+
+    const hoverClass  = isClickable && !disabled
+      ? variant === 'filled'
+        ? (filledHoverClasses[color]   ?? filledHoverClasses.default)
+        : (outlinedHoverClasses[color] ?? outlinedHoverClasses.default)
+      : ''
+
+    // Keyboard: Enter/Space → click; Delete/Backspace → onDelete
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+      if (!disabled) {
+        if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          ;(e.currentTarget as HTMLElement).click()
+        }
+        if (onDelete && (e.key === 'Delete' || e.key === 'Backspace')) {
+          e.preventDefault()
+          onDelete(e)
+        }
+      }
+      onKeyDown?.(e as React.KeyboardEvent<HTMLElement>)
+    }
 
     return (
-      <div
+      <Component
         ref={ref}
+        href={href}
         role={isClickable ? 'button' : undefined}
-        tabIndex={isClickable && !disabled ? 0 : undefined}
+        tabIndex={isClickable && !disabled ? 0 : onDelete && !disabled ? 0 : undefined}
+        aria-disabled={disabled || undefined}
         onClick={disabled ? undefined : onClick}
+        onKeyDown={handleKeyDown}
         className={cn(
-          'inline-flex items-center rounded-full font-medium transition-colors',
-          'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-1',
+          'inline-flex items-center rounded-full font-medium transition-colors select-none',
+          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
           sizeClasses[size],
-          variant === 'filled'
-            ? filledColorClasses[color]
-            : cn('border bg-transparent', outlinedColorClasses[color]),
-          isClickable && !disabled && 'cursor-pointer hover:opacity-80',
+          variant === 'outlined' && 'border bg-transparent',
+          colorClass,
+          hoverClass,
+          isClickable && !disabled ? 'cursor-pointer' : 'cursor-default',
           disabled && 'pointer-events-none opacity-50',
           className
         )}
         {...props}
       >
+        {/* Avatar */}
         {avatar && (
-          <span className="mr-1 -ml-1 flex items-center justify-center [&>*]:h-5 [&>*]:w-5 [&>*]:rounded-full">
+          <span className={cn('-ml-1 flex shrink-0 items-center justify-center [&>*]:rounded-full', avatarSizeClasses[size])}>
             {avatar}
           </span>
         )}
+
+        {/* Icon */}
         {!avatar && icon && (
-          <span className="mr-1 -ml-0.5 flex items-center justify-center [&>svg]:h-4 [&>svg]:w-4">
+          <span className={cn('-ml-0.5 flex shrink-0 items-center justify-center', iconSizeClasses[size])}>
             {icon}
           </span>
         )}
+
+        {/* Label */}
         <span className="truncate">{content}</span>
+
+        {/* Delete button */}
         {onDelete && (
           <button
             type="button"
+            tabIndex={-1}
             onClick={(e) => {
               e.stopPropagation()
               if (!disabled) onDelete(e)
             }}
             className={cn(
-              'ml-1 -mr-1 flex items-center justify-center rounded-full',
-              'h-4 w-4 hover:bg-black/10 focus:outline-none',
+              '-mr-1 flex shrink-0 items-center justify-center rounded-full',
+              'opacity-60 hover:opacity-100 focus:outline-none transition-opacity',
               disabled && 'pointer-events-none'
             )}
             disabled={disabled}
             aria-label="Remove"
           >
-            {deleteIcon ?? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                className="h-3 w-3"
-              >
-                <path d="M6.28 5.22a.75.75 0 00-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 101.06 1.06L10 11.06l3.72 3.72a.75.75 0 101.06-1.06L11.06 10l3.72-3.72a.75.75 0 00-1.06-1.06L10 8.94 6.28 5.22z" />
-              </svg>
-            )}
+            {deleteIcon ?? <DefaultDeleteIcon size={size} />}
           </button>
         )}
-      </div>
+      </Component>
     )
   }
 )

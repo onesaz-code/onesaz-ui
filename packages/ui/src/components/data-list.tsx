@@ -109,10 +109,10 @@ const colorStyles: Record<DataListColor, string> = {
   default: 'text-foreground',
   muted: 'text-muted-foreground',
   primary: 'text-primary',
-  success: 'text-green-600 dark:text-green-400',
-  warning: 'text-yellow-600 dark:text-yellow-400',
-  error: 'text-destructive',
-  info: 'text-blue-600 dark:text-blue-400',
+  success: 'text-success-600 dark:text-success-400',
+  warning: 'text-warning-600 dark:text-warning-400',
+  error: 'text-error-600 dark:text-error-400',
+  info: 'text-info-600 dark:text-info-400',
 }
 
 export interface DataListLabelProps extends React.HTMLAttributes<HTMLElement> {

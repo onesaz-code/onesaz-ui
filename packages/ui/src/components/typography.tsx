@@ -95,10 +95,10 @@ const colorClasses: Record<TypographyColor, string> = {
   inherit: '',
   primary: 'text-accent',
   secondary: 'text-muted-foreground',
-  success: 'text-green-600 dark:text-green-400',
-  warning: 'text-orange-600 dark:text-orange-400',
-  error: 'text-destructive',
-  info: 'text-blue-600 dark:text-blue-400',
+  success: 'text-success-600 dark:text-success-400',
+  warning: 'text-warning-600 dark:text-warning-400',
+  error: 'text-error-600 dark:text-error-400',
+  info: 'text-info-600 dark:text-info-400',
   muted: 'text-muted-foreground',
   white: 'text-white',
   dark: 'text-foreground',
@@ -134,13 +134,13 @@ const verticalAlignClasses: Record<string, string> = {
 }
 
 const gradientClasses: Record<string, string> = {
-  primary: 'from-purple-5 to-purple-8',
-  secondary: 'from-slate-5 to-slate-8',
-  info: 'from-blue-4 to-blue-7',
-  success: 'from-green-4 to-green-7',
-  warning: 'from-orange-4 to-orange-7',
-  error: 'from-red-4 to-red-7',
-  dark: 'from-slate-7 to-slate-10',
+  primary: 'from-violet-400 to-violet-700',
+  secondary: 'from-slate-400 to-slate-700',
+  info: 'from-info-400 to-info-700',
+  success: 'from-success-400 to-success-700',
+  warning: 'from-warning-400 to-warning-700',
+  error: 'from-error-400 to-error-700',
+  dark: 'from-slate-600 to-slate-900',
 }
 
 const Typography = React.forwardRef<HTMLElement, TypographyProps>(

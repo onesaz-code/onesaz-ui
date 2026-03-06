@@ -1,41 +1,53 @@
 import * as React from 'react'
 import { cn } from '../utils/cn'
 
+export type BadgeColor = 'default' | 'success' | 'warning' | 'error' | 'destructive'
+export type BadgeVariant = 'contained' | 'outlined' | 'text'
+
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
-  variant?
-    : 'default'
-    | 'secondary'
-    | 'destructive'
-    | 'outline'
-    | 'success'
-    | 'warning'
-    | 'info'
+  color?: BadgeColor
+  variant?: BadgeVariant
+}
+
+const containedClasses: Record<BadgeColor, string> = {
+  default:     'bg-accent text-accent-foreground',
+  success:     'bg-success-500 text-white dark:bg-success-600',
+  warning:     'bg-warning-500 text-white dark:bg-warning-600',
+  error:       'bg-error-500 text-white dark:bg-error-600',
+  destructive: 'bg-destructive text-destructive-foreground',
+}
+
+const outlinedClasses: Record<BadgeColor, string> = {
+  default:     'border border-accent text-accent',
+  success:     'border border-success-500 text-success-600 dark:text-success-400',
+  warning:     'border border-warning-500 text-warning-600 dark:text-warning-400',
+  error:       'border border-error-500 text-error-600 dark:text-error-400',
+  destructive: 'border border-destructive text-destructive',
+}
+
+const textClasses: Record<BadgeColor, string> = {
+  default:     'text-accent',
+  success:     'text-success-600 dark:text-success-400',
+  warning:     'text-warning-600 dark:text-warning-400',
+  error:       'text-error-600 dark:text-error-400',
+  destructive: 'text-destructive',
+}
+
+const variantMap = {
+  contained: containedClasses,
+  outlined:  outlinedClasses,
+  text:      textClasses,
 }
 
 const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(
-  ({ className, variant = 'default', ...props }, ref) => {
+  ({ className, color = 'default', variant = 'contained', ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn(
           'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors',
           'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-          {
-            'border-transparent bg-accent text-accent-foreground':
-              variant === 'default',
-            'border-transparent bg-muted text-foreground':
-              variant === 'secondary',
-            'border-transparent bg-destructive text-destructive-foreground':
-              variant === 'destructive',
-            'border border-border text-foreground':
-              variant === 'outline',
-            'border border-green-300 bg-green-100 text-green-800':
-              variant === 'success',
-            'border border-yellow-300 bg-yellow-100 text-yellow-800':
-              variant === 'warning',
-            'border border-blue-300 bg-blue-100 text-blue-800':
-              variant === 'info',
-          },
+          (variantMap[variant] ?? variantMap.contained)[color] ?? '',
           className
         )}
         {...props}

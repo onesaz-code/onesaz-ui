@@ -24,6 +24,20 @@
   --color-purple-11: #4c1d95;
   --color-purple-12: #2e1065;
 
+  /* Violet — built around #6933d3 as step 6 (main interactive shade) */
+  --color-violet-1: #f8f5ff;
+  --color-violet-2: #ede5ff;
+  --color-violet-3: #d9ccff;
+  --color-violet-4: #bea8f5;
+  --color-violet-5: #9a6fe8;
+  --color-violet-6: #6933d3;
+  --color-violet-7: #5626b2;
+  --color-violet-8: #441e92;
+  --color-violet-9: #351970;
+  --color-violet-10: #281050;
+  --color-violet-11: #1b0a36;
+  --color-violet-12: #100623;
+
   /* Blue */
   --color-blue-1: #eff6ff;
   --color-blue-2: #dbeafe;
@@ -427,6 +441,18 @@
  * Usage: <html data-accent="blue"> or <div data-accent="blue">
  * ======================================== */
 @layer base {
+  /* Violet (Default) */
+  [data-accent="violet"] {
+    --accent: #6933d3;
+    --accent-hover: #5626b2;
+    --accent-foreground: #ffffff;
+    --ring: #6933d3;
+  }
+  [data-accent="violet"].dark, .dark [data-accent="violet"], [data-accent="violet"][data-theme="dark"] {
+    --accent: #9a6fe8;
+    --accent-hover: #6933d3;
+  }
+
   /* Purple (Onesaz Custom - Default) */
   [data-accent="purple"] {
     --accent: #6739b7;

@@ -27,11 +27,11 @@ const linearSizeClasses = {
 }
 
 const variantClasses = {
-  default: 'bg-primary-500',
-  success: 'bg-green-500',
-  warning: 'bg-yellow-500',
-  error: 'bg-red-500',
-  info: 'bg-blue-500',
+  default: 'bg-accent',
+  success: 'bg-success-500',
+  warning: 'bg-warning-500',
+  error: 'bg-error-500',
+  info: 'bg-info-500',
 }
 
 const LinearProgress = React.forwardRef<HTMLDivElement, LinearProgressProps>(
@@ -116,11 +116,11 @@ const circularSizeValues = {
 }
 
 const strokeColors = {
-  default: 'stroke-primary-500',
-  success: 'stroke-green-500',
-  warning: 'stroke-yellow-500',
-  error: 'stroke-red-500',
-  info: 'stroke-blue-500',
+  default: 'stroke-accent',
+  success: 'stroke-success-500',
+  warning: 'stroke-warning-500',
+  error: 'stroke-error-500',
+  info: 'stroke-info-500',
 }
 
 const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>(
