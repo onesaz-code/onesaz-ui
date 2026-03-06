@@ -732,6 +732,7 @@ const longLabelOptions = [
   { value: '5', label: 'Yet another long option label that forces wrapping — the text must start from the left on every wrapped line without centering' },
   { value: '6', label: 'Brief' },
   { value: '7', label: 'Medium option label that may or may not wrap depending on the container width' },
+  { value: '8', label: 'Mediuwerthyjhgfedwefghkjhgrfefeghjghtgrfsdmkytwefkuytreefkiu54refhjytuytrejuty' },
 ]
 
 export const LongLabels: Story = {

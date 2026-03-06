@@ -333,6 +333,19 @@ export {
 } from './components/dropdown-menu'
 
 // Overlays
+export { Backdrop, type BackdropProps } from './components/backdrop'
+export {
+  Snackbar,
+  SnackbarContent,
+  SnackbarProvider,
+  useSnackbar,
+  type SnackbarProps,
+  type SnackbarContentProps,
+  type SnackbarProviderProps,
+  type SnackbarOrigin,
+  type SnackbarCloseReason,
+  type EnqueueOptions,
+} from './components/snackbar'
 export {
   Drawer,
   DrawerTrigger,

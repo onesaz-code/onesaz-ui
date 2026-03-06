@@ -33,19 +33,19 @@ const variantConfig: Record<
     iconColor: 'text-accent',
   },
   success: {
-    root: 'bg-success-500/10',
+    root: 'bg-success-50',
     strip: 'bg-success-500',
-    iconColor: 'text-success-600 dark:text-success-500',
+    iconColor: 'text-success-600',
   },
   warning: {
-    root: 'bg-warning-500/10',
+    root: 'bg-warning-50',
     strip: 'bg-warning-500',
-    iconColor: 'text-warning-600 dark:text-warning-500',
+    iconColor: 'text-warning-600',
   },
   error: {
-    root: 'bg-error-500/10',
+    root: 'bg-error-50',
     strip: 'bg-error-500',
-    iconColor: 'text-error-600 dark:text-error-500',
+    iconColor: 'text-error-600',
   },
 }
 
