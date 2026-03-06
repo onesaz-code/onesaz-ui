@@ -1,6 +1,6 @@
 {
   "name": "@onesaz/tailwind-config",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Tailwind CSS preset for Onesaz UI - shared configuration with design tokens (supports v3 and v4)",
   "type": "module",
   "license": "MIT",

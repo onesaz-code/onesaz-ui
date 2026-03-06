@@ -13,7 +13,7 @@ export interface ThemeConfig {
 
 export const defaultThemeConfig: ThemeConfig = {
   theme: 'light',
-  accentColor: 'purple',
+  accentColor: 'violet',
   grayColor: 'slate',
   radius: 'medium',
 }

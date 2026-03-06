@@ -16,6 +16,7 @@ const config: Partial<Config> = {
       colors: {
         // Accent color palettes
         purple: accentColors.purple,
+        violet: accentColors.violet,
         blue: accentColors.blue,
         cyan: accentColors.cyan,
         teal: accentColors.teal,

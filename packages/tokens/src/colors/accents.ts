@@ -111,6 +111,21 @@ export const accentColors = {
     11: '#500724',
     12: '#2e0515',
   },
+  // Violet — built around #6933d3 as step 6 (main interactive shade)
+  violet: {
+    1: '#f8f5ff',
+    2: '#ede5ff',
+    3: '#d9ccff',
+    4: '#bea8f5',
+    5: '#9a6fe8',
+    6: '#6933d3',
+    7: '#5626b2',
+    8: '#441e92',
+    9: '#351970',
+    10: '#281050',
+    11: '#1b0a36',
+    12: '#100623',
+  },
 } as const
 
 export type AccentColor = keyof typeof accentColors

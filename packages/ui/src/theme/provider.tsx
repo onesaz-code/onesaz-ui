@@ -29,7 +29,7 @@ function getSystemTheme(): 'light' | 'dark' {
 export function ThemeProvider({
   children,
   defaultTheme = 'system',
-  accentColor: defaultAccent = 'purple',
+  accentColor: defaultAccent = 'violet',
   grayColor: defaultGray = 'slate',
   radius: defaultRadius = 'medium',
   storageKey = 'onesaz-theme',

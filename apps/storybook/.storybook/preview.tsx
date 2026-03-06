@@ -47,10 +47,11 @@ const preview: Preview = {
     accentColor: {
       name: 'Accent Color',
       description: 'Primary accent color',
-      defaultValue: 'purple',
+      defaultValue: 'violet',
       toolbar: {
         icon: 'paintbrush',
         items: [
+          { value: 'violet', title: 'Violet' },
           { value: 'purple', title: 'Purple' },
           { value: 'blue', title: 'Blue' },
           { value: 'cyan', title: 'Cyan' },
