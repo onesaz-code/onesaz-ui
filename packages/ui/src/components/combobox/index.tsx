@@ -190,7 +190,7 @@ function OptionItem({
           )
         )}
       </span>
-      {option.label}
+      <span className="break-all">{option.label}</span>
     </button>
   )
 }
@@ -428,11 +428,13 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           disabled={disabled}
           onClick={() => setOpen(!open)}
           className={cn(
-            'flex min-h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm text-left',
+            'flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-left',
             'ring-offset-background',
             'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
             'disabled:cursor-not-allowed disabled:opacity-50',
-            isMultiple && selectedOptions.length > 0 && 'h-auto',
+            (isMultiple && selectedOptions.length > 0) || (!isMultiple && singleValue) 
+              ? 'h-auto items-start justify-between' 
+              : 'items-center justify-between',
             className
           )}
         >
@@ -454,7 +456,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                       key={getOptionValue(option)}
                       className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
                     >
-                      {getOptionLabel(option)}
+                      <span className="break-all">{getOptionLabel(option)}</span>
                       <button
                         type="button"
                         onClick={(e) => handleRemoveItem(getOptionValue(option), e)}
@@ -485,12 +487,12 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
               )}
             </div>
           ) : (
-            <span className={cn('flex-1', !singleValue && 'text-muted-foreground')}>
+            <span className={cn('flex-1 break-all', !singleValue && 'text-muted-foreground')}>
               {singleValue ? getOptionLabel(singleValue) : placeholder}
             </span>
           )}
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 shrink-0">
             {/* Clear all button for multi-select */}
             {isMultiple && selectedOptions.length > 0 && (
               <button
