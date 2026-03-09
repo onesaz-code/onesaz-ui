@@ -76,7 +76,7 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
             'peer-focus-visible:ring-2 peer-focus-visible:ring-ring peer-focus-visible:ring-offset-2 peer-focus-visible:ring-offset-background peer-focus-visible:outline-none',
             active
               ? 'bg-accent border-accent text-accent-foreground'
-              : 'bg-background border-border text-transparent'
+              : 'bg-background border-muted-foreground text-transparent'
           )}
         >
           {indeterminate ? (

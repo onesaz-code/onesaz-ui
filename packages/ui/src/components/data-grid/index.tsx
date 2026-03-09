@@ -926,18 +926,18 @@ const DataGridToolbar = ({
   moreOptions?: { label: string; onClick: () => void; icon?: React.ReactNode }[]
 }) => {
   return (
-    <div className="flex flex-wrap items-center gap-2 px-4 py-3 border-b border-border bg-background">
+    <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-background">
       {title && (
         <h3 className="text-sm font-semibold text-foreground shrink-0">{title}</h3>
       )}
-      {/* Controls — pushed right, wrap internally when narrow */}
-      <div className="flex flex-wrap items-center gap-2 ml-auto">
+      {/* Controls — pushed right */}
+      <div className="flex items-center gap-2 ml-auto">
         {showQuickFilter && (
           <Input
             placeholder="Search..."
             value={globalFilter ?? ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
-            className="h-9 min-w-[120px] flex-1"
+            className="h-9 w-[200px]"
             endAdornment={
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
                 <circle cx="11" cy="11" r="8" />
