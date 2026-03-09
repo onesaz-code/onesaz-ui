@@ -17,6 +17,10 @@ const meta: Meta<typeof ButtonGroup> = {
       control: 'select',
       options: ['default', 'sm', 'lg'],
     },
+    color: {
+      control: 'select',
+      options: ['default', 'success', 'warning', 'error', 'destructive'],
+    },
     orientation: {
       control: 'select',
       options: ['horizontal', 'vertical'],
@@ -151,17 +155,23 @@ export const WithIcons: Story = {
   render: () => (
     <div className="flex flex-col gap-4 items-start">
       <ButtonGroup variant="outline">
-        <Button>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
+        <Button
+          startIcon={
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 18l-6-6 6-6" />
+            </svg>
+          }
+        >
           Prev
         </Button>
-        <Button>
+        <Button
+          endIcon={
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          }
+        >
           Next
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M9 18l6-6-6-6" />
-          </svg>
         </Button>
       </ButtonGroup>
 
@@ -178,5 +188,68 @@ export const WithIcons: Story = {
         </Button>
       </ButtonGroup>
     </div>
+  ),
+}
+
+// ── Color prop ─────────────────────────────────────────────────────────────
+
+export const Colors: Story = {
+  render: () => (
+    <div className="flex flex-col gap-4 items-start">
+      <ButtonGroup color="success">
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+      <ButtonGroup color="warning">
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+      <ButtonGroup color="error">
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+      <ButtonGroup color="destructive">
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+    </div>
+  ),
+}
+
+export const ColorsOutline: Story = {
+  name: 'Colors – Outline',
+  render: () => (
+    <div className="flex flex-col gap-4 items-start">
+      <ButtonGroup variant="outline" color="success">
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+      <ButtonGroup variant="outline" color="warning">
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+      <ButtonGroup variant="outline" color="error">
+        <Button>One</Button>
+        <Button>Two</Button>
+        <Button>Three</Button>
+      </ButtonGroup>
+    </div>
+  ),
+}
+
+export const ColorOverridePerButton: Story = {
+  name: 'Color – Per-button override',
+  render: () => (
+    <ButtonGroup variant="outline" color="success">
+      <Button>Inherited</Button>
+      <Button color="error">Override to Error</Button>
+      <Button>Inherited</Button>
+    </ButtonGroup>
   ),
 }

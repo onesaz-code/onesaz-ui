@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { cn } from '../utils/cn'
-import { Button } from './button'
+import { Button, ButtonProps } from './button'
 
 export interface PaginationProps extends React.HTMLAttributes<HTMLElement> {}
 
@@ -37,8 +37,7 @@ const PaginationItem = React.forwardRef<
 ))
 PaginationItem.displayName = 'PaginationItem'
 
-export interface PaginationLinkProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface PaginationLinkProps extends ButtonProps {
   isActive?: boolean
 }
 
@@ -57,7 +56,7 @@ PaginationLink.displayName = 'PaginationLink'
 
 const PaginationPrevious = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
+  ButtonProps
 >(({ className, ...props }, ref) => (
   <Button
     ref={ref}
@@ -87,7 +86,7 @@ PaginationPrevious.displayName = 'PaginationPrevious'
 
 const PaginationNext = React.forwardRef<
   HTMLButtonElement,
-  React.ButtonHTMLAttributes<HTMLButtonElement>
+  ButtonProps
 >(({ className, ...props }, ref) => (
   <Button
     ref={ref}

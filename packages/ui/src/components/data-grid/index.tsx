@@ -708,12 +708,14 @@ const ExportDropdown = ({
   columns,
   pinnedRows,
   fileName = 'data-export',
+  columnVisibility = {},
 }: {
   onExport?: (data: any[], columns: GridColDef[]) => void
   rows: any[]
   columns: GridColDef[]
   pinnedRows?: { top?: any[]; bottom?: any[] }
   fileName?: string
+  columnVisibility?: VisibilityState
 }) => {
   const [open, setOpen] = React.useState(false)
   const dropdownRef = React.useRef<HTMLDivElement>(null)
@@ -729,7 +731,12 @@ const ExportDropdown = ({
   }, [])
 
   const exportToCSV = () => {
-    const visibleColumns = columns.filter(col => !col.hide && !col.disableExport && !col.hideExport)
+    const visibleColumns = columns.filter(col =>
+      !col.disableExport &&
+      !col.hideExport &&
+      !col.hide &&
+      columnVisibility[col.field] !== false
+    )
     const headers = visibleColumns.map(col => col.headerName || col.field)
     const csvRows = [headers.join(',')]
 
@@ -898,6 +905,7 @@ const DataGridToolbar = ({
   onExport,
   exportFileName,
   pinnedRows,
+  columnVisibility,
   customButtons,
   moreOptions = [],
 }: {
@@ -913,6 +921,7 @@ const DataGridToolbar = ({
   onExport?: (data: any[], columns: GridColDef[]) => void
   exportFileName?: string
   pinnedRows?: { top?: any[]; bottom?: any[] }
+  columnVisibility?: VisibilityState
   customButtons?: React.ReactNode
   moreOptions?: { label: string; onClick: () => void; icon?: React.ReactNode }[]
 }) => {
@@ -929,6 +938,12 @@ const DataGridToolbar = ({
             value={globalFilter ?? ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
             className="h-9 min-w-[120px] flex-1"
+            endAdornment={
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-muted-foreground">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            }
           />
         )}
         {showColumnSelector && (
@@ -941,6 +956,7 @@ const DataGridToolbar = ({
             columns={columns}
             pinnedRows={pinnedRows}
             fileName={exportFileName}
+            columnVisibility={columnVisibility}
           />
         )}
         {customButtons}
@@ -1965,6 +1981,7 @@ export function DataGrid<TData extends Record<string, any>>({
           onExport={onExport}
           exportFileName={exportFileName}
           pinnedRows={pinnedRows}
+          columnVisibility={columnVisibility}
           customButtons={customButtons}
           moreOptions={moreOptions}
         />
