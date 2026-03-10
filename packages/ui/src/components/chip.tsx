@@ -137,13 +137,15 @@ const Chip = React.forwardRef<HTMLElement, ChipProps>(
     const content    = label ?? children
     const isClickable = clickable || !!onClick || !!href
     const Component: React.ElementType = component ?? (href ? 'a' : 'div')
+    const safeSize = (size in sizeClasses ? size : 'medium') as keyof typeof sizeClasses
+    const safeVariant = (variant === 'filled' || variant === 'outlined' ? variant : 'filled') as ChipVariant
 
-    const colorClass  = variant === 'filled'
+    const colorClass  = safeVariant === 'filled'
       ? (filledClasses[color]   ?? filledClasses.default)
       : (outlinedClasses[color] ?? outlinedClasses.default)
 
     const hoverClass  = isClickable && !disabled
-      ? variant === 'filled'
+      ? safeVariant === 'filled'
         ? (filledHoverClasses[color]   ?? filledHoverClasses.default)
         : (outlinedHoverClasses[color] ?? outlinedHoverClasses.default)
       : ''
@@ -175,8 +177,8 @@ const Chip = React.forwardRef<HTMLElement, ChipProps>(
         className={cn(
           'inline-flex items-center rounded-full font-medium transition-colors select-none',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
-          sizeClasses[size],
-          variant === 'outlined' && 'border bg-transparent',
+          sizeClasses[safeSize],
+          safeVariant === 'outlined' && 'border bg-transparent',
           colorClass,
           hoverClass,
           isClickable && !disabled ? 'cursor-pointer' : 'cursor-default',
@@ -187,14 +189,14 @@ const Chip = React.forwardRef<HTMLElement, ChipProps>(
       >
         {/* Avatar */}
         {avatar && (
-          <span className={cn('-ml-1 flex shrink-0 items-center justify-center [&>*]:rounded-full', avatarSizeClasses[size])}>
+          <span className={cn('-ml-1 flex shrink-0 items-center justify-center [&>*]:rounded-full', avatarSizeClasses[safeSize])}>
             {avatar}
           </span>
         )}
 
         {/* Icon */}
         {!avatar && icon && (
-          <span className={cn('-ml-0.5 flex shrink-0 items-center justify-center', iconSizeClasses[size])}>
+          <span className={cn('-ml-0.5 flex shrink-0 items-center justify-center', iconSizeClasses[safeSize])}>
             {icon}
           </span>
         )}
@@ -219,7 +221,7 @@ const Chip = React.forwardRef<HTMLElement, ChipProps>(
             disabled={disabled}
             aria-label="Remove"
           >
-            {deleteIcon ?? <DefaultDeleteIcon size={size} />}
+            {deleteIcon ?? <DefaultDeleteIcon size={safeSize} />}
           </button>
         )}
       </Component>

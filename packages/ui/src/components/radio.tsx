@@ -58,6 +58,7 @@ const RadioGroupItem = React.forwardRef<
 >(({ className, size: sizeProp, ...props }, ref) => {
   const { size: contextSize } = React.useContext(RadioGroupContext)
   const size = sizeProp || contextSize || 'md'
+  const safeSize = (size in sizeClasses ? size : 'md') as keyof typeof sizeClasses
 
   return (
     <RadioGroupPrimitive.Item
@@ -70,7 +71,7 @@ const RadioGroupItem = React.forwardRef<
         'disabled:cursor-not-allowed disabled:opacity-50',
         'data-[state=checked]:border-accent',
         'transition-colors',
-        sizeClasses[size],
+        sizeClasses[safeSize],
         className
       )}
       {...props}
@@ -79,7 +80,7 @@ const RadioGroupItem = React.forwardRef<
         <div
           className={cn(
             'rounded-full bg-accent',
-            indicatorSizeClasses[size]
+            indicatorSizeClasses[safeSize]
           )}
         />
       </RadioGroupPrimitive.Indicator>

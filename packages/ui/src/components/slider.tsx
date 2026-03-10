@@ -126,9 +126,11 @@ const Slider = React.forwardRef<
     ),
   };
 
+  const safePosition = (valuePosition in containerClasses ? valuePosition : 'top') as keyof typeof containerClasses
+
   return (
-    <div className={containerClasses[valuePosition]}>
-      {orderMap[valuePosition]}
+    <div className={containerClasses[safePosition]}>
+      {orderMap[safePosition]}
     </div>
   );
 });

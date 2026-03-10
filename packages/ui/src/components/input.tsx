@@ -34,6 +34,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const safeSize = (inputSize in sizeClasses ? inputSize : 'md') as keyof typeof sizeClasses
     const hasAdornment = startAdornment || endAdornment
 
     if (hasAdornment) {
@@ -64,7 +65,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
               'focus:outline-none',
               'disabled:cursor-not-allowed',
               'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-              sizeClasses[inputSize],
+              sizeClasses[safeSize],
               startAdornment && 'pl-2',
               endAdornment && 'pr-2',
               className
@@ -95,7 +96,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           'disabled:cursor-not-allowed disabled:opacity-50 disabled:bg-muted',
           'transition-colors',
           'file:border-0 file:bg-transparent file:text-sm file:font-medium',
-          sizeClasses[inputSize],
+          sizeClasses[safeSize],
           className
         )}
         ref={ref}

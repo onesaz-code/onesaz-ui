@@ -22,12 +22,13 @@ const sizeClasses = {
 
 const TopBar = React.forwardRef<HTMLElement, TopBarProps>(
   ({ className, bordered = true, sticky = false, size = 'md', children, ...props }, ref) => {
+    const safeSize = (size in sizeClasses ? size : 'md') as keyof typeof sizeClasses
     return (
       <header
         ref={ref}
         className={cn(
           'flex items-center px-4 bg-card text-foreground',
-          sizeClasses[size],
+          sizeClasses[safeSize],
           bordered && 'border-b border-border',
           sticky && 'sticky top-0 z-40',
           className

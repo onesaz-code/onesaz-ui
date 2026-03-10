@@ -221,7 +221,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       (option: ComboboxOptionInput) => {
         if (typeof option === 'string') return option
         const record = option as Record<string, unknown>
-        const maybeLabel = record[labelKey]
+        const maybeLabel = labelKey in record ? record[labelKey] : undefined
         return typeof maybeLabel === 'string' ? maybeLabel : String(maybeLabel ?? '')
       },
       [labelKey]
@@ -231,7 +231,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       (option: ComboboxOptionInput) => {
         if (typeof option === 'string') return option
         const record = option as Record<string, unknown>
-        const maybeValue = record[valueKey]
+        const maybeValue = valueKey in record ? record[valueKey] : undefined
         if (maybeValue !== undefined && maybeValue !== null) {
           return String(maybeValue)
         }

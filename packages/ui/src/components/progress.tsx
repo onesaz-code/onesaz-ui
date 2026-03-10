@@ -49,13 +49,15 @@ const LinearProgress = React.forwardRef<HTMLDivElement, LinearProgressProps>(
     ref
   ) => {
     const isIndeterminate = value === undefined
+    const safeSize = (size in linearSizeClasses ? size : 'md') as keyof typeof linearSizeClasses
+    const safeVariant = (variant in variantClasses ? variant : 'default') as keyof typeof variantClasses
 
     return (
       <div ref={ref} className={cn('w-full', className)} {...props}>
         <div
           className={cn(
             'w-full overflow-hidden rounded-full bg-muted',
-            linearSizeClasses[size]
+            linearSizeClasses[safeSize]
           )}
           role="progressbar"
           aria-valuenow={isIndeterminate ? undefined : value}
@@ -65,7 +67,7 @@ const LinearProgress = React.forwardRef<HTMLDivElement, LinearProgressProps>(
           <div
             className={cn(
               'h-full rounded-full',
-              variantClasses[variant],
+              variantClasses[safeVariant],
               animated && !isIndeterminate && 'transition-all duration-300 ease-out',
               isIndeterminate && 'animate-indeterminate-progress w-1/3'
             )}
@@ -139,7 +141,9 @@ const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>
     ref
   ) => {
     const isIndeterminate = value === undefined
-    const sizeValue = typeof size === 'number' ? size : circularSizeValues[size]
+    const safeVariant = (variant in strokeColors ? variant : 'default') as keyof typeof strokeColors
+    const safeSize = (typeof size === 'number' || size in circularSizeValues ? size : 'md') as keyof typeof circularSizeValues | number
+    const sizeValue = typeof safeSize === 'number' ? safeSize : circularSizeValues[safeSize]
     const radius = (sizeValue - thickness) / 2
     const circumference = 2 * Math.PI * radius
     const strokeDashoffset = isIndeterminate
@@ -175,7 +179,7 @@ const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>
           {/* Progress circle */}
           <circle
             className={cn(
-              strokeColors[variant],
+              strokeColors[safeVariant],
               !isIndeterminate && 'transition-all duration-300 ease-out'
             )}
             fill="none"

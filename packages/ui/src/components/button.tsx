@@ -139,7 +139,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // When color is 'default', fall through to the original variant classes (full BC).
     const colorOverride =
       resolvedColor !== 'default'
-        ? colorMap[resolvedColor][variantToShape(resolvedVariant)]
+        ? (colorMap[resolvedColor]?.[variantToShape(resolvedVariant)] ?? null)
         : null
 
     // Original per-variant classes (only used when no color override)
@@ -228,7 +228,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
   ({ className, variant = 'ghost', color = 'default', size = 'md', rounded = false, loading = false, ...props }, ref) => {
     const colorOverride =
       color !== 'default'
-        ? colorMap[color][variantToShape(variant)]
+        ? (colorMap[color]?.[variantToShape(variant)] ?? null)
         : null
 
     const variantClasses = colorOverride
