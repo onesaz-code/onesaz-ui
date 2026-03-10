@@ -5,7 +5,7 @@
  */
 
 /* Use data-theme/class-based dark mode instead of prefers-color-scheme */
-/* @custom-variant dark (&:where(.dark, [data-theme="dark"], .dark *, [data-theme="dark"] *)); */
+@custom-variant dark (&:where(.dark, [data-theme="dark"], .dark *, [data-theme="dark"] *));
 
 @theme {
   /* ========================================

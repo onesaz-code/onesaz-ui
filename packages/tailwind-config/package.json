@@ -1,6 +1,6 @@
 {
   "name": "@onesaz/tailwind-config",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Tailwind CSS preset for Onesaz UI - shared configuration with design tokens (supports v3 and v4)",
   "type": "module",
   "license": "MIT",
@@ -36,7 +36,9 @@
     "./v4": "./dist/v4.css",
     "./v4.css": "./dist/v4.css"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

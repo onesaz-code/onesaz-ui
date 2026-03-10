@@ -150,7 +150,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             resolvedVariant === 'default',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90':
             resolvedVariant === 'destructive',
-          'border border-accent bg-transparent text-accent hover:bg-accent/10':
+          'border border-input bg-background hover:text-foreground dark:border-border dark:text-foreground dark:hover:bg-muted':
             resolvedVariant === 'outline',
           'bg-muted text-foreground hover:bg-muted/80':
             resolvedVariant === 'secondary',
@@ -236,7 +236,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       : {
           'bg-accent text-accent-foreground hover:bg-accent-hover': variant === 'default',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90': variant === 'destructive',
-          'border border-accent bg-transparent text-accent hover:bg-accent/10': variant === 'outline',
+          'border border-input bg-background hover:text-foreground dark:border-border dark:text-foreground dark:hover:bg-muted': variant === 'outline',
           'bg-muted text-foreground hover:bg-muted/80': variant === 'secondary',
           'hover:bg-muted hover:text-foreground': variant === 'ghost',
           'text-accent underline-offset-4 hover:underline': variant === 'link',
