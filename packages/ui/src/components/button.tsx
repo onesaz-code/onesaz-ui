@@ -32,23 +32,23 @@ const colorMap: Record<
 > = {
   success: {
     contained: 'bg-success-500 text-white hover:bg-success-600 dark:bg-success-600 dark:hover:bg-success-700',
-    outline:   'border border-success-500 bg-transparent text-success-600 hover:bg-success-50 dark:text-success-400 dark:hover:bg-success-950',
-    secondary: 'bg-success-50 text-success-700 hover:bg-success-100 dark:bg-success-950 dark:text-success-300 dark:hover:bg-success-900',
-    ghost:     'text-success-600 hover:bg-success-50 dark:text-success-400 dark:hover:bg-success-950',
+    outline:   'border border-success-500 bg-transparent text-success-600 hover:bg-success-500/10 dark:text-success-400 dark:hover:bg-success-500/10',
+    secondary: 'bg-success-500/10 text-success-700 hover:bg-success-500/15 dark:text-success-300 dark:hover:bg-success-500/15',
+    ghost:     'text-success-600 hover:bg-success-500/10 dark:text-success-400 dark:hover:bg-success-500/10',
     link:      'text-success-600 dark:text-success-400',
   },
   warning: {
     contained: 'bg-warning-500 text-white hover:bg-warning-600 dark:bg-warning-600 dark:hover:bg-warning-700',
-    outline:   'border border-warning-500 bg-transparent text-warning-600 hover:bg-warning-50 dark:text-warning-400 dark:hover:bg-warning-950',
-    secondary: 'bg-warning-50 text-warning-700 hover:bg-warning-100 dark:bg-warning-950 dark:text-warning-300 dark:hover:bg-warning-900',
-    ghost:     'text-warning-600 hover:bg-warning-50 dark:text-warning-400 dark:hover:bg-warning-950',
+    outline:   'border border-warning-500 bg-transparent text-warning-600 hover:bg-warning-500/10 dark:text-warning-400 dark:hover:bg-warning-500/10',
+    secondary: 'bg-warning-500/10 text-warning-700 hover:bg-warning-500/15 dark:text-warning-300 dark:hover:bg-warning-500/15',
+    ghost:     'text-warning-600 hover:bg-warning-500/10 dark:text-warning-400 dark:hover:bg-warning-500/10',
     link:      'text-warning-600 dark:text-warning-400',
   },
   error: {
     contained: 'bg-error-500 text-white hover:bg-error-600 dark:bg-error-600 dark:hover:bg-error-700',
-    outline:   'border border-error-500 bg-transparent text-error-600 hover:bg-error-50 dark:text-error-400 dark:hover:bg-error-950',
-    secondary: 'bg-error-50 text-error-700 hover:bg-error-100 dark:bg-error-950 dark:text-error-300 dark:hover:bg-error-900',
-    ghost:     'text-error-600 hover:bg-error-50 dark:text-error-400 dark:hover:bg-error-950',
+    outline:   'border border-error-500 bg-transparent text-error-600 hover:bg-error-500/10 dark:text-error-400 dark:hover:bg-error-500/10',
+    secondary: 'bg-error-500/10 text-error-700 hover:bg-error-500/15 dark:text-error-300 dark:hover:bg-error-500/15',
+    ghost:     'text-error-600 hover:bg-error-500/10 dark:text-error-400 dark:hover:bg-error-500/10',
     link:      'text-error-600 dark:text-error-400',
   },
   destructive: {
@@ -150,7 +150,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             resolvedVariant === 'default',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90':
             resolvedVariant === 'destructive',
-          'border border-input bg-background hover:bg-muted hover:text-foreground':
+          'border border-accent bg-transparent text-accent hover:bg-accent/10':
             resolvedVariant === 'outline',
           'bg-muted text-foreground hover:bg-muted/80':
             resolvedVariant === 'secondary',
@@ -236,7 +236,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
       : {
           'bg-accent text-accent-foreground hover:bg-accent-hover': variant === 'default',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90': variant === 'destructive',
-          'border border-input bg-background hover:bg-muted hover:text-foreground': variant === 'outline',
+          'border border-accent bg-transparent text-accent hover:bg-accent/10': variant === 'outline',
           'bg-muted text-foreground hover:bg-muted/80': variant === 'secondary',
           'hover:bg-muted hover:text-foreground': variant === 'ghost',
           'text-accent underline-offset-4 hover:underline': variant === 'link',
