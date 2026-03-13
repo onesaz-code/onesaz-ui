@@ -152,12 +152,27 @@ SidebarRail.displayName = 'SidebarRail'
 // IconRail - The narrow always-visible rail with icons
 // ============================================================================
 
-export interface IconRailProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface IconRailProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Expand rail on hover */
+  hoverExpandRail?: boolean
+}
 
 const IconRail = React.forwardRef<HTMLDivElement, IconRailProps>(
-  ({ className, children, ...props }, ref) => {
-    const { railExpanded, overlayRail, expandableRail } = useSidebarRail()
+  ({ className, children, hoverExpandRail = false, ...props }, ref) => {
+    const { railExpanded, overlayRail, expandableRail, setRailExpanded } = useSidebarRail()
     const isExpanded = expandableRail && railExpanded
+
+    const handleMouseEnter = () => {
+      if (hoverExpandRail && expandableRail) {
+        setRailExpanded(true)
+      }
+    }
+
+    const handleMouseLeave = () => {
+      if (hoverExpandRail && expandableRail) {
+        setRailExpanded(false)
+      }
+    }
 
     return (
       <div
@@ -166,6 +181,8 @@ const IconRail = React.forwardRef<HTMLDivElement, IconRailProps>(
           'relative h-full shrink-0',
           isExpanded && !overlayRail ? 'w-[var(--rail-expanded-width)]' : 'w-[var(--rail-width)]'
         )}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         {...props}
       >
         <div
@@ -275,10 +292,12 @@ export interface IconRailItemProps extends React.ButtonHTMLAttributes<HTMLButton
   asButton?: boolean
   /** Toggle rail expansion when clicked */
   toggleRail?: boolean
+  /** Custom color for the icon (CSS color value or Tailwind class) */
+  iconColor?: string
 }
 
 const IconRailItem = React.forwardRef<HTMLButtonElement, IconRailItemProps>(
-  ({ className, railId, icon, label, asButton = false, toggleRail = false, onClick, ...props }, ref) => {
+  ({ className, railId, icon, label, asButton = false, toggleRail = false, iconColor, onClick, ...props }, ref) => {
     const {
       activeRail,
       setActiveRail,
@@ -307,6 +326,13 @@ const IconRailItem = React.forwardRef<HTMLButtonElement, IconRailItemProps>(
       }
     }
 
+    // Create icon wrapper with color
+    const iconWithColor = iconColor ? (
+      <span style={{ color: iconColor }} className="flex items-center justify-center">
+        {icon}
+      </span>
+    ) : icon
+
     return (
       <button
         ref={ref}
@@ -321,14 +347,15 @@ const IconRailItem = React.forwardRef<HTMLButtonElement, IconRailItemProps>(
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           isActive
             ? 'bg-accent text-accent-foreground'
-            : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+            : !iconColor && 'text-muted-foreground hover:text-foreground hover:bg-muted',
+          iconColor && !isActive && 'hover:bg-muted',
           className
         )}
         title={label}
         aria-label={label}
         {...props}
       >
-        {icon}
+        {iconWithColor}
         {isRailExpanded && label && (
           <span className="text-sm font-medium truncate">{label}</span>
         )}

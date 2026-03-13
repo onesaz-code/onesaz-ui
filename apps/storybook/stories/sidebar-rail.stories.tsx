@@ -836,3 +836,333 @@ export const WithTopBar: Story = {
     </div>
   ),
 }
+
+export const HoverExpandRail: Story = {
+  name: 'Hover Expand Rail (NEW)',
+  render: () => {
+    const [activeRail, setActiveRail] = React.useState<string | null>('org')
+
+    return (
+      <div className="h-[600px] flex">
+        <SidebarRail
+          activeRail={activeRail}
+          onActiveRailChange={setActiveRail}
+          expandableRail
+          overlayRail
+          railExpandedWidth={240}
+          defaultRailExpanded={false}
+        >
+          <IconRail hoverExpandRail>
+            <IconRailHeader>
+              <IconRailItem
+                asButton
+                toggleRail
+                icon={
+                  <svg
+                    className="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                  </svg>
+                }
+                label="Menu"
+              />
+            </IconRailHeader>
+            <IconRailContent>
+              {moduleNavigation.slice(0, 8).map((module) => (
+                <IconRailItem
+                  key={module.id}
+                  railId={module.id}
+                  icon={<ModuleIcon letter={module.label.slice(0, 1).toUpperCase()} />}
+                  label={module.label}
+                />
+              ))}
+            </IconRailContent>
+            <IconRailFooter>
+              <IconRailItem icon={<SettingsIcon />} label="Settings" />
+            </IconRailFooter>
+          </IconRail>
+        </SidebarRail>
+
+        <ModuleSidePanel activeRail={activeRail} />
+
+        <main className="flex-1 p-6 bg-muted/30 overflow-auto">
+          <h1 className="text-2xl font-bold mb-4">Hover Expand Rail</h1>
+          <p className="text-muted-foreground mb-4">
+            <strong>NEW FEATURE:</strong> The rail automatically expands when you hover over the icons.
+          </p>
+          <div className="p-4 bg-card rounded-lg border border-border">
+            <h3 className="font-semibold mb-2">How it works:</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• Move your cursor over the icon rail</li>
+              <li>• The rail expands automatically to show labels</li>
+              <li>• Move cursor away to collapse back to icons only</li>
+              <li>• No clicking required!</li>
+            </ul>
+          </div>
+        </main>
+      </div>
+    )
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'New `hoverExpandRail` prop enables automatic rail expansion on hover. Add it to the `IconRail` component to enable this behavior.',
+      },
+    },
+  },
+}
+
+export const ColoredIcons: Story = {
+  name: 'Colored Icons (NEW)',
+  render: () => {
+    const [activeRail, setActiveRail] = React.useState<string | null>('org')
+
+    const modulesWithColors = [
+      { id: 'org', label: 'Organization', color: '#10b981' }, // green
+      { id: 'admissions', label: 'Admissions', color: '#8b5cf6' }, // purple
+      { id: 'academics', label: 'Academics', color: '#3b82f6' }, // blue
+      { id: 'finance', label: 'Finance', color: '#f59e0b' }, // amber
+      { id: 'attendance', label: 'Attendance', color: '#06b6d4' }, // cyan
+      { id: 'inventory', label: 'Inventory', color: '#ec4899' }, // pink
+      { id: 'transport', label: 'Transport', color: '#f97316' }, // orange
+      { id: 'admin', label: 'Admin', color: '#6b7280' }, // gray
+    ]
+
+    return (
+      <div className="h-[600px] flex">
+        <SidebarRail
+          activeRail={activeRail}
+          onActiveRailChange={setActiveRail}
+          expandableRail
+          overlayRail
+          railExpandedWidth={240}
+          defaultRailExpanded={false}
+        >
+          <IconRail hoverExpandRail>
+            <IconRailHeader>
+              <IconRailItem
+                asButton
+                toggleRail
+                icon={
+                  <svg
+                    className="h-5 w-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="3" y1="12" x2="21" y2="12" />
+                    <line x1="3" y1="6" x2="21" y2="6" />
+                    <line x1="3" y1="18" x2="21" y2="18" />
+                  </svg>
+                }
+                label="Menu"
+              />
+            </IconRailHeader>
+            <IconRailContent>
+              {modulesWithColors.map((module) => (
+                <IconRailItem
+                  key={module.id}
+                  railId={module.id}
+                  icon={<ModuleIcon letter={module.label.slice(0, 1).toUpperCase()} />}
+                  label={module.label}
+                  iconColor={module.id === activeRail ? undefined : module.color}
+                />
+              ))}
+            </IconRailContent>
+            <IconRailFooter>
+              <IconRailItem icon={<SettingsIcon />} label="Settings" iconColor="#64748b" />
+            </IconRailFooter>
+          </IconRail>
+        </SidebarRail>
+
+        <ModuleSidePanel activeRail={activeRail} />
+
+        <main className="flex-1 p-6 bg-muted/30 overflow-auto">
+          <h1 className="text-2xl font-bold mb-4">Colored Icons</h1>
+          <p className="text-muted-foreground mb-4">
+            <strong>NEW FEATURE:</strong> Each icon can have a custom color when inactive using the <code className="px-1.5 py-0.5 bg-muted rounded text-xs">iconColor</code> prop.
+          </p>
+          <div className="grid gap-4">
+            <div className="p-4 bg-card rounded-lg border border-border">
+              <h3 className="font-semibold mb-3">How it works:</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>• Pass <code className="px-1.5 py-0.5 bg-muted rounded text-xs">iconColor</code> prop to IconRailItem</li>
+                <li>• Accepts CSS color values (hex, rgb, hsl) or Tailwind classes</li>
+                <li>• Active icons use default theme styling</li>
+                <li>• Inactive icons display the custom color</li>
+                <li>• Great for module-based color coding!</li>
+              </ul>
+            </div>
+            <div className="p-4 bg-card rounded-lg border border-border">
+              <h3 className="font-semibold mb-3">Color Examples:</h3>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {modulesWithColors.map((module) => (
+                  <div key={module.id} className="flex items-center gap-2">
+                    <div className="w-4 h-4 rounded" style={{ backgroundColor: module.color }} />
+                    <span className="text-muted-foreground">{module.label}</span>
+                    <code className="ml-auto text-[10px] bg-muted px-1 rounded">{module.color}</code>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'New `iconColor` prop on IconRailItem allows setting custom colors for inactive icons. Accepts any CSS color value or Tailwind class. Active icons maintain default theme styling.',
+      },
+    },
+  },
+}
+
+export const CombinedFeatures: Story = {
+  name: 'Hover + Colors Combined (NEW)',
+  render: () => {
+    const [activeRail, setActiveRail] = React.useState<string | null>('dashboard')
+
+    const coloredModules = [
+      { id: 'dashboard', label: 'Dashboard', icon: <HomeIcon />, color: 'hsl(var(--primary))' },
+      { id: 'hr', label: 'HR', icon: <UsersIcon />, color: '#10b981' },
+      { id: 'finance', label: 'Finance', icon: <InboxIcon />, color: '#f59e0b' },
+      { id: 'academics', label: 'Academics', icon: <FolderIcon />, color: '#3b82f6' },
+      { id: 'attendance', label: 'Attendance', icon: <GitBranchIcon />, color: '#06b6d4' },
+      { id: 'inventory', label: 'Inventory', icon: <ExtensionsIcon />, color: '#ec4899' },
+    ]
+
+    return (
+      <div className="h-[600px] flex">
+        <SidebarRail
+          activeRail={activeRail}
+          onActiveRailChange={setActiveRail}
+          expandableRail
+          overlayRail
+          railExpandedWidth={240}
+          defaultRailExpanded={false}
+        >
+          <IconRail hoverExpandRail>
+            <IconRailHeader>
+              <div className="flex items-center justify-center">
+                <LogoIcon />
+              </div>
+            </IconRailHeader>
+            <IconRailContent>
+              {coloredModules.map((module) => (
+                <IconRailItem
+                  key={module.id}
+                  railId={module.id}
+                  icon={module.icon}
+                  label={module.label}
+                  iconColor={module.id === activeRail ? undefined : module.color}
+                />
+              ))}
+            </IconRailContent>
+            <IconRailFooter>
+              <IconRailItem 
+                icon={<SettingsIcon />} 
+                label="Settings"
+                iconColor="#64748b"
+              />
+              <Avatar name="Admin User" size="sm" className="mt-2" />
+            </IconRailFooter>
+          </IconRail>
+        </SidebarRail>
+
+        <Sidebar width={288}>
+          <SidebarHeader>
+            <div className="text-sm font-semibold">
+              {coloredModules.find((m) => m.id === activeRail)?.label || 'Select Module'}
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarItem active>Overview</SidebarItem>
+              <SidebarItem>Reports</SidebarItem>
+              <SidebarItem>Settings</SidebarItem>
+              <SidebarItem>Activity</SidebarItem>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
+
+        <main className="flex-1 p-6 bg-muted/30 overflow-auto">
+          <div className="max-w-3xl">
+            <h1 className="text-2xl font-bold mb-2">🎨 Combined Features Demo</h1>
+            <p className="text-muted-foreground mb-6">
+              Both new features working together: hover-to-expand + custom icon colors
+            </p>
+
+            <div className="grid gap-4 mb-6">
+              <div className="p-4 bg-card rounded-lg border border-border border-l-4" style={{ borderLeftColor: '#10b981' }}>
+                <h3 className="font-semibold mb-2">✨ Hover Expand Rail</h3>
+                <p className="text-sm text-muted-foreground">
+                  Move your cursor over the icon rail to expand it automatically. No click required!
+                </p>
+              </div>
+
+              <div className="p-4 bg-card rounded-lg border border-border border-l-4" style={{ borderLeftColor: '#3b82f6' }}>
+                <h3 className="font-semibold mb-2">🎨 Custom Icon Colors</h3>
+                <p className="text-sm text-muted-foreground">
+                  Each inactive icon shows its module-specific color. Active icon uses theme colors.
+                </p>
+              </div>
+            </div>
+
+            <div className="p-5 bg-card rounded-lg border border-border">
+              <h3 className="font-semibold mb-3">Code Example:</h3>
+              <pre className="bg-muted p-3 rounded text-xs overflow-x-auto">
+{`<IconRail hoverExpandRail>
+  <IconRailContent>
+    {modules.map((module) => (
+      <IconRailItem
+        key={module.id}
+        railId={module.id}
+        icon={module.icon}
+        label={module.label}
+        iconColor={
+          module.id === activeRail 
+            ? undefined 
+            : module.color
+        }
+      />
+    ))}
+  </IconRailContent>
+</IconRail>`}
+              </pre>
+            </div>
+
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950 rounded-lg border border-blue-200 dark:border-blue-800">
+              <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">💡 Pro Tip</h4>
+              <p className="text-sm text-blue-800 dark:text-blue-200">
+                Combine both features for the best UX: hover makes navigation faster, 
+                while custom colors help users quickly identify different modules.
+              </p>
+            </div>
+          </div>
+        </main>
+      </div>
+    )
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Demonstrates both new features working together: `hoverExpandRail` for automatic rail expansion on hover, and `iconColor` for custom module colors.',
+      },
+    },
+  },
+}
