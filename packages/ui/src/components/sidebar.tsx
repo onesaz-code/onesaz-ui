@@ -96,14 +96,21 @@ Sidebar.displayName = 'Sidebar'
 // Sidebar Header
 // ============================================================================
 
-export interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+export interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Use accent color for text */
+  accentColor?: boolean
+}
 
 const SidebarHeader = React.forwardRef<HTMLDivElement, SidebarHeaderProps>(
-  ({ className, children, ...props }, ref) => {
+  ({ className, accentColor = false, children, ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={cn('flex items-center h-14 px-4 border-b border-border shrink-0', className)}
+        className={cn(
+          'flex items-center h-14 px-4 border-b border-border shrink-0',
+          accentColor && 'text-[var(--accent-7)] font-semibold',
+          className
+        )}
         {...props}
       >
         {children}
