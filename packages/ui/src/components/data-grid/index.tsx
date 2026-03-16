@@ -492,12 +492,14 @@ const ColumnVisibilityDropdown = ({
   table: any
 }) => {
   const [open, setOpen] = React.useState(false)
+  const [search, setSearch] = React.useState('')
   const dropdownRef = React.useRef<HTMLDivElement>(null)
 
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpen(false)
+        setSearch('')
       }
     }
     document.addEventListener('mousedown', handleClickOutside)
@@ -505,6 +507,12 @@ const ColumnVisibilityDropdown = ({
   }, [])
 
   const allColumns = table.getAllLeafColumns().filter((col: any) => col.id !== '__select__')
+  const filteredColumns = search
+    ? allColumns.filter((col: any) => {
+        const headerName = (col.columnDef.meta as any)?.headerName || col.id
+        return headerName.toLowerCase().includes(search.toLowerCase())
+      })
+    : allColumns
 
   return (
     <div className="relative" ref={dropdownRef}>
@@ -523,26 +531,49 @@ const ColumnVisibilityDropdown = ({
       </Button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 min-w-[180px] rounded-md border border-border bg-popover p-2 shadow-md">
+        <div className="absolute right-0 top-full mt-1 z-50 min-w-[200px] rounded-md border border-border bg-popover p-2 shadow-md">
           <div className="text-xs font-medium text-foreground mb-2 px-2">Show/Hide Columns</div>
-          <div className="max-h-[300px] overflow-auto">
-            {allColumns.map((column: any) => {
-              const meta = column.columnDef.meta as any
-              const headerName = meta?.headerName || column.id
+          <div className="flex items-center gap-1.5 border border-border rounded-md px-2 mb-2">
+            <svg className="h-3.5 w-3.5 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.3-4.3" />
+            </svg>
+            <input
+              className="flex h-7 w-full bg-transparent text-xs outline-none placeholder:text-muted-foreground"
+              placeholder="Search columns..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
+            {search && (
+              <button type="button" onClick={() => setSearch('')} className="shrink-0 opacity-50 hover:opacity-100">
+                <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          <div className="max-h-[250px] overflow-auto">
+            {filteredColumns.length === 0 ? (
+              <div className="py-4 text-center text-xs text-muted-foreground">No columns found</div>
+            ) : (
+              filteredColumns.map((column: any) => {
+                const meta = column.columnDef.meta as any
+                const headerName = meta?.headerName || column.id
 
-              return (
-                <label
-                  key={column.id}
-                  className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted rounded cursor-pointer"
-                >
-                  <Checkbox
-                    checked={column.getIsVisible()}
-                    onChange={(e) => column.toggleVisibility(e.target.checked)}
-                  />
-                  <span className="text-xs">{headerName}</span>
-                </label>
-              )
-            })}
+                return (
+                  <label
+                    key={column.id}
+                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted rounded cursor-pointer"
+                  >
+                    <Checkbox
+                      checked={column.getIsVisible()}
+                      onChange={(e) => column.toggleVisibility(e.target.checked)}
+                    />
+                    <span className="text-xs">{headerName}</span>
+                  </label>
+                )
+              })
+            )}
           </div>
           <div className="border-t border-border mt-2 pt-2 flex gap-2 px-2">
             <Button

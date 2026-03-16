@@ -735,6 +735,125 @@ const longLabelOptions = [
   { value: '8', label: 'Mediuwerthyjhgfedwefghkjhgrfefeghjghtgrfsdmkytwefkuytreefkiu54refhjytuytrejuty' },
 ]
 
+// ============================================================================
+// Built-in label & required
+// ============================================================================
+
+export const BuiltInLabel: Story = {
+  name: 'Built-in label prop',
+  render: () => (
+    <div className="flex flex-col gap-6 w-[320px]">
+      <p className="text-xs text-muted-foreground">
+        Use the <code>label</code> prop instead of a separate &lt;Label&gt; component.
+      </p>
+      <Combobox
+        label="Framework"
+        options={frameworks}
+        placeholder="Select framework..."
+      />
+      <Combobox
+        label="Country"
+        multiple
+        options={countries}
+        placeholder="Select countries..."
+      />
+    </div>
+  ),
+}
+
+export const BuiltInRequired: Story = {
+  name: 'Built-in required prop',
+  render: () => (
+    <div className="flex flex-col gap-6 w-[320px]">
+      <p className="text-xs text-muted-foreground">
+        <code>required</code> renders a red asterisk and wires a hidden native input for form validation.
+      </p>
+      <Combobox
+        label="Framework"
+        required
+        options={frameworks}
+        placeholder="Select framework..."
+      />
+      <Combobox
+        label="Countries"
+        required
+        multiple
+        options={countries}
+        placeholder="Select countries..."
+      />
+    </div>
+  ),
+}
+
+export const LabelRequiredInForm: Story = {
+  name: 'label + required — inside a form',
+  render: function LabelRequiredInForm() {
+    const [submitted, setSubmitted] = React.useState(false)
+    const [value, setValue] = React.useState<typeof frameworks[number] | null>(null)
+
+    return (
+      <form
+        className="flex flex-col gap-4 w-[320px]"
+        onSubmit={(e) => {
+          e.preventDefault()
+          setSubmitted(true)
+        }}
+      >
+        <Combobox
+          label="Framework"
+          required
+          options={frameworks}
+          value={value}
+          onChange={setValue}
+          placeholder="Select framework..."
+        />
+        <button
+          type="submit"
+          className="rounded-md bg-primary-500 px-4 py-2 text-sm font-medium text-white hover:bg-primary-600"
+        >
+          Submit
+        </button>
+        {submitted && (
+          <p className="text-xs text-green-600 font-medium">
+            ✓ Submitted with: {value?.label ?? 'none'}
+          </p>
+        )}
+      </form>
+    )
+  },
+}
+
+export const LabelVariants: Story = {
+  name: 'label — single vs multi vs disabled',
+  render: () => (
+    <div className="flex flex-col gap-6 w-[320px]">
+      <Combobox
+        label="Single select"
+        options={frameworks}
+        placeholder="Pick one..."
+      />
+      <Combobox
+        label="Multi select"
+        required
+        multiple
+        selectAll
+        options={frameworks}
+        placeholder="Pick multiple..."
+      />
+      <Combobox
+        label="Disabled"
+        required
+        disabled
+        options={frameworks}
+        defaultValue={frameworks[0]}
+        placeholder="Pick one..."
+      />
+    </div>
+  ),
+}
+
+// ─── Long label story — verifies text stays left-aligned when wrapping ────────
+
 export const LongLabels: Story = {
   name: 'Long labels (wrap alignment)',
   render: function LongLabels() {

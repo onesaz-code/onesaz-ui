@@ -1,6 +1,7 @@
 import * as React from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { cn } from '../../utils/cn'
+import { Label } from '../label'
 
 export interface ComboboxOption {
   value: string
@@ -35,6 +36,10 @@ interface ComboboxSharedProps<T extends ComboboxOptionInput = ComboboxOptionInpu
   simpleOptions?: boolean
   labelKey?: string
   valueKey?: string
+  /** Label displayed above the trigger */
+  label?: string
+  /** Marks the field as required — shows an asterisk and adds native required to the hidden input */
+  required?: boolean
   /** Node rendered at the start (left) of the trigger button */
   startAdornment?: React.ReactNode
   /** Click handler for the start adornment — renders it as a button when provided */
@@ -206,6 +211,8 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       clearable = true,
       openOnFocus = true,
       className,
+      label,
+      required = false,
       startAdornment,
       onStartAdornmentClick,
       endAdornment,
@@ -251,6 +258,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       [options, getOptionLabel, getOptionValue]
     )
 
+    const id = React.useId()
     const [open, setOpen] = React.useState(false)
     const [internalSearch, setInternalSearch] = React.useState('')
     const containerRef = React.useRef<HTMLDivElement>(null)
@@ -419,12 +427,34 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
     const displayedOptions = selectedOptions.slice(0, maxDisplayItems)
     const remainingCount = selectedOptions.length - maxDisplayItems
 
+    const hiddenValue = isMultiple
+      ? (multiValue.length > 0 ? 'filled' : '')
+      : (singleValue ? getOptionValue(singleValue) : '')
+
     return (
       <div ref={containerRef} className="relative">
+        {label && (
+          <Label htmlFor={id} className="mb-1.5 block">
+            {label}
+            {required && <span className="ml-0.5 text-red-500" aria-hidden="true">*</span>}
+          </Label>
+        )}
+        {/* Hidden input carries the value so native form validation works */}
+        <input
+          id={id}
+          type="text"
+          aria-hidden="true"
+          tabIndex={-1}
+          required={required}
+          value={hiddenValue}
+          onChange={() => {}}
+          className="absolute inset-0 h-px w-px opacity-0 pointer-events-none"
+        />
         <button
           type="button"
           role="combobox"
           aria-expanded={open}
+          aria-labelledby={label ? id : undefined}
           disabled={disabled}
           onClick={() => setOpen(!open)}
           className={cn(
