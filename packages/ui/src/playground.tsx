@@ -108,9 +108,9 @@ const PlaygroundContent = () => {
         {/* Buttons */}
         <Section title="Button">
           <div className="flex flex-wrap gap-4">
-            <Button variant="default">Default</Button>
+            <Button variant="contained">Default</Button>
             <Button variant="destructive">Destructive</Button>
-            <Button variant="outline">Outline</Button>
+            <Button variant="outlined">Outline</Button>
             <Button variant="secondary">Secondary</Button>
             <Button variant="ghost">Ghost</Button>
             <Button variant="link">Link</Button>
@@ -123,7 +123,7 @@ const PlaygroundContent = () => {
           </div>
           <div className="flex flex-wrap gap-4 mt-4">
             <Button disabled>Disabled</Button>
-            <Button variant="outline" disabled>Disabled Outline</Button>
+            <Button variant="outlined" disabled>Disabled Outline</Button>
           </div>
         </Section>
 
@@ -290,7 +290,7 @@ const PlaygroundContent = () => {
                 <p className="text-foreground">This is the card content area.</p>
               </CardContent>
               <CardFooter>
-                <Button variant="outline" className="mr-2">Cancel</Button>
+                <Button variant="outlined" className="mr-2">Cancel</Button>
                 <Button>Submit</Button>
               </CardFooter>
             </Card>
@@ -362,7 +362,7 @@ const PlaygroundContent = () => {
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setDialogOpen(false)}>
+                <Button variant="outlined" onClick={() => setDialogOpen(false)}>
                   CANCEL
                 </Button>
                 <Button onClick={() => setDialogOpen(false)}>Create</Button>

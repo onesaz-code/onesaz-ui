@@ -45,7 +45,7 @@ const PaginationLink = React.forwardRef<HTMLButtonElement, PaginationLinkProps>(
   ({ className, isActive, ...props }, ref) => (
     <Button
       ref={ref}
-      variant={isActive ? 'default' : 'outline'}
+      variant={isActive ? 'contained' : 'outlined'}
       size="icon"
       className={cn('h-9 w-9', className)}
       {...props}
@@ -60,7 +60,7 @@ const PaginationPrevious = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Button
     ref={ref}
-    variant="outline"
+    variant="outlined"
     size="default"
     className={cn('gap-1 pl-2.5', className)}
     {...props}
@@ -90,7 +90,7 @@ const PaginationNext = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <Button
     ref={ref}
-    variant="outline"
+    variant="outlined"
     size="default"
     className={cn('gap-1 pr-2.5', className)}
     {...props}

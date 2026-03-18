@@ -517,7 +517,7 @@ const ColumnVisibilityDropdown = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <Button
-        variant="outline"
+        variant="outlined"
         size="sm"
         onClick={() => setOpen(!open)}
         className="h-9 gap-2"
@@ -688,7 +688,7 @@ const DataGridPagination = ({
     <Pagination className="mx-0 w-auto">
       <PaginationContent>
         <PaginationItem>
-          <Button variant="outline" size="icon" className="h-8 w-8"
+          <Button variant="outlined" size="icon" className="h-8 w-8"
             onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
@@ -696,7 +696,7 @@ const DataGridPagination = ({
           </Button>
         </PaginationItem>
         <PaginationItem>
-          <Button variant="outline" size="icon" className="h-8 w-8"
+          <Button variant="outlined" size="icon" className="h-8 w-8"
             onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M15 18l-6-6 6-6" />
@@ -705,7 +705,7 @@ const DataGridPagination = ({
         </PaginationItem>
         {renderPageNumbers(maxVisible)}
         <PaginationItem>
-          <Button variant="outline" size="icon" className="h-8 w-8"
+          <Button variant="outlined" size="icon" className="h-8 w-8"
             onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M9 18l6-6-6-6" />
@@ -713,7 +713,7 @@ const DataGridPagination = ({
           </Button>
         </PaginationItem>
         <PaginationItem>
-          <Button variant="outline" size="icon" className="h-8 w-8"
+          <Button variant="outlined" size="icon" className="h-8 w-8"
             onClick={() => table.setPageIndex(pageCount - 1)} disabled={!table.getCanNextPage()}>
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />
@@ -822,7 +822,7 @@ const ExportDropdown = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <Button
-        variant="outline"
+        variant="outlined"
         size="sm"
         onClick={() => setOpen(!open)}
         className="h-9 gap-2"
@@ -889,7 +889,7 @@ const MoreOptionsDropdown = ({
   return (
     <div className="relative" ref={dropdownRef}>
       <Button
-        variant="outline"
+        variant="outlined"
         size="icon"
         onClick={() => setOpen(!open)}
         className="h-9 w-9"
