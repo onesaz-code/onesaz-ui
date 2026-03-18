@@ -28,32 +28,32 @@ const useButtonGroup = () => React.useContext(ButtonGroupContext)
 /** Classes applied when color is non-default, keyed by variant shape */
 const colorMap: Record<
   Exclude<ButtonColor, 'default'>,
-  Record<'contained' | 'outline' | 'secondary' | 'ghost' | 'link', string>
+  Record<'contained' | 'outlined' | 'secondary' | 'ghost' | 'link', string>
 > = {
   success: {
     contained: 'bg-success-500 text-white hover:bg-success-600 dark:bg-success-600 dark:hover:bg-success-700',
-    outline:   'border border-success-500 bg-transparent text-success-600 hover:bg-success-500/10 dark:text-success-400 dark:hover:bg-success-500/10',
+    outlined:  'border border-success-500 bg-transparent text-success-600 hover:bg-success-500/10 dark:text-success-400 dark:hover:bg-success-500/10',
     secondary: 'bg-success-500/10 text-success-700 hover:bg-success-500/15 dark:text-success-300 dark:hover:bg-success-500/15',
     ghost:     'text-success-600 hover:bg-success-500/10 dark:text-success-400 dark:hover:bg-success-500/10',
     link:      'text-success-600 dark:text-success-400',
   },
   warning: {
     contained: 'bg-warning-500 text-white hover:bg-warning-600 dark:bg-warning-600 dark:hover:bg-warning-700',
-    outline:   'border border-warning-500 bg-transparent text-warning-600 hover:bg-warning-500/10 dark:text-warning-400 dark:hover:bg-warning-500/10',
+    outlined:  'border border-warning-500 bg-transparent text-warning-600 hover:bg-warning-500/10 dark:text-warning-400 dark:hover:bg-warning-500/10',
     secondary: 'bg-warning-500/10 text-warning-700 hover:bg-warning-500/15 dark:text-warning-300 dark:hover:bg-warning-500/15',
     ghost:     'text-warning-600 hover:bg-warning-500/10 dark:text-warning-400 dark:hover:bg-warning-500/10',
     link:      'text-warning-600 dark:text-warning-400',
   },
   error: {
     contained: 'bg-error-500 text-white hover:bg-error-600 dark:bg-error-600 dark:hover:bg-error-700',
-    outline:   'border border-error-500 bg-transparent text-error-600 hover:bg-error-500/10 dark:text-error-400 dark:hover:bg-error-500/10',
+    outlined:  'border border-error-500 bg-transparent text-error-600 hover:bg-error-500/10 dark:text-error-400 dark:hover:bg-error-500/10',
     secondary: 'bg-error-500/10 text-error-700 hover:bg-error-500/15 dark:text-error-300 dark:hover:bg-error-500/15',
     ghost:     'text-error-600 hover:bg-error-500/10 dark:text-error-400 dark:hover:bg-error-500/10',
     link:      'text-error-600 dark:text-error-400',
   },
   destructive: {
     contained: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',
-    outline:   'border border-destructive bg-transparent text-destructive hover:bg-destructive/10',
+    outlined:  'border border-destructive bg-transparent text-destructive hover:bg-destructive/10',
     secondary: 'bg-destructive/10 text-destructive hover:bg-destructive/20',
     ghost:     'text-destructive hover:bg-destructive/10',
     link:      'text-destructive',
@@ -63,13 +63,13 @@ const colorMap: Record<
 /** Maps variant name → shape key used in colorMap */
 function variantToShape(
   variant: ButtonProps['variant']
-): 'contained' | 'outline' | 'secondary' | 'ghost' | 'link' {
+): 'contained' | 'outlined' | 'secondary' | 'ghost' | 'link' {
   switch (variant) {
-    case 'outline':    return 'outline'
+    case 'outlined':   return 'outlined'
     case 'secondary':  return 'secondary'
     case 'ghost':      return 'ghost'
     case 'link':       return 'link'
-    default:           return 'contained' // 'default' and 'destructive'
+    default:           return 'contained' // 'contained' and 'destructive'
   }
 }
 
@@ -99,7 +99,7 @@ const Spinner = ({ className }: { className?: string }) => (
 // ============================================================================
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link'
+  variant?: 'contained' | 'destructive' | 'outlined' | 'secondary' | 'ghost' | 'link'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   color?: ButtonColor
   /** Whether the button should take the full width of its container */
@@ -130,7 +130,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const groupCtx = useButtonGroup()
-    const resolvedVariant  = variant  ?? groupCtx.variant  ?? 'default'
+    const resolvedVariant  = variant  ?? groupCtx.variant  ?? 'contained'
     const resolvedSize     = size     ?? 'default'
     const resolvedColor    = color    ?? groupCtx.color    ?? 'default'
     const resolvedDisabled = disabled ?? groupCtx.disabled
@@ -147,11 +147,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       ? null
       : {
           'bg-accent text-accent-foreground hover:bg-accent-hover':
-            resolvedVariant === 'default',
+            resolvedVariant === 'contained',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90':
             resolvedVariant === 'destructive',
           'border border-input bg-background hover:text-foreground dark:border-border dark:text-foreground dark:hover:bg-muted':
-            resolvedVariant === 'outline',
+            resolvedVariant === 'outlined',
           'bg-muted text-foreground hover:bg-muted/80':
             resolvedVariant === 'secondary',
           'hover:bg-muted hover:text-foreground':
@@ -225,7 +225,7 @@ const iconButtonSizes = {
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
-  ({ className, variant = 'ghost', color = 'default', size = 'md', rounded = false, loading = false, ...props }, ref) => {
+  ({ className, variant = 'contained', color = 'default', size = 'md', rounded = false, loading = false, ...props }, ref) => {
     const colorOverride =
       color !== 'default'
         ? (colorMap[color]?.[variantToShape(variant)] ?? null)
@@ -234,9 +234,9 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
     const variantClasses = colorOverride
       ? null
       : {
-          'bg-accent text-accent-foreground hover:bg-accent-hover': variant === 'default',
+          'bg-accent text-accent-foreground hover:bg-accent-hover': variant === 'contained',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90': variant === 'destructive',
-          'border border-input bg-background hover:text-foreground dark:border-border dark:text-foreground dark:hover:bg-muted': variant === 'outline',
+          'border border-input bg-background hover:text-foreground dark:border-border dark:text-foreground dark:hover:bg-muted': variant === 'outlined',
           'bg-muted text-foreground hover:bg-muted/80': variant === 'secondary',
           'hover:bg-muted hover:text-foreground': variant === 'ghost',
           'text-accent underline-offset-4 hover:underline': variant === 'link',

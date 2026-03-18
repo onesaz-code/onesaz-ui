@@ -6,7 +6,7 @@ import { cn } from '../utils/cn'
 // ============================================================================
 
 export type ChipColor   = 'default' | 'success' | 'warning' | 'error' | 'destructive'
-export type ChipVariant = 'filled' | 'outlined'
+export type ChipVariant = 'contained' | 'outlined'
 export type ChipSize    = 'small' | 'medium'
 
 export interface ChipProps extends React.HTMLAttributes<HTMLElement> {
@@ -41,7 +41,7 @@ export interface ChipProps extends React.HTMLAttributes<HTMLElement> {
 // Color maps
 // ============================================================================
 
-const filledClasses: Record<ChipColor, string> = {
+const containedClasses: Record<ChipColor, string> = {
   default:     'bg-accent text-accent-foreground',
   success:     'bg-success-500 text-white dark:bg-success-600',
   warning:     'bg-warning-500 text-white dark:bg-warning-600',
@@ -49,7 +49,7 @@ const filledClasses: Record<ChipColor, string> = {
   destructive: 'bg-destructive text-destructive-foreground',
 }
 
-const filledHoverClasses: Record<ChipColor, string> = {
+const containedHoverClasses: Record<ChipColor, string> = {
   default:     'hover:bg-accent-hover',
   success:     'hover:bg-success-600 dark:hover:bg-success-500',
   warning:     'hover:bg-warning-600 dark:hover:bg-warning-500',
@@ -116,7 +116,7 @@ const Chip = React.forwardRef<HTMLElement, ChipProps>(
     {
       className,
       label,
-      variant  = 'filled',
+      variant  = 'contained',
       color    = 'default',
       size     = 'medium',
       icon,
@@ -138,15 +138,15 @@ const Chip = React.forwardRef<HTMLElement, ChipProps>(
     const isClickable = clickable || !!onClick || !!href
     const Component: React.ElementType = component ?? (href ? 'a' : 'div')
     const safeSize = (size in sizeClasses ? size : 'medium') as keyof typeof sizeClasses
-    const safeVariant = (variant === 'filled' || variant === 'outlined' ? variant : 'filled') as ChipVariant
+    const safeVariant = (variant === 'contained' || variant === 'outlined' ? variant : 'contained') as ChipVariant
 
-    const colorClass  = safeVariant === 'filled'
-      ? (filledClasses[color]   ?? filledClasses.default)
+    const colorClass  = safeVariant === 'contained'
+      ? (containedClasses[color]   ?? containedClasses.default)
       : (outlinedClasses[color] ?? outlinedClasses.default)
 
     const hoverClass  = isClickable && !disabled
-      ? safeVariant === 'filled'
-        ? (filledHoverClasses[color]   ?? filledHoverClasses.default)
+      ? safeVariant === 'contained'
+        ? (containedHoverClasses[color]   ?? containedHoverClasses.default)
         : (outlinedHoverClasses[color] ?? outlinedHoverClasses.default)
       : ''
 

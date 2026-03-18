@@ -55,6 +55,23 @@ export const grayColors = {
     11: '#121212',
     12: '#0a0a0a',
   },
+  // Midnight: dark navy-blue gray scale inspired by professional dark consoles
+  // Step 10 (#161d26) = page background, 9 (#1c2b3a) = card bg,
+  // 5 (#545b64) = border, 3 (#c6c6cd) = body text, 2 (#ebebf0) = heading
+  midnight: {
+    1:  '#f7f8f9',
+    2:  '#ebebf0',
+    3:  '#c6c6cd',
+    4:  '#8d9199',
+    5:  '#545b64',
+    6:  '#3d4752',
+    7:  '#2d3748',
+    8:  '#21303f',
+    9:  '#1c2b3a',
+    10: '#161d26',
+    11: '#0f141a',
+    12: '#090d12',
+  },
 } as const
 
 export type GrayColor = keyof typeof grayColors

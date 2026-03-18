@@ -30,6 +30,7 @@ const config: Partial<Config> = {
         gray: grayColors.gray,
         zinc: grayColors.zinc,
         neutral: grayColors.neutral,
+        midnight: grayColors.midnight,
 
         // Semantic colors
         success: semanticColors.success,

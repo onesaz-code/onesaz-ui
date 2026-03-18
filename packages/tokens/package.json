@@ -1,6 +1,6 @@
 {
   "name": "@onesaz/tokens",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Design tokens for Onesaz UI component library - colors, spacing, typography, and theming",
   "type": "module",
   "license": "MIT",
@@ -34,7 +34,9 @@
       "require": "./dist/index.cjs"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
