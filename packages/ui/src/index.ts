@@ -351,6 +351,22 @@ export {
 // Overlays
 export { Backdrop, type BackdropProps } from './components/backdrop'
 export {
+  // Primitives
+  PopoverRoot,
+  PopoverTrigger,
+  PopoverPortal,
+  PopoverClose,
+  PopoverAnchor,
+  PopoverArrow,
+  PopoverContent,
+  // Convenience components
+  Popover,
+  Popper,
+  type PopoverProps,
+  type PopoverContentProps,
+  type PopperProps,
+} from './components/popover'
+export {
   Snackbar,
   SnackbarContent,
   SnackbarProvider,
