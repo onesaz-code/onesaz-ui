@@ -1987,6 +1987,10 @@ export function DataGrid<TData extends Record<string, any>>({
     containerStyle.height = height
     if (minHeight) containerStyle.minHeight = minHeight
     if (maxHeight) containerStyle.maxHeight = maxHeight
+  } else {
+    // When autoHeight is true, still respect min/max constraints to prevent excessive expansion
+    if (minHeight) containerStyle.minHeight = minHeight
+    if (maxHeight) containerStyle.maxHeight = maxHeight
   }
 
   return (
