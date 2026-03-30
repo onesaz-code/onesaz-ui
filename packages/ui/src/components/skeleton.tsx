@@ -34,7 +34,7 @@ const Skeleton = React.forwardRef<HTMLDivElement, SkeletonProps>(
 
     const animationClasses = {
       pulse: 'animate-pulse',
-      wave: 'animate-shimmer bg-gradient-to-r from-muted via-muted/50 to-muted bg-[length:200%_100%]',
+      wave: 'animate-shimmer bg-[linear-gradient(90deg,var(--muted)_0%,var(--background)_45%,var(--muted)_100%)] bg-[length:200%_100%]',
       none: '',
     }
 
