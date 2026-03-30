@@ -890,3 +890,219 @@ export const LongLabels: Story = {
     )
   },
 }
+
+// ============================================================================
+// Multiple Comboboxes Examples
+// ============================================================================
+
+export const MultipleSingleSelect: Story = {
+  name: 'Multiple Single Select — tab navigation test',
+  render: function MultipleSingleSelect() {
+    const [framework, setFramework] = React.useState<(typeof frameworks)[number] | null>(null)
+    const [country, setCountry] = React.useState<(typeof countries)[number] | null>(null)
+    const [department, setDepartment] = React.useState<{ id: string; name: string } | null>(null)
+
+    const departments = [
+      { id: 'hr', name: 'Human Resources' },
+      { id: 'eng', name: 'Engineering' },
+      { id: 'sales', name: 'Sales' },
+      { id: 'marketing', name: 'Marketing' },
+      { id: 'finance', name: 'Finance' },
+    ]
+
+    return (
+      <div className="flex flex-col gap-6 w-[400px]">
+        <p className="text-sm text-muted-foreground">
+          Test tab navigation between multiple single-select comboboxes. Use Tab key to move between them.
+        </p>
+        
+        <div className="grid gap-1.5">
+          <Label>Framework</Label>
+          <Combobox
+            options={frameworks}
+            value={framework}
+            onChange={setFramework}
+            placeholder="Select framework..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Selected: {framework?.label ?? 'None'}
+          </p>
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Country</Label>
+          <Combobox
+            options={countries}
+            value={country}
+            onChange={setCountry}
+            placeholder="Select country..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Selected: {country?.label ?? 'None'}
+          </p>
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Department</Label>
+          <Combobox
+            options={departments}
+            labelKey="name"
+            valueKey="id"
+            value={department}
+            onChange={setDepartment}
+            placeholder="Select department..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Selected: {department?.name ?? 'None'}
+          </p>
+        </div>
+      </div>
+    )
+  },
+}
+
+export const MultipleMultiSelect: Story = {
+  name: 'Multiple Multi Select — tab navigation test',
+  render: function MultipleMultiSelect() {
+    const [frameworks, setFrameworks] = React.useState<(typeof frameworks)[number][]>([])
+    const [countries, setCountries] = React.useState<(typeof countries)[number][]>([])
+    const [skills, setSkills] = React.useState<string[]>([])
+
+    const skillOptions = [
+      'JavaScript', 'TypeScript', 'React', 'Vue', 'Angular', 
+      'Node.js', 'Python', 'Java', 'C++', 'Go', 'Rust'
+    ]
+
+    return (
+      <div className="flex flex-col gap-6 w-[400px]">
+        <p className="text-sm text-muted-foreground">
+          Test tab navigation between multiple multi-select comboboxes. Use Tab key to move between them.
+        </p>
+        
+        <div className="grid gap-1.5">
+          <Label>Frameworks</Label>
+          <Combobox
+            multiple
+            selectAll
+            options={frameworks}
+            value={frameworks}
+            onChange={setFrameworks}
+            placeholder="Select frameworks..."
+          />
+          <p className="text-xs text-muted-foreground">
+            Selected: {frameworks.length} framework{frameworks.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Countries</Label>
+          <Combobox
+            multiple
+            options={countries}
+            value={countries}
+            onChange={setCountries}
+            placeholder="Select countries..."
+            maxDisplayItems={2}
+          />
+          <p className="text-xs text-muted-foreground">
+            Selected: {countries.length} countr{countries.length !== 1 ? 'ies' : 'y'}
+          </p>
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Skills</Label>
+          <Combobox
+            multiple
+            simpleOptions
+            options={skillOptions}
+            value={skills}
+            onChange={setSkills}
+            placeholder="Select skills..."
+            maxDisplayItems={3}
+          />
+          <p className="text-xs text-muted-foreground">
+            Selected: {skills.length} skill{skills.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+      </div>
+    )
+  },
+}
+
+export const MixedComboboxTypes: Story = {
+  name: 'Mixed Types — single & multi with tab navigation',
+  render: function MixedComboboxTypes() {
+    const [role, setRole] = React.useState<string | null>(null)
+    const [technologies, setTechnologies] = React.useState<string[]>([])
+    const [location, setLocation] = React.useState<(typeof countries)[number] | null>(null)
+    const [benefits, setBenefits] = React.useState<string[]>([])
+
+    const roles = ['Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'DevOps Engineer', 'Designer']
+    const techStack = ['React', 'Vue', 'Angular', 'Node.js', 'Python', 'Java', 'Docker', 'Kubernetes']
+    const benefitOptions = ['Health Insurance', 'Dental', 'Vision', '401k', 'Remote Work', 'Flexible Hours', 'Stock Options']
+
+    return (
+      <div className="flex flex-col gap-6 w-[450px]">
+        <p className="text-sm text-muted-foreground">
+          Mixed single and multi-select comboboxes. Test tab navigation through all fields.
+        </p>
+        
+        <div className="grid gap-1.5">
+          <Label>Job Role (Single)</Label>
+          <Combobox
+            simpleOptions
+            options={roles}
+            value={role}
+            onChange={setRole}
+            placeholder="Select your role..."
+          />
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Technologies (Multi)</Label>
+          <Combobox
+            multiple
+            simpleOptions
+            selectAll
+            options={techStack}
+            value={technologies}
+            onChange={setTechnologies}
+            placeholder="Select technologies..."
+            maxDisplayItems={2}
+          />
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Location (Single)</Label>
+          <Combobox
+            options={countries}
+            value={location}
+            onChange={setLocation}
+            placeholder="Select location..."
+          />
+        </div>
+
+        <div className="grid gap-1.5">
+          <Label>Benefits (Multi)</Label>
+          <Combobox
+            multiple
+            simpleOptions
+            options={benefitOptions}
+            value={benefits}
+            onChange={setBenefits}
+            placeholder="Select benefits..."
+            maxDisplayItems={3}
+          />
+        </div>
+
+        <div className="mt-4 p-4 bg-muted rounded-md text-sm">
+          <h3 className="font-semibold mb-2">Summary:</h3>
+          <p>Role: {role ?? 'Not selected'}</p>
+          <p>Technologies: {technologies.length > 0 ? technologies.join(', ') : 'None'}</p>
+          <p>Location: {location?.label ?? 'Not selected'}</p>
+          <p>Benefits: {benefits.length > 0 ? benefits.join(', ') : 'None'}</p>
+        </div>
+      </div>
+    )
+  },
+}

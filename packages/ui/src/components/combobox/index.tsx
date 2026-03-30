@@ -131,11 +131,13 @@ function OptionItem({
   option,
   isSelected,
   isMultiple,
+  isFocused,
   onSelect,
 }: {
   option: NormalizedOption<ComboboxOptionInput>
   isSelected: boolean
   isMultiple: boolean
+  isFocused: boolean
   onSelect: () => void
 }) {
   return (
@@ -148,7 +150,8 @@ function OptionItem({
         'hover:bg-muted hover:text-foreground',
         'focus:bg-muted focus:text-foreground',
         'disabled:pointer-events-none disabled:opacity-50',
-        isSelected && 'bg-muted'
+        (isSelected || isFocused) && 'bg-muted',
+        isFocused && 'ring-2 ring-ring'
       )}
     >
       <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
@@ -261,6 +264,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
     const id = React.useId()
     const [open, setOpen] = React.useState(false)
     const [internalSearch, setInternalSearch] = React.useState('')
+    const [focusedIndex, setFocusedIndex] = React.useState(-1)
     const containerRef = React.useRef<HTMLDivElement>(null)
     const searchInputRef = React.useRef<HTMLInputElement | null>(null)
     const listContainerRef = React.useRef<HTMLDivElement>(null)
@@ -407,6 +411,18 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       return () => document.removeEventListener('mousedown', handleClickOutside)
     }, [])
 
+    // Reset focused index when dropdown state changes
+    React.useEffect(() => {
+      if (!open) {
+        setFocusedIndex(-1)
+      }
+    }, [open])
+
+    // Reset focused index when search changes (filtered options change)
+    React.useEffect(() => {
+      setFocusedIndex(-1)
+    }, [search])
+
     React.useEffect(() => {
       if (open) {
         searchInputRef.current?.focus()
@@ -457,6 +473,30 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           aria-labelledby={label ? id : undefined}
           disabled={disabled}
           onClick={() => setOpen(!open)}
+          onKeyDown={(e) => {
+            if (disabled) return
+
+            switch (e.key) {
+              case 'Enter':
+              case ' ':
+                e.preventDefault()
+                setOpen(!open)
+                break
+              case 'ArrowDown':
+              case 'ArrowUp':
+                e.preventDefault()
+                if (!open) {
+                  setOpen(true)
+                }
+                break
+              case 'Escape':
+                e.preventDefault()
+                if (open) {
+                  setOpen(false)
+                }
+                break
+            }
+          }}
           className={cn(
             'flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-left',
             'ring-offset-background',
@@ -629,6 +669,67 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 onFocus={() => {
                   if (openOnFocus && !disabled) setOpen(true)
                 }}
+                onKeyDown={(e) => {
+                  if (disabled) return
+
+                  const availableOptions = filteredOptions.filter(opt => !opt.disabled)
+                  const maxIndex = availableOptions.length - 1
+
+                  switch (e.key) {
+                    case 'ArrowDown':
+                      e.preventDefault()
+                      if (!open) {
+                        setOpen(true)
+                        setFocusedIndex(0)
+                      } else {
+                        setFocusedIndex(prev => {
+                          const nextIndex = prev + 1
+                          return nextIndex > maxIndex ? 0 : nextIndex
+                        })
+                      }
+                      break
+
+                    case 'ArrowUp':
+                      e.preventDefault()
+                      if (!open) {
+                        setOpen(true)
+                        setFocusedIndex(maxIndex)
+                      } else {
+                        setFocusedIndex(prev => {
+                          const nextIndex = prev - 1
+                          return nextIndex < 0 ? maxIndex : nextIndex
+                        })
+                      }
+                      break
+
+                    case 'Enter':
+                      e.preventDefault()
+                      if (open && focusedIndex >= 0 && focusedIndex <= maxIndex) {
+                        const focusedOption = availableOptions[focusedIndex]
+                        if (focusedOption) {
+                          if (isMultiple) {
+                            handleMultiSelect(focusedOption.raw)
+                          } else {
+                            handleSingleSelect(focusedOption.raw)
+                            setOpen(false)
+                          }
+                        }
+                      }
+                      break
+
+                    case 'Escape':
+                      e.preventDefault()
+                      setOpen(false)
+                      setFocusedIndex(-1)
+                      break
+
+                    case 'Tab':
+                      // Let tab work naturally to move to next element
+                      setOpen(false)
+                      setFocusedIndex(-1)
+                      break
+                  }
+                }}
               />
             </div>
 
@@ -710,6 +811,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                           option={option}
                           isSelected={isSelected}
                           isMultiple={isMultiple}
+                          isFocused={focusedIndex === virtualRow.index}
                           onSelect={() =>
                             isMultiple
                               ? handleMultiSelect(option.raw)
@@ -722,7 +824,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 </div>
               ) : (
                 // ── Normal list ───────────────────────────────────────────
-                filteredOptions.map((option) => {
+                filteredOptions.map((option, index) => {
                   const isSelected = isMultiple
                     ? selectedValueKeys.has(option.value)
                     : option.value === singleValueKey
@@ -733,6 +835,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                       option={option}
                       isSelected={isSelected}
                       isMultiple={isMultiple}
+                      isFocused={focusedIndex === index}
                       onSelect={() =>
                         isMultiple
                           ? handleMultiSelect(option.raw)

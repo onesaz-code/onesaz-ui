@@ -2990,3 +2990,46 @@ export const ResponsiveNarrowWidth: Story = {
     )
   },
 }
+
+// AutoHeight with Large Dataset (Testing pagination and scroll behavior)
+export const AutoHeightLargeDataset: Story = {
+  name: "AutoHeight with 200+ Rows",
+  render: () => {
+    // Generate 200 rows to test autoHeight with pagination
+    const largeDataset: User[] = Array.from({ length: 200 }, (_, i) => ({
+      id: i + 1,
+      name: `User ${i + 1}`,
+      email: `user${i + 1}@example.com`,
+      role: ["Admin", "Developer", "Designer", "Manager", "QA Engineer"][i % 5],
+      status: (["active", "inactive", "pending"] as const)[i % 3],
+      department: ["Engineering", "Design", "HR", "Product", "Operations"][
+        i % 5
+      ],
+      salary: 50000 + (i * 1000),
+      joinDate: `202${i % 4}-${String((i % 12) + 1).padStart(2, "0")}-${String((i % 28) + 1).padStart(2, "0")}`,
+    }));
+
+    return (
+      <div className="space-y-4">
+        <p className="text-sm text-muted-foreground">
+          Testing autoHeight with 200 rows. Try changing rows per page to 100 to see if scrolling works correctly.
+          The DataGrid should not cause double-scroll issues with the page container.
+        </p>
+        <DataGrid
+          rows={largeDataset}
+          columns={basicColumns}
+          getRowId={(row) => row.id}
+          autoHeight
+          maxHeight={800}
+          toolBar
+          title="200 Rows with AutoHeight"
+          pageSizeOptions={[10, 25, 50, 100]}
+          paginationModel={{ page: 0, pageSize: 25 }}
+        />
+        <p className="text-xs text-muted-foreground mt-4">
+          This story helps test the scroll behavior when changing pagination sizes.
+        </p>
+      </div>
+    );
+  },
+}
