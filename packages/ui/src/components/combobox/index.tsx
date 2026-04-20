@@ -1,94 +1,96 @@
-import * as React from 'react'
-import { useVirtualizer } from '@tanstack/react-virtual'
-import { cn } from '../../utils/cn'
-import { Label } from '../label'
+import * as React from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { cn } from "../../utils/cn";
+import { Label } from "../label";
 
 export interface ComboboxOption {
-  value: string
-  label: string
-  disabled?: boolean
+  value: string;
+  label: string;
+  disabled?: boolean;
 }
 
-type ComboboxPrimitiveOption = string
-type ComboboxObjectOption = object
-type ComboboxOptionInput = ComboboxPrimitiveOption | ComboboxObjectOption
+type ComboboxPrimitiveOption = string;
+type ComboboxObjectOption = object;
+type ComboboxOptionInput = ComboboxPrimitiveOption | ComboboxObjectOption;
 type NormalizedOption<T> = {
-  value: string
-  label: string
-  disabled?: boolean
-  raw: T
-}
+  value: string;
+  label: string;
+  disabled?: boolean;
+  raw: T;
+};
 
 // ============================================================================
 // Shared Props (common to both single and multi)
 // ============================================================================
-interface ComboboxSharedProps<T extends ComboboxOptionInput = ComboboxOptionInput> {
-  options: T[]
-  placeholder?: string
-  searchPlaceholder?: string
-  emptyMessage?: string
-  disabled?: boolean
-  className?: string
-  clearable?: boolean
-  openOnFocus?: boolean
-  inputValue?: string
-  onInputChange?: (value: string) => void
-  simpleOptions?: boolean
-  labelKey?: string
-  valueKey?: string
+interface ComboboxSharedProps<
+  T extends ComboboxOptionInput = ComboboxOptionInput,
+> {
+  options: T[];
+  placeholder?: string;
+  searchPlaceholder?: string;
+  emptyMessage?: string;
+  disabled?: boolean;
+  className?: string;
+  clearable?: boolean;
+  openOnFocus?: boolean;
+  inputValue?: string;
+  onInputChange?: (value: string) => void;
+  simpleOptions?: boolean;
+  labelKey?: string;
+  valueKey?: string;
   /** Label displayed above the trigger */
-  label?: string
+  label?: string;
   /** Marks the field as required — shows an asterisk and adds native required to the hidden input */
-  required?: boolean
+  required?: boolean;
   /** Node rendered at the start (left) of the trigger button */
-  startAdornment?: React.ReactNode
+  startAdornment?: React.ReactNode;
   /** Click handler for the start adornment — renders it as a button when provided */
-  onStartAdornmentClick?: (e: React.MouseEvent) => void
+  onStartAdornmentClick?: (e: React.MouseEvent) => void;
   /** Node rendered at the end (right) of the trigger button, before the chevron */
-  endAdornment?: React.ReactNode
+  endAdornment?: React.ReactNode;
   /** Click handler for the end adornment — renders it as a button when provided */
-  onEndAdornmentClick?: (e: React.MouseEvent) => void
+  onEndAdornmentClick?: (e: React.MouseEvent) => void;
   /** Enable virtual rendering for large option lists */
-  virtual?: boolean
+  virtual?: boolean;
   /** Height of each option item in pixels (used for virtual rendering) */
-  virtualItemHeight?: number
+  virtualItemHeight?: number;
 }
 
 // ============================================================================
 // Single Select Combobox Props
 // ============================================================================
-export interface ComboboxSingleProps<T extends ComboboxOptionInput = ComboboxOptionInput>
-  extends ComboboxSharedProps<T> {
-  value?: T | null
-  defaultValue?: T | null
-  onChange?: (value: T | null) => void
-  multiple?: false
+export interface ComboboxSingleProps<
+  T extends ComboboxOptionInput = ComboboxOptionInput,
+> extends ComboboxSharedProps<T> {
+  value?: T | null;
+  defaultValue?: T | null;
+  onChange?: (value: T | null) => void;
+  multiple?: false;
 }
 
 // ============================================================================
 // Multi Select Combobox Props
 // ============================================================================
-export interface ComboboxMultipleProps<T extends ComboboxOptionInput = ComboboxOptionInput>
-  extends ComboboxSharedProps<T> {
-  value?: T[]
-  defaultValue?: T[]
-  onChange?: (value: T[]) => void
-  multiple: true
+export interface ComboboxMultipleProps<
+  T extends ComboboxOptionInput = ComboboxOptionInput,
+> extends ComboboxSharedProps<T> {
+  value?: T[];
+  defaultValue?: T[];
+  onChange?: (value: T[]) => void;
+  multiple: true;
   /** Show select-all option */
-  selectAll?: boolean
+  selectAll?: boolean;
   /** Label for select-all option */
-  selectAllLabel?: string
+  selectAllLabel?: string;
   /** Maximum number of items to display as chips before showing "+N more" */
-  maxDisplayItems?: number
+  maxDisplayItems?: number;
 }
 
-export type ComboboxProps =
-  | ComboboxSingleProps
-  | ComboboxMultipleProps
+export type ComboboxProps = ComboboxSingleProps | ComboboxMultipleProps;
 
 // Type guard to check if props are for multi-select
 function isMultipleProps(props: ComboboxProps): props is ComboboxMultipleProps {
-  return props.multiple === true
+  return props.multiple === true;
 }
 
 // ============================================================================
@@ -99,29 +101,29 @@ function Adornment({
   onClick,
   className,
 }: {
-  children: React.ReactNode
-  onClick?: (e: React.MouseEvent) => void
-  className?: string
+  children: React.ReactNode;
+  onClick?: (e: React.MouseEvent) => void;
+  className?: string;
 }) {
   if (onClick) {
     return (
       <button
         type="button"
         onClick={(e) => {
-          e.stopPropagation()
-          onClick(e)
+          e.stopPropagation();
+          onClick(e);
         }}
-        className={cn('shrink-0 rounded p-0.5 hover:bg-muted', className)}
+        className={cn("shrink-0 rounded p-0.5 hover:bg-muted", className)}
       >
         {children}
       </button>
-    )
+    );
   }
   return (
-    <span className={cn('shrink-0 pointer-events-none opacity-50', className)}>
+    <span className={cn("shrink-0 pointer-events-none opacity-50", className)}>
       {children}
     </span>
-  )
+  );
 }
 
 // ============================================================================
@@ -134,11 +136,11 @@ function OptionItem({
   isFocused,
   onSelect,
 }: {
-  option: NormalizedOption<ComboboxOptionInput>
-  isSelected: boolean
-  isMultiple: boolean
-  isFocused: boolean
-  onSelect: () => void
+  option: NormalizedOption<ComboboxOptionInput>;
+  isSelected: boolean;
+  isMultiple: boolean;
+  isFocused: boolean;
+  onSelect: () => void;
 }) {
   return (
     <button
@@ -146,20 +148,20 @@ function OptionItem({
       disabled={option.disabled}
       onClick={onSelect}
       className={cn(
-        'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm text-left outline-none',
-        'hover:bg-muted hover:text-foreground',
-        'focus:bg-muted focus:text-foreground',
-        'disabled:pointer-events-none disabled:opacity-50',
-        (isSelected || isFocused) && 'bg-muted',
-        isFocused && 'ring-2 ring-ring'
+        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm text-left outline-none",
+        "hover:bg-muted hover:text-foreground",
+        "focus:bg-muted focus:text-foreground",
+        "disabled:pointer-events-none disabled:opacity-50",
+        (isSelected || isFocused) && "bg-muted",
+        isFocused && "ring-2 ring-ring",
       )}
     >
       <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
         {isMultiple ? (
           <div
             className={cn(
-              'flex h-4 w-4 items-center justify-center rounded border border-input',
-              isSelected && 'bg-accent border-accent'
+              "flex h-4 w-4 items-center justify-center rounded border border-input",
+              isSelected && "bg-accent border-accent",
             )}
           >
             {isSelected && (
@@ -200,16 +202,16 @@ function OptionItem({
       </span>
       <span className="break-all">{option.label}</span>
     </button>
-  )
+  );
 }
 
 const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
   (props, ref) => {
     const {
       options,
-      placeholder = 'Select option...',
-      searchPlaceholder = 'Search...',
-      emptyMessage = 'No results found.',
+      placeholder = "Select option...",
+      searchPlaceholder = "Search...",
+      emptyMessage = "No results found.",
       disabled = false,
       clearable = true,
       openOnFocus = true,
@@ -222,35 +224,43 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       onEndAdornmentClick,
       virtual = false,
       virtualItemHeight = 36,
-    } = props
+    } = props;
 
-    const labelKey = props.labelKey ?? 'label'
-    const valueKey = props.valueKey ?? 'value'
+    const labelKey = props.labelKey ?? "label";
+    const valueKey = props.valueKey ?? "value";
+
+    const [dropdownPosition, setDropdownPosition] = React.useState<
+      "bottom" | "top"
+    >("bottom");
 
     const getOptionLabel = React.useCallback(
       (option: ComboboxOptionInput) => {
-        if (typeof option === 'string') return option
-        const record = option as Record<string, unknown>
-        const maybeLabel = labelKey in record ? record[labelKey] : undefined
-        return typeof maybeLabel === 'string' ? maybeLabel : String(maybeLabel ?? '')
+        if (typeof option === "string") return option;
+        const record = option as Record<string, unknown>;
+        const maybeLabel = labelKey in record ? record[labelKey] : undefined;
+        return typeof maybeLabel === "string"
+          ? maybeLabel
+          : String(maybeLabel ?? "");
       },
-      [labelKey]
-    )
+      [labelKey],
+    );
 
     const getOptionValue = React.useCallback(
       (option: ComboboxOptionInput) => {
-        if (typeof option === 'string') return option
-        const record = option as Record<string, unknown>
-        const maybeValue = valueKey in record ? record[valueKey] : undefined
+        if (typeof option === "string") return option;
+        const record = option as Record<string, unknown>;
+        const maybeValue = valueKey in record ? record[valueKey] : undefined;
         if (maybeValue !== undefined && maybeValue !== null) {
-          return String(maybeValue)
+          return String(maybeValue);
         }
-        return getOptionLabel(option)
+        return getOptionLabel(option);
       },
-      [valueKey, getOptionLabel]
-    )
+      [valueKey, getOptionLabel],
+    );
 
-    const normalizedOptions = React.useMemo<NormalizedOption<ComboboxOptionInput>[]>(
+    const normalizedOptions = React.useMemo<
+      NormalizedOption<ComboboxOptionInput>[]
+    >(
       () =>
         (options ?? []).map((option) => ({
           raw: option,
@@ -258,65 +268,73 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           value: getOptionValue(option),
           disabled: Boolean((option as { disabled?: boolean }).disabled),
         })),
-      [options, getOptionLabel, getOptionValue]
-    )
+      [options, getOptionLabel, getOptionValue],
+    );
 
-    const id = React.useId()
-    const [open, setOpen] = React.useState(false)
-    const [internalSearch, setInternalSearch] = React.useState('')
-    const [focusedIndex, setFocusedIndex] = React.useState(-1)
-    const containerRef = React.useRef<HTMLDivElement>(null)
-    const searchInputRef = React.useRef<HTMLInputElement | null>(null)
-    const listContainerRef = React.useRef<HTMLDivElement>(null)
+    const id = React.useId();
+    const [open, setOpen] = React.useState(false);
+    const [internalSearch, setInternalSearch] = React.useState("");
+    const [focusedIndex, setFocusedIndex] = React.useState(-1);
+    const containerRef = React.useRef<HTMLDivElement>(null);
+    const searchInputRef = React.useRef<HTMLInputElement | null>(null);
+    const listContainerRef = React.useRef<HTMLDivElement>(null);
 
     // Handle single vs multiple value state
-    const isMultiple = isMultipleProps(props)
-    const selectAll = isMultiple ? (props.selectAll ?? false) : false
-    const selectAllLabel = isMultiple ? (props.selectAllLabel ?? 'Select all') : 'Select all'
+    const isMultiple = isMultipleProps(props);
+    const selectAll = isMultiple ? (props.selectAll ?? false) : false;
+    const selectAllLabel = isMultiple
+      ? (props.selectAllLabel ?? "Select all")
+      : "Select all";
 
     // Single select state
-    const [internalSingleValue, setInternalSingleValue] = React.useState<
-      ComboboxOptionInput | null
-    >(!isMultiple ? (props.defaultValue ?? null) : null)
+    const [internalSingleValue, setInternalSingleValue] =
+      React.useState<ComboboxOptionInput | null>(
+        !isMultiple ? (props.defaultValue ?? null) : null,
+      );
 
     // Multi select state
     const [internalMultiValue, setInternalMultiValue] = React.useState<
       ComboboxOptionInput[]
-    >(isMultiple ? (props.defaultValue ?? []) : [])
+    >(isMultiple ? (props.defaultValue ?? []) : []);
 
     // Get current value(s)
     const singleValue = !isMultiple
-      ? (props.value !== undefined ? (props.value as ComboboxOptionInput | null) : internalSingleValue)
-      : null
+      ? props.value !== undefined
+        ? (props.value as ComboboxOptionInput | null)
+        : internalSingleValue
+      : null;
     const multiValue = isMultiple
-      ? (props.value !== undefined ? (props.value as ComboboxOptionInput[]) : internalMultiValue)
-      : []
+      ? props.value !== undefined
+        ? (props.value as ComboboxOptionInput[])
+        : internalMultiValue
+      : [];
 
-    const search = props.inputValue !== undefined ? props.inputValue : internalSearch
+    const search =
+      props.inputValue !== undefined ? props.inputValue : internalSearch;
 
     const filteredOptions = React.useMemo(() => {
-      if (!search) return normalizedOptions
+      if (!search) return normalizedOptions;
       return normalizedOptions.filter((option) =>
-        option.label.toLowerCase().includes(search.toLowerCase())
-      )
-    }, [normalizedOptions, search])
+        option.label.toLowerCase().includes(search.toLowerCase()),
+      );
+    }, [normalizedOptions, search]);
 
     // Single select: get selected option
     // Multi select: get selected options
-    const selectedOptions = isMultiple ? multiValue : []
+    const selectedOptions = isMultiple ? multiValue : [];
     const selectedValueKeys = React.useMemo(
       () => new Set(selectedOptions.map((option) => getOptionValue(option))),
-      [selectedOptions, getOptionValue]
-    )
-    const singleValueKey = singleValue ? getOptionValue(singleValue) : null
+      [selectedOptions, getOptionValue],
+    );
+    const singleValueKey = singleValue ? getOptionValue(singleValue) : null;
     const selectableOptions = React.useMemo(
       () => normalizedOptions.filter((option) => !option.disabled),
-      [normalizedOptions]
-    )
+      [normalizedOptions],
+    );
     const allSelected =
       isMultiple &&
       selectableOptions.length > 0 &&
-      selectableOptions.every((option) => selectedValueKeys.has(option.value))
+      selectableOptions.every((option) => selectedValueKeys.has(option.value));
 
     // ========================================================================
     // Virtual list setup — always initialized, only used when virtual=true
@@ -326,133 +344,175 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       getScrollElement: () => listContainerRef.current,
       estimateSize: () => virtualItemHeight,
       overscan: 5,
-    })
+    });
 
     const handleSingleSelect = (option: ComboboxOptionInput) => {
       if (!isMultiple) {
         if (props.value === undefined) {
-          setInternalSingleValue(option)
+          setInternalSingleValue(option);
         }
-        props.onChange?.(option as never)
-        setOpen(false)
+        props.onChange?.(option as never);
+        setOpen(false);
         if (props.inputValue === undefined) {
-          setInternalSearch('')
+          setInternalSearch("");
         }
       }
-    }
+    };
 
     const handleMultiSelect = (option: ComboboxOptionInput) => {
       if (isMultiple) {
-        const optionKey = getOptionValue(option)
-        const exists = multiValue.some((item) => getOptionValue(item) === optionKey)
+        const optionKey = getOptionValue(option);
+        const exists = multiValue.some(
+          (item) => getOptionValue(item) === optionKey,
+        );
         const newValue = exists
           ? multiValue.filter((item) => getOptionValue(item) !== optionKey)
-          : [...multiValue, option]
+          : [...multiValue, option];
 
         if (props.value === undefined) {
-          setInternalMultiValue(newValue)
+          setInternalMultiValue(newValue);
         }
-        props.onChange?.(newValue as never)
+        props.onChange?.(newValue as never);
       }
-    }
+    };
 
     const handleRemoveItem = (optionValue: string, e: React.MouseEvent) => {
-      e.stopPropagation()
+      e.stopPropagation();
       if (isMultiple) {
-        const newValue = multiValue.filter((v) => getOptionValue(v) !== optionValue)
+        const newValue = multiValue.filter(
+          (v) => getOptionValue(v) !== optionValue,
+        );
         if (props.value === undefined) {
-          setInternalMultiValue(newValue)
+          setInternalMultiValue(newValue);
         }
-        props.onChange?.(newValue as never)
+        props.onChange?.(newValue as never);
       }
-    }
+    };
 
     const handleClearAll = (e: React.MouseEvent) => {
-      e.stopPropagation()
+      e.stopPropagation();
       if (isMultiple) {
         if (props.value === undefined) {
-          setInternalMultiValue([])
+          setInternalMultiValue([]);
         }
-        props.onChange?.([] as never)
+        props.onChange?.([] as never);
       }
-    }
+    };
 
     const handleSelectAll = (e: React.MouseEvent) => {
-      e.stopPropagation()
-      if (!isMultiple) return
-      const nextValue = allSelected ? [] : selectableOptions
+      e.stopPropagation();
+      if (!isMultiple) return;
+      const nextValue = allSelected ? [] : selectableOptions;
       if (props.value === undefined) {
-        setInternalMultiValue(nextValue.map((option) => option.raw))
+        setInternalMultiValue(nextValue.map((option) => option.raw));
       }
-      props.onChange?.(nextValue.map((option) => option.raw) as never)
-    }
+      props.onChange?.(nextValue.map((option) => option.raw) as never);
+    };
 
     const handleClearSingle = (e: React.MouseEvent) => {
-      e.stopPropagation()
+      e.stopPropagation();
       if (!isMultiple) {
         if (props.value === undefined) {
-          setInternalSingleValue(null)
+          setInternalSingleValue(null);
         }
-        props.onChange?.(null)
+        props.onChange?.(null);
         if (props.inputValue === undefined) {
-          setInternalSearch('')
+          setInternalSearch("");
         }
       }
-    }
+    };
 
     // Close on click outside
     React.useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
-        if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-          setOpen(false)
+        if (
+          containerRef.current &&
+          !containerRef.current.contains(event.target as Node)
+        ) {
+          setOpen(false);
         }
-      }
-      document.addEventListener('mousedown', handleClickOutside)
-      return () => document.removeEventListener('mousedown', handleClickOutside)
-    }, [])
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     // Reset focused index when dropdown state changes
     React.useEffect(() => {
       if (!open) {
-        setFocusedIndex(-1)
+        setFocusedIndex(-1);
       }
-    }, [open])
+    }, [open]);
 
     // Reset focused index when search changes (filtered options change)
     React.useEffect(() => {
-      setFocusedIndex(-1)
-    }, [search])
+      setFocusedIndex(-1);
+    }, [search]);
 
     React.useEffect(() => {
       if (open) {
-        searchInputRef.current?.focus()
+        searchInputRef.current?.focus();
       }
-    }, [open])
+    }, [open]);
 
     React.useImperativeHandle(
       ref,
       () => searchInputRef.current as HTMLInputElement,
-      []
-    )
+      [],
+    );
 
     const setSearchRef = (node: HTMLInputElement | null) => {
-      searchInputRef.current = node
-    }
+      searchInputRef.current = node;
+    };
 
-    const maxDisplayItems = isMultiple ? (props.maxDisplayItems ?? 3) : 0
-    const displayedOptions = selectedOptions.slice(0, maxDisplayItems)
-    const remainingCount = selectedOptions.length - maxDisplayItems
+    const maxDisplayItems = isMultiple ? (props.maxDisplayItems ?? 3) : 0;
+    const displayedOptions = selectedOptions.slice(0, maxDisplayItems);
+    const remainingCount = selectedOptions.length - maxDisplayItems;
 
     const hiddenValue = isMultiple
-      ? (multiValue.length > 0 ? 'filled' : '')
-      : (singleValue ? getOptionValue(singleValue) : '')
+      ? multiValue.length > 0
+        ? "filled"
+        : ""
+      : singleValue
+        ? getOptionValue(singleValue)
+        : "";
+
+    React.useEffect(() => {
+      if (!open || !containerRef.current) return;
+
+      const recalculate = () => {
+        if (!containerRef.current) return;
+        const rect = containerRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        const dropdownHeight = 340;
+        setDropdownPosition(
+          spaceBelow < dropdownHeight && spaceAbove > spaceBelow
+            ? "top"
+            : "bottom",
+        );
+      };
+
+      recalculate(); // run immediately on open
+      window.addEventListener("scroll", recalculate, true);
+      window.addEventListener("resize", recalculate);
+
+      return () => {
+        window.removeEventListener("scroll", recalculate, true);
+        window.removeEventListener("resize", recalculate);
+      };
+    }, [open]);
 
     return (
       <div ref={containerRef} className="relative">
         {label && (
           <Label htmlFor={id} className="mb-1.5 block">
             {label}
-            {required && <span className="ml-0.5 text-red-500" aria-hidden="true">*</span>}
+            {required && (
+              <span className="ml-0.5 text-red-500" aria-hidden="true">
+                *
+              </span>
+            )}
           </Label>
         )}
         {/* Hidden input carries the value so native form validation works */}
@@ -474,38 +534,39 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           disabled={disabled}
           onClick={() => setOpen(!open)}
           onKeyDown={(e) => {
-            if (disabled) return
+            if (disabled) return;
 
             switch (e.key) {
-              case 'Enter':
-              case ' ':
-                e.preventDefault()
-                setOpen(!open)
-                break
-              case 'ArrowDown':
-              case 'ArrowUp':
-                e.preventDefault()
+              case "Enter":
+              case " ":
+                e.preventDefault();
+                setOpen(!open);
+                break;
+              case "ArrowDown":
+              case "ArrowUp":
+                e.preventDefault();
                 if (!open) {
-                  setOpen(true)
+                  setOpen(true);
                 }
-                break
-              case 'Escape':
-                e.preventDefault()
+                break;
+              case "Escape":
+                e.preventDefault();
                 if (open) {
-                  setOpen(false)
+                  setOpen(false);
                 }
-                break
+                break;
             }
           }}
           className={cn(
-            'flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-left',
-            'ring-offset-background',
-            'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
-            'disabled:cursor-not-allowed disabled:opacity-50',
-            (isMultiple && selectedOptions.length > 0) || (!isMultiple && singleValue) 
-              ? 'h-auto items-start justify-between' 
-              : 'items-center justify-between',
-            className
+            "flex min-h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-left",
+            "ring-offset-background",
+            "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+            "disabled:cursor-not-allowed disabled:opacity-50",
+            (isMultiple && selectedOptions.length > 0) ||
+              (!isMultiple && singleValue)
+              ? "h-auto items-start justify-between"
+              : "items-center justify-between",
+            className,
           )}
         >
           {/* Start adornment */}
@@ -526,10 +587,14 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                       key={getOptionValue(option)}
                       className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
                     >
-                      <span className="break-all">{getOptionLabel(option)}</span>
+                      <span className="break-all">
+                        {getOptionLabel(option)}
+                      </span>
                       <button
                         type="button"
-                        onClick={(e) => handleRemoveItem(getOptionValue(option), e)}
+                        onClick={(e) =>
+                          handleRemoveItem(getOptionValue(option), e)
+                        }
                         className="ml-1 rounded-full hover:bg-background/50"
                       >
                         <svg
@@ -557,7 +622,12 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
               )}
             </div>
           ) : (
-            <span className={cn('flex-1 break-all', !singleValue && 'text-muted-foreground')}>
+            <span
+              className={cn(
+                "flex-1 break-all",
+                !singleValue && "text-muted-foreground",
+              )}
+            >
               {singleValue ? getOptionLabel(singleValue) : placeholder}
             </span>
           )}
@@ -628,8 +698,8 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
               strokeLinecap="round"
               strokeLinejoin="round"
               className={cn(
-                'h-4 w-4 shrink-0 opacity-50 transition-transform',
-                open && 'rotate-180'
+                "h-4 w-4 shrink-0 opacity-50 transition-transform",
+                open && "rotate-180",
               )}
             >
               <path d="m6 9 6 6 6-6" />
@@ -638,7 +708,14 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         </button>
 
         {open && (
-          <div className="absolute z-50 mt-1 w-full overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md">
+          <div
+            className={cn(
+              "absolute z-50 w-full overflow-hidden rounded-md border border-border bg-popover text-popover-foreground shadow-md",
+              dropdownPosition === "bottom"
+                ? "top-full mt-1"
+                : "bottom-full mb-1",
+            )}
+          >
             <div className="flex items-center border-b border-border px-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -662,72 +739,78 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 value={search}
                 onChange={(e) => {
                   if (props.inputValue === undefined) {
-                    setInternalSearch(e.target.value)
+                    setInternalSearch(e.target.value);
                   }
-                  props.onInputChange?.(e.target.value)
+                  props.onInputChange?.(e.target.value);
                 }}
                 onFocus={() => {
-                  if (openOnFocus && !disabled) setOpen(true)
+                  if (openOnFocus && !disabled) setOpen(true);
                 }}
                 onKeyDown={(e) => {
-                  if (disabled) return
+                  if (disabled) return;
 
-                  const availableOptions = filteredOptions.filter(opt => !opt.disabled)
-                  const maxIndex = availableOptions.length - 1
+                  const availableOptions = filteredOptions.filter(
+                    (opt) => !opt.disabled,
+                  );
+                  const maxIndex = availableOptions.length - 1;
 
                   switch (e.key) {
-                    case 'ArrowDown':
-                      e.preventDefault()
+                    case "ArrowDown":
+                      e.preventDefault();
                       if (!open) {
-                        setOpen(true)
-                        setFocusedIndex(0)
+                        setOpen(true);
+                        setFocusedIndex(0);
                       } else {
-                        setFocusedIndex(prev => {
-                          const nextIndex = prev + 1
-                          return nextIndex > maxIndex ? 0 : nextIndex
-                        })
+                        setFocusedIndex((prev) => {
+                          const nextIndex = prev + 1;
+                          return nextIndex > maxIndex ? 0 : nextIndex;
+                        });
                       }
-                      break
+                      break;
 
-                    case 'ArrowUp':
-                      e.preventDefault()
+                    case "ArrowUp":
+                      e.preventDefault();
                       if (!open) {
-                        setOpen(true)
-                        setFocusedIndex(maxIndex)
+                        setOpen(true);
+                        setFocusedIndex(maxIndex);
                       } else {
-                        setFocusedIndex(prev => {
-                          const nextIndex = prev - 1
-                          return nextIndex < 0 ? maxIndex : nextIndex
-                        })
+                        setFocusedIndex((prev) => {
+                          const nextIndex = prev - 1;
+                          return nextIndex < 0 ? maxIndex : nextIndex;
+                        });
                       }
-                      break
+                      break;
 
-                    case 'Enter':
-                      e.preventDefault()
-                      if (open && focusedIndex >= 0 && focusedIndex <= maxIndex) {
-                        const focusedOption = availableOptions[focusedIndex]
+                    case "Enter":
+                      e.preventDefault();
+                      if (
+                        open &&
+                        focusedIndex >= 0 &&
+                        focusedIndex <= maxIndex
+                      ) {
+                        const focusedOption = availableOptions[focusedIndex];
                         if (focusedOption) {
                           if (isMultiple) {
-                            handleMultiSelect(focusedOption.raw)
+                            handleMultiSelect(focusedOption.raw);
                           } else {
-                            handleSingleSelect(focusedOption.raw)
-                            setOpen(false)
+                            handleSingleSelect(focusedOption.raw);
+                            setOpen(false);
                           }
                         }
                       }
-                      break
+                      break;
 
-                    case 'Escape':
-                      e.preventDefault()
-                      setOpen(false)
-                      setFocusedIndex(-1)
-                      break
+                    case "Escape":
+                      e.preventDefault();
+                      setOpen(false);
+                      setFocusedIndex(-1);
+                      break;
 
-                    case 'Tab':
+                    case "Tab":
                       // Let tab work naturally to move to next element
-                      setOpen(false)
-                      setFocusedIndex(-1)
-                      break
+                      setOpen(false);
+                      setFocusedIndex(-1);
+                      break;
                   }
                 }}
               />
@@ -740,17 +823,17 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                   type="button"
                   onClick={handleSelectAll}
                   className={cn(
-                    'relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none',
-                    'hover:bg-muted hover:text-foreground',
-                    'focus:bg-muted focus:text-foreground',
-                    allSelected && 'bg-muted'
+                    "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none",
+                    "hover:bg-muted hover:text-foreground",
+                    "focus:bg-muted focus:text-foreground",
+                    allSelected && "bg-muted",
                   )}
                 >
                   <span className="absolute left-2 flex h-4 w-4 items-center justify-center">
                     <div
                       className={cn(
-                        'flex h-4 w-4 items-center justify-center rounded border border-input',
-                        allSelected && 'bg-accent border-accent'
+                        "flex h-4 w-4 items-center justify-center rounded border border-input",
+                        allSelected && "bg-accent border-accent",
                       )}
                     >
                       {allSelected && (
@@ -788,19 +871,22 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
               ) : virtual ? (
                 // ── Virtual list ──────────────────────────────────────────
                 <div
-                  style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}
+                  style={{
+                    height: rowVirtualizer.getTotalSize(),
+                    position: "relative",
+                  }}
                 >
                   {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-                    const option = filteredOptions[virtualRow.index]
+                    const option = filteredOptions[virtualRow.index];
                     const isSelected = isMultiple
                       ? selectedValueKeys.has(option.value)
-                      : option.value === singleValueKey
+                      : option.value === singleValueKey;
 
                     return (
                       <div
                         key={virtualRow.key}
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           top: virtualRow.start,
                           left: 0,
                           right: 0,
@@ -819,7 +905,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                           }
                         />
                       </div>
-                    )
+                    );
                   })}
                 </div>
               ) : (
@@ -827,7 +913,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                 filteredOptions.map((option, index) => {
                   const isSelected = isMultiple
                     ? selectedValueKeys.has(option.value)
-                    : option.value === singleValueKey
+                    : option.value === singleValueKey;
 
                   return (
                     <OptionItem
@@ -842,16 +928,16 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                           : handleSingleSelect(option.raw)
                       }
                     />
-                  )
+                  );
                 })
               )}
             </div>
           </div>
         )}
       </div>
-    )
-  }
-)
-Combobox.displayName = 'Combobox'
+    );
+  },
+);
+Combobox.displayName = "Combobox";
 
-export { Combobox }
+export { Combobox };

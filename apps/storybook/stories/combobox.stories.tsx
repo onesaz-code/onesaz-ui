@@ -1,43 +1,43 @@
-import * as React from 'react'
-import type { Meta, StoryObj } from '@storybook/react'
-import { Combobox, Label } from '@onesaz/ui'
+import * as React from "react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { Combobox, Label } from "@onesaz/ui";
 
 const meta: Meta<typeof Combobox> = {
-  title: 'Components/Combobox',
+  title: "Components/Combobox",
   component: Combobox,
   parameters: {
-    layout: 'centered',
+    layout: "centered",
   },
-  tags: ['autodocs'],
-}
+  tags: ["autodocs"],
+};
 
-export default meta
-type Story = StoryObj<typeof Combobox>
+export default meta;
+type Story = StoryObj<typeof Combobox>;
 
 const frameworks = [
-  { value: 'next', label: 'Next.js' },
-  { value: 'remix', label: 'Remix' },
-  { value: 'astro', label: 'Astro' },
-  { value: 'gatsby', label: 'Gatsby' },
-  { value: 'nuxt', label: 'Nuxt.js' },
-  { value: 'sveltekit', label: 'SvelteKit' },
-]
+  { value: "next", label: "Next.js" },
+  { value: "remix", label: "Remix" },
+  { value: "astro", label: "Astro" },
+  { value: "gatsby", label: "Gatsby" },
+  { value: "nuxt", label: "Nuxt.js" },
+  { value: "sveltekit", label: "SvelteKit" },
+];
 
 const countries = [
-  { value: 'us', label: 'United States' },
-  { value: 'uk', label: 'United Kingdom' },
-  { value: 'ca', label: 'Canada' },
-  { value: 'au', label: 'Australia' },
-  { value: 'de', label: 'Germany' },
-  { value: 'fr', label: 'France' },
-  { value: 'jp', label: 'Japan' },
-  { value: 'in', label: 'India' },
-]
+  { value: "us", label: "United States" },
+  { value: "uk", label: "United Kingdom" },
+  { value: "ca", label: "Canada" },
+  { value: "au", label: "Australia" },
+  { value: "de", label: "Germany" },
+  { value: "fr", label: "France" },
+  { value: "jp", label: "Japan" },
+  { value: "in", label: "India" },
+];
 
 export const Default: Story = {
   args: {
     options: frameworks,
-    placeholder: 'Select framework...',
+    placeholder: "Select framework...",
   },
   decorators: [
     (Story) => (
@@ -46,7 +46,7 @@ export const Default: Story = {
       </div>
     ),
   ],
-}
+};
 
 export const WithLabel: Story = {
   render: () => (
@@ -59,7 +59,7 @@ export const WithLabel: Story = {
       />
     </div>
   ),
-}
+};
 
 export const Countries: Story = {
   render: () => (
@@ -72,7 +72,7 @@ export const Countries: Story = {
       />
     </div>
   ),
-}
+};
 
 export const SimpleOptions: Story = {
   render: () => (
@@ -80,34 +80,34 @@ export const SimpleOptions: Story = {
       <Label>Simple Options</Label>
       <Combobox
         simpleOptions
-        options={['Alpha', 'Beta', 'Gamma', 'Delta']}
+        options={["Alpha", "Beta", "Gamma", "Delta"]}
         placeholder="Select option..."
       />
     </div>
   ),
-}
+};
 
 export const ControlledSimple: Story = {
   render: function ControlledSimple() {
-    const [value, setValue] = React.useState<string | null>(null)
+    const [value, setValue] = React.useState<string | null>(null);
 
     return (
       <div className="grid w-[300px] items-center gap-1.5">
         <Label>Controlled Simple</Label>
         <Combobox
           simpleOptions
-          options={['Alpha', 'Beta', 'Gamma', 'Delta']}
+          options={["Alpha", "Beta", "Gamma", "Delta"]}
           value={value}
           onChange={setValue}
           placeholder="Select option..."
         />
         <p className="text-sm text-[var(--muted-foreground)]">
-          Selected: {value ?? 'None'}
+          Selected: {value ?? "None"}
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const CustomKeys: Story = {
   render: () => (
@@ -115,9 +115,9 @@ export const CustomKeys: Story = {
       <Label>Custom Keys</Label>
       <Combobox
         options={[
-          { id: 'hr', name: 'HR' },
-          { id: 'ops', name: 'Operations' },
-          { id: 'sales', name: 'Sales' },
+          { id: "hr", name: "HR" },
+          { id: "ops", name: "Operations" },
+          { id: "sales", name: "Sales" },
         ]}
         labelKey="name"
         valueKey="id"
@@ -125,11 +125,13 @@ export const CustomKeys: Story = {
       />
     </div>
   ),
-}
+};
 
 export const ControlledMultiCustomKeys: Story = {
   render: function ControlledMultiCustomKeys() {
-    const [value, setValue] = React.useState<{ id: string; name: string }[]>([])
+    const [value, setValue] = React.useState<{ id: string; name: string }[]>(
+      [],
+    );
 
     return (
       <div className="grid w-[350px] items-center gap-1.5">
@@ -137,9 +139,9 @@ export const ControlledMultiCustomKeys: Story = {
         <Combobox
           multiple
           options={[
-            { id: 'hr', name: 'HR' },
-            { id: 'ops', name: 'Operations' },
-            { id: 'sales', name: 'Sales' },
+            { id: "hr", name: "HR" },
+            { id: "ops", name: "Operations" },
+            { id: "sales", name: "Sales" },
           ]}
           labelKey="name"
           valueKey="id"
@@ -148,16 +150,19 @@ export const ControlledMultiCustomKeys: Story = {
           placeholder="Select departments..."
         />
         <p className="text-sm text-[var(--muted-foreground)]">
-          Selected: {value.length ? value.map((v) => v.name).join(', ') : 'None'}
+          Selected:{" "}
+          {value.length ? value.map((v) => v.name).join(", ") : "None"}
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const Controlled: Story = {
   render: function ControlledCombobox() {
-    const [value, setValue] = React.useState<(typeof frameworks)[number] | null>(null)
+    const [value, setValue] = React.useState<
+      (typeof frameworks)[number] | null
+    >(null);
 
     return (
       <div className="grid w-[300px] items-center gap-1.5">
@@ -169,17 +174,17 @@ export const Controlled: Story = {
           placeholder="Select framework..."
         />
         <p className="text-sm text-[var(--muted-foreground)]">
-          Selected: {value?.label ?? 'None'}
+          Selected: {value?.label ?? "None"}
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const Disabled: Story = {
   args: {
     options: frameworks,
-    placeholder: 'Select framework...',
+    placeholder: "Select framework...",
     disabled: true,
   },
   decorators: [
@@ -189,18 +194,18 @@ export const Disabled: Story = {
       </div>
     ),
   ],
-}
+};
 
 export const WithDisabledOptions: Story = {
   args: {
     options: [
-      { value: 'next', label: 'Next.js' },
-      { value: 'remix', label: 'Remix' },
-      { value: 'astro', label: 'Astro', disabled: true },
-      { value: 'gatsby', label: 'Gatsby', disabled: true },
-      { value: 'nuxt', label: 'Nuxt.js' },
+      { value: "next", label: "Next.js" },
+      { value: "remix", label: "Remix" },
+      { value: "astro", label: "Astro", disabled: true },
+      { value: "gatsby", label: "Gatsby", disabled: true },
+      { value: "nuxt", label: "Nuxt.js" },
     ],
-    placeholder: 'Select framework...',
+    placeholder: "Select framework...",
   },
   decorators: [
     (Story) => (
@@ -209,7 +214,7 @@ export const WithDisabledOptions: Story = {
       </div>
     ),
   ],
-}
+};
 
 // ============================================================================
 // Multi-Select Examples
@@ -227,11 +232,11 @@ export const MultiSelect: Story = {
       />
     </div>
   ),
-}
+};
 
 export const ControlledSimpleMulti: Story = {
   render: function ControlledSimpleMulti() {
-    const [value, setValue] = React.useState<string[]>([])
+    const [value, setValue] = React.useState<string[]>([]);
 
     return (
       <div className="grid w-[350px] items-center gap-1.5">
@@ -239,18 +244,18 @@ export const ControlledSimpleMulti: Story = {
         <Combobox
           multiple
           simpleOptions
-          options={['Alpha', 'Beta', 'Gamma', 'Delta']}
+          options={["Alpha", "Beta", "Gamma", "Delta"]}
           value={value}
           onChange={setValue}
           placeholder="Select options..."
         />
         <p className="text-sm text-[var(--muted-foreground)]">
-          Selected: {value.length ? value.join(', ') : 'None'}
+          Selected: {value.length ? value.join(", ") : "None"}
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const MultiSelectWithSelectAll: Story = {
   render: () => (
@@ -265,14 +270,14 @@ export const MultiSelectWithSelectAll: Story = {
       />
     </div>
   ),
-}
+};
 
 export const MultiSelectControlled: Story = {
   render: function ControlledMultiCombobox() {
     const [value, setValue] = React.useState<(typeof frameworks)[number][]>([
       frameworks[0],
       frameworks[1],
-    ])
+    ]);
 
     return (
       <div className="grid w-[350px] items-center gap-1.5">
@@ -285,12 +290,13 @@ export const MultiSelectControlled: Story = {
           placeholder="Select frameworks..."
         />
         <p className="text-sm text-[var(--muted-foreground)]">
-          Selected: {value.length > 0 ? value.map((v) => v.label).join(', ') : 'None'}
+          Selected:{" "}
+          {value.length > 0 ? value.map((v) => v.label).join(", ") : "None"}
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const MultiSelectManyOptions: Story = {
   render: function MultiSelectManyOptions() {
@@ -300,7 +306,7 @@ export const MultiSelectManyOptions: Story = {
       countries[2],
       countries[4],
       countries[5],
-    ])
+    ]);
 
     return (
       <div className="grid w-[350px] items-center gap-1.5">
@@ -317,9 +323,9 @@ export const MultiSelectManyOptions: Story = {
           {value.length} countries selected
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const MultiSelectCustomMaxDisplay: Story = {
   render: () => (
@@ -329,7 +335,12 @@ export const MultiSelectCustomMaxDisplay: Story = {
         <Combobox
           multiple
           options={frameworks}
-          defaultValue={[frameworks[0], frameworks[1], frameworks[2], frameworks[3]]}
+          defaultValue={[
+            frameworks[0],
+            frameworks[1],
+            frameworks[2],
+            frameworks[3],
+          ]}
           placeholder="Select frameworks..."
           maxDisplayItems={2}
         />
@@ -339,24 +350,26 @@ export const MultiSelectCustomMaxDisplay: Story = {
         <Combobox
           multiple
           options={frameworks}
-          defaultValue={[frameworks[0], frameworks[1], frameworks[2], frameworks[3]]}
+          defaultValue={[
+            frameworks[0],
+            frameworks[1],
+            frameworks[2],
+            frameworks[3],
+          ]}
           placeholder="Select frameworks..."
           maxDisplayItems={5}
         />
       </div>
     </div>
   ),
-}
+};
 
 export const SingleVsMulti: Story = {
   render: () => (
     <div className="space-y-6 w-[350px]">
       <div className="space-y-2">
         <Label>Single Select</Label>
-        <Combobox
-          options={frameworks}
-          placeholder="Select one framework..."
-        />
+        <Combobox options={frameworks} placeholder="Select one framework..." />
       </div>
       <div className="space-y-2">
         <Label>Multi Select</Label>
@@ -368,7 +381,7 @@ export const SingleVsMulti: Story = {
       </div>
     </div>
   ),
-}
+};
 
 // ============================================================================
 // Adornment Examples
@@ -391,7 +404,7 @@ const GlobeIcon = () => (
     <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
     <path d="M2 12h20" />
   </svg>
-)
+);
 
 const FilterIcon = () => (
   <svg
@@ -407,7 +420,7 @@ const FilterIcon = () => (
   >
     <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
   </svg>
-)
+);
 
 const CalendarIcon = () => (
   <svg
@@ -426,7 +439,7 @@ const CalendarIcon = () => (
     <line x1="8" x2="8" y1="2" y2="6" />
     <line x1="3" x2="21" y1="10" y2="10" />
   </svg>
-)
+);
 
 const InfoIcon = () => (
   <svg
@@ -444,7 +457,7 @@ const InfoIcon = () => (
     <path d="M12 16v-4" />
     <path d="M12 8h.01" />
   </svg>
-)
+);
 
 /** Decorative start adornment — no click handler, rendered as a non-interactive span */
 export const WithStartAdornment: Story = {
@@ -458,7 +471,7 @@ export const WithStartAdornment: Story = {
       />
     </div>
   ),
-}
+};
 
 /** Decorative end adornment — no click handler */
 export const WithEndAdornment: Story = {
@@ -472,7 +485,7 @@ export const WithEndAdornment: Story = {
       />
     </div>
   ),
-}
+};
 
 /** Both adornments as decorative icons */
 export const WithBothAdornments: Story = {
@@ -487,12 +500,12 @@ export const WithBothAdornments: Story = {
       />
     </div>
   ),
-}
+};
 
 /** Clickable start adornment — handler fires without opening the dropdown */
 export const WithClickableStartAdornment: Story = {
   render: function WithClickableStartAdornment() {
-    const [log, setLog] = React.useState<string | null>(null)
+    const [log, setLog] = React.useState<string | null>(null);
 
     return (
       <div className="grid w-[300px] items-center gap-1.5">
@@ -501,20 +514,18 @@ export const WithClickableStartAdornment: Story = {
           options={countries}
           placeholder="Select country..."
           startAdornment={<GlobeIcon />}
-          onStartAdornmentClick={() => setLog('Globe clicked!')}
+          onStartAdornmentClick={() => setLog("Globe clicked!")}
         />
-        {log && (
-          <p className="text-xs text-[var(--muted-foreground)]">{log}</p>
-        )}
+        {log && <p className="text-xs text-[var(--muted-foreground)]">{log}</p>}
       </div>
-    )
+    );
   },
-}
+};
 
 /** Clickable end adornment — demonstrates a custom action slot */
 export const WithClickableEndAdornment: Story = {
   render: function WithClickableEndAdornment() {
-    const [log, setLog] = React.useState<string | null>(null)
+    const [log, setLog] = React.useState<string | null>(null);
 
     return (
       <div className="grid w-[300px] items-center gap-1.5">
@@ -523,20 +534,18 @@ export const WithClickableEndAdornment: Story = {
           options={frameworks}
           placeholder="Select framework..."
           endAdornment={<FilterIcon />}
-          onEndAdornmentClick={() => setLog('Filter clicked!')}
+          onEndAdornmentClick={() => setLog("Filter clicked!")}
         />
-        {log && (
-          <p className="text-xs text-[var(--muted-foreground)]">{log}</p>
-        )}
+        {log && <p className="text-xs text-[var(--muted-foreground)]">{log}</p>}
       </div>
-    )
+    );
   },
-}
+};
 
 /** Both adornments clickable — full API demonstration */
 export const WithBothClickableAdornments: Story = {
   render: function WithBothClickableAdornments() {
-    const [log, setLog] = React.useState<string>('—')
+    const [log, setLog] = React.useState<string>("—");
 
     return (
       <div className="grid w-[320px] items-center gap-1.5">
@@ -545,15 +554,17 @@ export const WithBothClickableAdornments: Story = {
           options={frameworks}
           placeholder="Select framework..."
           startAdornment={<GlobeIcon />}
-          onStartAdornmentClick={() => setLog('Start adornment clicked')}
+          onStartAdornmentClick={() => setLog("Start adornment clicked")}
           endAdornment={<FilterIcon />}
-          onEndAdornmentClick={() => setLog('End adornment clicked')}
+          onEndAdornmentClick={() => setLog("End adornment clicked")}
         />
-        <p className="text-xs text-[var(--muted-foreground)]">Last action: {log}</p>
+        <p className="text-xs text-[var(--muted-foreground)]">
+          Last action: {log}
+        </p>
       </div>
-    )
+    );
   },
-}
+};
 
 // ============================================================================
 // Virtual Rendering Examples
@@ -564,14 +575,16 @@ const generateOptions = (count: number) =>
   Array.from({ length: count }, (_, i) => ({
     value: `item-${i}`,
     label: `Option ${i + 1} — Item ${i}`,
-  }))
+  }));
 
-const largeOptionList = generateOptions(10_000)
+const largeOptionList = generateOptions(10_000);
 
 export const VirtualSingleSelect: Story = {
-  name: 'Virtual — single select (10 000 options)',
+  name: "Virtual — single select (10 000 options)",
   render: function VirtualSingleSelect() {
-    const [value, setValue] = React.useState<(typeof largeOptionList)[number] | null>(null)
+    const [value, setValue] = React.useState<
+      (typeof largeOptionList)[number] | null
+    >(null);
 
     return (
       <div className="grid w-[340px] items-center gap-1.5">
@@ -585,20 +598,22 @@ export const VirtualSingleSelect: Story = {
           searchPlaceholder="Search 10 000 options..."
         />
         <p className="text-xs text-[var(--muted-foreground)]">
-          Selected: {value?.label ?? 'None'}
+          Selected: {value?.label ?? "None"}
         </p>
         <p className="text-xs text-[var(--muted-foreground)]">
           Only ~10 DOM nodes rendered at a time regardless of list size.
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const VirtualMultiSelect: Story = {
-  name: 'Virtual — multi select with select-all',
+  name: "Virtual — multi select with select-all",
   render: function VirtualMultiSelect() {
-    const [value, setValue] = React.useState<(typeof largeOptionList)[number][]>([])
+    const [value, setValue] = React.useState<
+      (typeof largeOptionList)[number][]
+    >([]);
 
     return (
       <div className="grid w-[340px] items-center gap-1.5">
@@ -615,19 +630,22 @@ export const VirtualMultiSelect: Story = {
           maxDisplayItems={3}
         />
         <p className="text-xs text-[var(--muted-foreground)]">
-          {value.length.toLocaleString()} of {largeOptionList.length.toLocaleString()} selected
+          {value.length.toLocaleString()} of{" "}
+          {largeOptionList.length.toLocaleString()} selected
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 export const VirtualVsNormal: Story = {
-  name: 'Virtual vs Normal — performance comparison',
+  name: "Virtual vs Normal — performance comparison",
   render: function VirtualVsNormal() {
-    const smallList = generateOptions(50)
-    const [v1, setV1] = React.useState<(typeof largeOptionList)[number] | null>(null)
-    const [v2, setV2] = React.useState<(typeof smallList)[number] | null>(null)
+    const smallList = generateOptions(50);
+    const [v1, setV1] = React.useState<(typeof largeOptionList)[number] | null>(
+      null,
+    );
+    const [v2, setV2] = React.useState<(typeof smallList)[number] | null>(null);
 
     return (
       <div className="flex gap-6 items-start">
@@ -645,7 +663,7 @@ export const VirtualVsNormal: Story = {
             searchPlaceholder="Search..."
           />
           <p className="text-xs text-[var(--muted-foreground)]">
-            {v1?.label ?? 'None'}
+            {v1?.label ?? "None"}
           </p>
         </div>
         <div className="grid w-[280px] gap-1.5">
@@ -661,20 +679,22 @@ export const VirtualVsNormal: Story = {
             searchPlaceholder="Search..."
           />
           <p className="text-xs text-[var(--muted-foreground)]">
-            {v2?.label ?? 'None'}
+            {v2?.label ?? "None"}
           </p>
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 export const VirtualWithSearch: Story = {
-  name: 'Virtual — search filters virtual rows',
+  name: "Virtual — search filters virtual rows",
   render: function VirtualWithSearch() {
     // Controlled search — demonstrates that filtering + virtual work together
-    const [search, setSearch] = React.useState('')
-    const [value, setValue] = React.useState<(typeof largeOptionList)[number] | null>(null)
+    const [search, setSearch] = React.useState("");
+    const [value, setValue] = React.useState<
+      (typeof largeOptionList)[number] | null
+    >(null);
 
     return (
       <div className="grid w-[340px] gap-1.5">
@@ -690,17 +710,17 @@ export const VirtualWithSearch: Story = {
           searchPlaceholder="Type to filter..."
         />
         <p className="text-xs text-[var(--muted-foreground)]">
-          Query: "{search}" · Selected: {value?.label ?? 'None'}
+          Query: "{search}" · Selected: {value?.label ?? "None"}
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 /** Adornments work identically in multi-select mode */
 export const MultiSelectWithAdornments: Story = {
   render: function MultiSelectWithAdornments() {
-    const [value, setValue] = React.useState<(typeof countries)[number][]>([])
+    const [value, setValue] = React.useState<(typeof countries)[number][]>([]);
 
     return (
       <div className="grid w-[350px] items-center gap-1.5">
@@ -718,33 +738,50 @@ export const MultiSelectWithAdornments: Story = {
           {value.length} selected
         </p>
       </div>
-    )
+    );
   },
-}
+};
 
 // ─── Long label story — verifies text stays left-aligned when wrapping ────────
 
 const longLabelOptions = [
-  { value: '1', label: 'Short label' },
-  { value: '2', label: 'A medium length option that fits on one line' },
-  { value: '3', label: 'This is a significantly longer label that will wrap across multiple lines inside the dropdown menu and should remain left-aligned throughout' },
-  { value: '4', label: 'Another short one' },
-  { value: '5', label: 'Yet another long option label that forces wrapping — the text must start from the left on every wrapped line without centering' },
-  { value: '6', label: 'Brief' },
-  { value: '7', label: 'Medium option label that may or may not wrap depending on the container width' },
-  { value: '8', label: 'Mediuwerthyjhgfedwefghkjhgrfefeghjghtgrfsdmkytwefkuytreefkiu54refhjytuytrejuty' },
-]
+  { value: "1", label: "Short label" },
+  { value: "2", label: "A medium length option that fits on one line" },
+  {
+    value: "3",
+    label:
+      "This is a significantly longer label that will wrap across multiple lines inside the dropdown menu and should remain left-aligned throughout",
+  },
+  { value: "4", label: "Another short one" },
+  {
+    value: "5",
+    label:
+      "Yet another long option label that forces wrapping — the text must start from the left on every wrapped line without centering",
+  },
+  { value: "6", label: "Brief" },
+  {
+    value: "7",
+    label:
+      "Medium option label that may or may not wrap depending on the container width",
+  },
+  {
+    value: "8",
+    label:
+      "Mediuwerthyjhgfedwefghkjhgrfefeghjghtgrfsdmkytwefkuytreefkiu54refhjytuytrejuty",
+  },
+];
 
 // ============================================================================
 // Built-in label & required
 // ============================================================================
 
 export const BuiltInLabel: Story = {
-  name: 'Built-in label prop',
+  name: "Built-in label prop",
   render: () => (
     <div className="flex flex-col gap-6 w-[320px]">
       <p className="text-xs text-muted-foreground">
-        Use the <code>label</code> prop instead of a separate &lt;Label&gt; component.
+        Use the <code>label</code> prop instead of a separate &lt;Label&gt;
+        component.
       </p>
       <Combobox
         label="Framework"
@@ -759,14 +796,15 @@ export const BuiltInLabel: Story = {
       />
     </div>
   ),
-}
+};
 
 export const BuiltInRequired: Story = {
-  name: 'Built-in required prop',
+  name: "Built-in required prop",
   render: () => (
     <div className="flex flex-col gap-6 w-[320px]">
       <p className="text-xs text-muted-foreground">
-        <code>required</code> renders a red asterisk and wires a hidden native input for form validation.
+        <code>required</code> renders a red asterisk and wires a hidden native
+        input for form validation.
       </p>
       <Combobox
         label="Framework"
@@ -783,20 +821,22 @@ export const BuiltInRequired: Story = {
       />
     </div>
   ),
-}
+};
 
 export const LabelRequiredInForm: Story = {
-  name: 'label + required — inside a form',
+  name: "label + required — inside a form",
   render: function LabelRequiredInForm() {
-    const [submitted, setSubmitted] = React.useState(false)
-    const [value, setValue] = React.useState<typeof frameworks[number] | null>(null)
+    const [submitted, setSubmitted] = React.useState(false);
+    const [value, setValue] = React.useState<
+      (typeof frameworks)[number] | null
+    >(null);
 
     return (
       <form
         className="flex flex-col gap-4 w-[320px]"
         onSubmit={(e) => {
-          e.preventDefault()
-          setSubmitted(true)
+          e.preventDefault();
+          setSubmitted(true);
         }}
       >
         <Combobox
@@ -815,16 +855,16 @@ export const LabelRequiredInForm: Story = {
         </button>
         {submitted && (
           <p className="text-xs text-green-600 font-medium">
-            ✓ Submitted with: {value?.label ?? 'none'}
+            ✓ Submitted with: {value?.label ?? "none"}
           </p>
         )}
       </form>
-    )
+    );
   },
-}
+};
 
 export const LabelVariants: Story = {
-  name: 'label — single vs multi vs disabled',
+  name: "label — single vs multi vs disabled",
   render: () => (
     <div className="flex flex-col gap-6 w-[320px]">
       <Combobox
@@ -850,20 +890,25 @@ export const LabelVariants: Story = {
       />
     </div>
   ),
-}
+};
 
 // ─── Long label story — verifies text stays left-aligned when wrapping ────────
 
 export const LongLabels: Story = {
-  name: 'Long labels (wrap alignment)',
+  name: "Long labels (wrap alignment)",
   render: function LongLabels() {
-    const [single, setSingle] = React.useState<typeof longLabelOptions[number] | null>(null)
-    const [multi, setMulti] = React.useState<typeof longLabelOptions[number][]>([])
+    const [single, setSingle] = React.useState<
+      (typeof longLabelOptions)[number] | null
+    >(null);
+    const [multi, setMulti] = React.useState<
+      (typeof longLabelOptions)[number][]
+    >([]);
 
     return (
       <div className="flex flex-col gap-6 w-[320px]">
         <p className="text-xs text-muted-foreground">
-          Labels that wrap to multiple lines must remain left-aligned — not centered.
+          Labels that wrap to multiple lines must remain left-aligned — not
+          centered.
         </p>
 
         <div className="grid gap-1.5">
@@ -887,35 +932,43 @@ export const LongLabels: Story = {
           />
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 // ============================================================================
 // Multiple Comboboxes Examples
 // ============================================================================
 
 export const MultipleSingleSelect: Story = {
-  name: 'Multiple Single Select — tab navigation test',
+  name: "Multiple Single Select — tab navigation test",
   render: function MultipleSingleSelect() {
-    const [framework, setFramework] = React.useState<(typeof frameworks)[number] | null>(null)
-    const [country, setCountry] = React.useState<(typeof countries)[number] | null>(null)
-    const [department, setDepartment] = React.useState<{ id: string; name: string } | null>(null)
+    const [framework, setFramework] = React.useState<
+      (typeof frameworks)[number] | null
+    >(null);
+    const [country, setCountry] = React.useState<
+      (typeof countries)[number] | null
+    >(null);
+    const [department, setDepartment] = React.useState<{
+      id: string;
+      name: string;
+    } | null>(null);
 
     const departments = [
-      { id: 'hr', name: 'Human Resources' },
-      { id: 'eng', name: 'Engineering' },
-      { id: 'sales', name: 'Sales' },
-      { id: 'marketing', name: 'Marketing' },
-      { id: 'finance', name: 'Finance' },
-    ]
+      { id: "hr", name: "Human Resources" },
+      { id: "eng", name: "Engineering" },
+      { id: "sales", name: "Sales" },
+      { id: "marketing", name: "Marketing" },
+      { id: "finance", name: "Finance" },
+    ];
 
     return (
       <div className="flex flex-col gap-6 w-[400px]">
         <p className="text-sm text-muted-foreground">
-          Test tab navigation between multiple single-select comboboxes. Use Tab key to move between them.
+          Test tab navigation between multiple single-select comboboxes. Use Tab
+          key to move between them.
         </p>
-        
+
         <div className="grid gap-1.5">
           <Label>Framework</Label>
           <Combobox
@@ -925,7 +978,7 @@ export const MultipleSingleSelect: Story = {
             placeholder="Select framework..."
           />
           <p className="text-xs text-muted-foreground">
-            Selected: {framework?.label ?? 'None'}
+            Selected: {framework?.label ?? "None"}
           </p>
         </div>
 
@@ -938,7 +991,7 @@ export const MultipleSingleSelect: Story = {
             placeholder="Select country..."
           />
           <p className="text-xs text-muted-foreground">
-            Selected: {country?.label ?? 'None'}
+            Selected: {country?.label ?? "None"}
           </p>
         </div>
 
@@ -953,32 +1006,46 @@ export const MultipleSingleSelect: Story = {
             placeholder="Select department..."
           />
           <p className="text-xs text-muted-foreground">
-            Selected: {department?.name ?? 'None'}
+            Selected: {department?.name ?? "None"}
           </p>
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 export const MultipleMultiSelect: Story = {
-  name: 'Multiple Multi Select — tab navigation test',
+  name: "Multiple Multi Select — tab navigation test",
   render: function MultipleMultiSelect() {
-    const [frameworks, setFrameworks] = React.useState<(typeof frameworks)[number][]>([])
-    const [countries, setCountries] = React.useState<(typeof countries)[number][]>([])
-    const [skills, setSkills] = React.useState<string[]>([])
+    const [frameworks, setFrameworks] = React.useState<
+      (typeof frameworks)[number][]
+    >([]);
+    const [countries, setCountries] = React.useState<
+      (typeof countries)[number][]
+    >([]);
+    const [skills, setSkills] = React.useState<string[]>([]);
 
     const skillOptions = [
-      'JavaScript', 'TypeScript', 'React', 'Vue', 'Angular', 
-      'Node.js', 'Python', 'Java', 'C++', 'Go', 'Rust'
-    ]
+      "JavaScript",
+      "TypeScript",
+      "React",
+      "Vue",
+      "Angular",
+      "Node.js",
+      "Python",
+      "Java",
+      "C++",
+      "Go",
+      "Rust",
+    ];
 
     return (
       <div className="flex flex-col gap-6 w-[400px]">
         <p className="text-sm text-muted-foreground">
-          Test tab navigation between multiple multi-select comboboxes. Use Tab key to move between them.
+          Test tab navigation between multiple multi-select comboboxes. Use Tab
+          key to move between them.
         </p>
-        
+
         <div className="grid gap-1.5">
           <Label>Frameworks</Label>
           <Combobox
@@ -990,7 +1057,8 @@ export const MultipleMultiSelect: Story = {
             placeholder="Select frameworks..."
           />
           <p className="text-xs text-muted-foreground">
-            Selected: {frameworks.length} framework{frameworks.length !== 1 ? 's' : ''}
+            Selected: {frameworks.length} framework
+            {frameworks.length !== 1 ? "s" : ""}
           </p>
         </div>
 
@@ -1005,7 +1073,8 @@ export const MultipleMultiSelect: Story = {
             maxDisplayItems={2}
           />
           <p className="text-xs text-muted-foreground">
-            Selected: {countries.length} countr{countries.length !== 1 ? 'ies' : 'y'}
+            Selected: {countries.length} countr
+            {countries.length !== 1 ? "ies" : "y"}
           </p>
         </div>
 
@@ -1021,32 +1090,58 @@ export const MultipleMultiSelect: Story = {
             maxDisplayItems={3}
           />
           <p className="text-xs text-muted-foreground">
-            Selected: {skills.length} skill{skills.length !== 1 ? 's' : ''}
+            Selected: {skills.length} skill{skills.length !== 1 ? "s" : ""}
           </p>
         </div>
       </div>
-    )
+    );
   },
-}
+};
 
 export const MixedComboboxTypes: Story = {
-  name: 'Mixed Types — single & multi with tab navigation',
+  name: "Mixed Types — single & multi with tab navigation",
   render: function MixedComboboxTypes() {
-    const [role, setRole] = React.useState<string | null>(null)
-    const [technologies, setTechnologies] = React.useState<string[]>([])
-    const [location, setLocation] = React.useState<(typeof countries)[number] | null>(null)
-    const [benefits, setBenefits] = React.useState<string[]>([])
+    const [role, setRole] = React.useState<string | null>(null);
+    const [technologies, setTechnologies] = React.useState<string[]>([]);
+    const [location, setLocation] = React.useState<
+      (typeof countries)[number] | null
+    >(null);
+    const [benefits, setBenefits] = React.useState<string[]>([]);
 
-    const roles = ['Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'DevOps Engineer', 'Designer']
-    const techStack = ['React', 'Vue', 'Angular', 'Node.js', 'Python', 'Java', 'Docker', 'Kubernetes']
-    const benefitOptions = ['Health Insurance', 'Dental', 'Vision', '401k', 'Remote Work', 'Flexible Hours', 'Stock Options']
+    const roles = [
+      "Frontend Developer",
+      "Backend Developer",
+      "Full Stack Developer",
+      "DevOps Engineer",
+      "Designer",
+    ];
+    const techStack = [
+      "React",
+      "Vue",
+      "Angular",
+      "Node.js",
+      "Python",
+      "Java",
+      "Docker",
+      "Kubernetes",
+    ];
+    const benefitOptions = [
+      "Health Insurance",
+      "Dental",
+      "Vision",
+      "401k",
+      "Remote Work",
+      "Flexible Hours",
+      "Stock Options",
+    ];
 
     return (
       <div className="flex flex-col gap-6 w-[450px]">
         <p className="text-sm text-muted-foreground">
-          Mixed single and multi-select comboboxes. Test tab navigation through all fields.
+          Mixed single and multi-select comboboxes. Test tab navigation through
+          all fields.
         </p>
-        
+
         <div className="grid gap-1.5">
           <Label>Job Role (Single)</Label>
           <Combobox
@@ -1097,12 +1192,83 @@ export const MixedComboboxTypes: Story = {
 
         <div className="mt-4 p-4 bg-muted rounded-md text-sm">
           <h3 className="font-semibold mb-2">Summary:</h3>
-          <p>Role: {role ?? 'Not selected'}</p>
-          <p>Technologies: {technologies.length > 0 ? technologies.join(', ') : 'None'}</p>
-          <p>Location: {location?.label ?? 'Not selected'}</p>
-          <p>Benefits: {benefits.length > 0 ? benefits.join(', ') : 'None'}</p>
+          <p>Role: {role ?? "Not selected"}</p>
+          <p>
+            Technologies:{" "}
+            {technologies.length > 0 ? technologies.join(", ") : "None"}
+          </p>
+          <p>Location: {location?.label ?? "Not selected"}</p>
+          <p>Benefits: {benefits.length > 0 ? benefits.join(", ") : "None"}</p>
         </div>
       </div>
-    )
+    );
   },
-}
+};
+
+// ============================================================================
+// Flip / Collision Detection
+// ============================================================================
+
+export const FlipOnCollision: Story = {
+  name: "Flip — auto top/bottom based on viewport space",
+  parameters: { layout: "fullscreen" },
+  render: function FlipOnCollision() {
+    const [value, setValue] = React.useState<
+      (typeof frameworks)[number] | null
+    >(null);
+    const [multiValue, setMultiValue] = React.useState<
+      (typeof countries)[number][]
+    >([]);
+
+    return (
+      <div className="flex flex-col items-center px-8 py-4">
+        <p className="text-xs text-muted-foreground mb-2 self-start">
+          ↓ Scroll down — both comboboxes near the bottom should open{" "}
+          <strong>upward</strong>.
+        </p>
+
+        {/* Push comboboxes to near the bottom of the viewport */}
+        <div style={{ height: "80vh" }} />
+
+        <div className="flex flex-col gap-4 w-[340px]">
+          <div className="grid gap-1.5">
+            <Label>Single select — should flip to top</Label>
+            <Combobox
+              options={frameworks}
+              value={value}
+              onChange={setValue}
+              placeholder="Select framework..."
+              searchPlaceholder="Search frameworks..."
+            />
+            <p className="text-xs text-muted-foreground">
+              Selected: {value?.label ?? "None"}
+            </p>
+          </div>
+
+          <div className="grid gap-1.5">
+            <Label>Multi select — should also flip to top</Label>
+            <Combobox
+              multiple
+              options={countries}
+              value={multiValue}
+              onChange={setMultiValue}
+              placeholder="Select countries..."
+              searchPlaceholder="Search countries..."
+              maxDisplayItems={2}
+            />
+            <p className="text-xs text-muted-foreground">
+              {multiValue.length} selected
+            </p>
+          </div>
+        </div>
+
+        {/* Spacer so you can scroll back up and test bottom opening too */}
+        <div style={{ height: "80vh" }} />
+        <p className="text-xs text-muted-foreground">
+          ↑ Near top of page — comboboxes here should open{" "}
+          <strong>downward</strong>.
+        </p>
+      </div>
+    );
+  },
+};
