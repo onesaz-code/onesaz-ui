@@ -127,6 +127,71 @@ export const CustomKeys: Story = {
   ),
 };
 
+/** Options include an `image` URL; pass `imageKey="image"` to show avatar + label in the list and trigger. */
+const contactsWithImages = [
+  {
+    value: "1",
+    label: "Alice Chen",
+    image: "https://i.pravatar.cc/48?img=1",
+  },
+  {
+    value: "2",
+    label: "Bob Singh",
+    image: "https://i.pravatar.cc/48?img=2",
+  },
+  {
+    value: "3",
+    label: "Carla Ortiz",
+    image: "https://i.pravatar.cc/48?img=3",
+  },
+  {
+    value: "4",
+    label: "Dev Patel",
+    image: "https://i.pravatar.cc/48?img=4",
+  },
+];
+
+export const WithOptionImages: Story = {
+  render: () => (
+    <div className="grid w-[320px] items-center gap-1.5">
+      <Label>Assign to</Label>
+      <Combobox
+        options={contactsWithImages}
+        imageKey="image"
+        placeholder="Select a person..."
+        searchPlaceholder="Search people..."
+      />
+    </div>
+  ),
+};
+
+export const WithOptionImagesMulti: Story = {
+  render: function WithOptionImagesMulti() {
+    type ContactOption = (typeof contactsWithImages)[number];
+    const [value, setValue] = React.useState<ContactOption[]>([]);
+
+    return (
+      <div className="grid w-[360px] items-center gap-1.5">
+        <Label>Team</Label>
+        <Combobox
+          multiple
+          options={contactsWithImages}
+          imageKey="image"
+          value={value}
+          onChange={(next) => setValue(next as ContactOption[])}
+          placeholder="Select people..."
+          searchPlaceholder="Search..."
+        />
+        <p className="text-sm text-[var(--muted-foreground)]">
+          {value.length
+            ? `${value.length} selected: ${value.map((v) => v.label).join(", ")}`
+            : "None selected"}
+        </p>
+      </div>
+    );
+  },
+};
+
 export const ControlledMultiCustomKeys: Story = {
   render: function ControlledMultiCustomKeys() {
     const [value, setValue] = React.useState<{ id: string; name: string }[]>(

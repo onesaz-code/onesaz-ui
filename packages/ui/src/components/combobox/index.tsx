@@ -7,6 +7,8 @@ export interface ComboboxOption {
   value: string;
   label: string;
   disabled?: boolean;
+  /** Image URL; shown when `imageKey` is set to `"image"` (or pass a custom `imageKey`) */
+  image?: string;
 }
 
 type ComboboxPrimitiveOption = string;
@@ -16,6 +18,8 @@ type NormalizedOption<T> = {
   value: string;
   label: string;
   disabled?: boolean;
+  /** Resolved image URL for list + trigger, when `imageKey` is set */
+  imageSrc?: string;
   raw: T;
 };
 
@@ -38,6 +42,12 @@ interface ComboboxSharedProps<
   simpleOptions?: boolean;
   labelKey?: string;
   valueKey?: string;
+  /**
+   * Object key for an image URL on each option (e.g. `"image"` or `"avatarUrl"`).
+   * When set, the dropdown and selected value show that image next to the label.
+   * String options never show images.
+   */
+  imageKey?: string;
   /** Label displayed above the trigger */
   label?: string;
   /** Marks the field as required — shows an asterisk and adds native required to the hidden input */
@@ -148,7 +158,7 @@ function OptionItem({
       disabled={option.disabled}
       onClick={onSelect}
       className={cn(
-        "relative flex w-full cursor-pointer select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm text-left outline-none",
+        "relative flex w-full cursor-pointer select-none items-center gap-2 rounded-sm py-1.5 pl-8 pr-2 text-sm text-left outline-none",
         "hover:bg-muted hover:text-foreground",
         "focus:bg-muted focus:text-foreground",
         "disabled:pointer-events-none disabled:opacity-50",
@@ -200,7 +210,14 @@ function OptionItem({
           )
         )}
       </span>
-      <span className="break-all">{option.label}</span>
+      {option.imageSrc ? (
+        <img
+          src={option.imageSrc}
+          alt=""
+          className="h-7 w-7 shrink-0 rounded-md object-cover"
+        />
+      ) : null}
+      <span className="min-w-0 flex-1 break-all">{option.label}</span>
     </button>
   );
 }
@@ -223,11 +240,12 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       endAdornment,
       onEndAdornmentClick,
       virtual = false,
-      virtualItemHeight = 36,
     } = props;
 
     const labelKey = props.labelKey ?? "label";
     const valueKey = props.valueKey ?? "value";
+    const imageKey = props.imageKey;
+    const virtualItemHeight = props.virtualItemHeight ?? (imageKey ? 44 : 36);
 
     const [dropdownPosition, setDropdownPosition] = React.useState<
       "bottom" | "top"
@@ -258,6 +276,17 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       [valueKey, getOptionLabel],
     );
 
+    const getOptionImage = React.useCallback(
+      (option: ComboboxOptionInput): string | undefined => {
+        if (!imageKey || typeof option === "string") return undefined;
+        const record = option as Record<string, unknown>;
+        const raw = imageKey in record ? record[imageKey] : undefined;
+        if (typeof raw === "string" && raw.trim() !== "") return raw;
+        return undefined;
+      },
+      [imageKey],
+    );
+
     const normalizedOptions = React.useMemo<
       NormalizedOption<ComboboxOptionInput>[]
     >(
@@ -267,8 +296,9 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           label: getOptionLabel(option),
           value: getOptionValue(option),
           disabled: Boolean((option as { disabled?: boolean }).disabled),
+          imageSrc: getOptionImage(option),
         })),
-      [options, getOptionLabel, getOptionValue],
+      [options, getOptionLabel, getOptionValue, getOptionImage],
     );
 
     const id = React.useId();
@@ -327,6 +357,9 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       [selectedOptions, getOptionValue],
     );
     const singleValueKey = singleValue ? getOptionValue(singleValue) : null;
+    const singleValueImage = singleValue
+      ? getOptionImage(singleValue)
+      : undefined;
     const selectableOptions = React.useMemo(
       () => normalizedOptions.filter((option) => !option.disabled),
       [normalizedOptions],
@@ -585,9 +618,16 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                   {displayedOptions.map((option) => (
                     <span
                       key={getOptionValue(option)}
-                      className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
+                      className="inline-flex max-w-full min-w-0 items-center gap-1.5 rounded-md bg-muted px-2 py-0.5 text-xs font-medium"
                     >
-                      <span className="break-all">
+                      {getOptionImage(option) ? (
+                        <img
+                          src={getOptionImage(option)}
+                          alt=""
+                          className="h-4 w-4 shrink-0 rounded object-cover"
+                        />
+                      ) : null}
+                      <span className="min-w-0 break-all">
                         {getOptionLabel(option)}
                       </span>
                       <button
@@ -624,11 +664,20 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           ) : (
             <span
               className={cn(
-                "flex-1 break-all",
+                "flex min-w-0 flex-1 items-center gap-2",
                 !singleValue && "text-muted-foreground",
               )}
             >
-              {singleValue ? getOptionLabel(singleValue) : placeholder}
+              {singleValueImage ? (
+                <img
+                  src={singleValueImage}
+                  alt=""
+                  className="h-6 w-6 shrink-0 rounded-md object-cover"
+                />
+              ) : null}
+              <span className="min-w-0 flex-1 break-all">
+                {singleValue ? getOptionLabel(singleValue) : placeholder}
+              </span>
             </span>
           )}
 
