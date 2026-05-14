@@ -2,7 +2,7 @@ import * as React from 'react'
 import { cn } from '../utils/cn'
 
 export type BadgeColor = 'default' | 'success' | 'warning' | 'error' | 'destructive'
-export type BadgeVariant = 'contained' | 'outlined' | 'text'
+export type BadgeVariant = 'contained' | 'outlined' | 'soft' | 'text'
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   color?: BadgeColor
@@ -25,6 +25,14 @@ const outlinedClasses: Record<BadgeColor, string> = {
   destructive: 'border border-destructive text-destructive',
 }
 
+const softClasses: Record<BadgeColor, string> = {
+  default:     'bg-accent/10 text-accent',
+  success:     'bg-success-500/10 text-success-700 dark:text-success-300',
+  warning:     'bg-warning-500/10 text-warning-700 dark:text-warning-300',
+  error:       'bg-error-500/10 text-error-700 dark:text-error-300',
+  destructive: 'bg-destructive/10 text-destructive',
+}
+
 const textClasses: Record<BadgeColor, string> = {
   default:     'text-accent',
   success:     'text-success-600 dark:text-success-400',
@@ -36,6 +44,7 @@ const textClasses: Record<BadgeColor, string> = {
 const variantMap = {
   contained: containedClasses,
   outlined:  outlinedClasses,
+  soft:      softClasses,
   text:      textClasses,
 }
 
