@@ -41,11 +41,50 @@ export interface BarChartProps {
   data: any[]
   /** Data key for the bars */
   dataKey: string
-  /** Multiple data keys for grouped bars */
+  /**
+   * Multiple data keys for grouped OR stacked bars.
+   *
+   * To stack bars, set the same `stackId` on every key that should stack
+   * together. Bars sharing a stackId are drawn vertically on top of each
+   * other (recharts semantics).
+   *
+   * For end-capped stacks (rounded only at the ends), set `radius` per
+   * key — bottom bar `[0,0,r,r]`, middle bars `0`, top bar `[r,r,0,0]`.
+   * The bars in `dataKeys` render in array order; for a stack, the first
+   * entry is the BOTTOM of the stack and the last is the TOP.
+   */
   dataKeys?: Array<{
     dataKey: string
     fill?: string
     name?: string
+    /** When set, bars sharing the same stackId stack vertically */
+    stackId?: string
+    /**
+     * Per-bar corner radius. Overrides `barProps.radius` for THIS bar
+     * only. Accepts either a single number (all four corners) or a
+     * `[topLeft, topRight, bottomRight, bottomLeft]` tuple.
+     */
+    radius?: number | [number, number, number, number]
+    /**
+     * Per-bar label rendered inside the segment. Use for stacked charts
+     * where each segment should show its own value.
+     */
+    label?: {
+      /** Data key to read the label from. Defaults to the bar's dataKey. */
+      dataKey?: string
+      /** Where to anchor the label. Default: `center`. */
+      position?: 'top' | 'bottom' | 'left' | 'right' | 'center' | 'inside' | 'outside'
+      /**
+       * Text orientation. `horizontal` (default) renders normally;
+       * `vertical` rotates the text -90° (reads bottom-to-top), useful
+       * when a stacked segment is narrow but tall.
+       */
+      orientation?: 'horizontal' | 'vertical'
+      /** Style applied to the label text */
+      style?: React.CSSProperties
+      /** Transforms the cell value into the rendered string. */
+      formatter?: (value: any) => React.ReactNode
+    }
   }>
   /** Fill color for single bar */
   fill?: string
@@ -83,6 +122,10 @@ export interface BarChartProps {
       fontWeight?: string | number
       fill?: string
     }
+    /** Whether to draw the axis baseline (default true / recharts default) */
+    axisLine?: boolean
+    /** Whether to draw individual tick marks (default true / recharts default) */
+    tickLine?: boolean
   }
   /** Y-axis configuration */
   yAxis?: {
@@ -96,6 +139,20 @@ export interface BarChartProps {
       fontWeight?: string | number
       fill?: string
     }
+    /**
+     * Range for the Y-axis. Accepts any recharts domain — `[number, number]`,
+     * `['auto', 'auto']`, `['dataMin', 'dataMax']`, or function form
+     * `[(min) => number, (max) => number]`. Use when the consumer needs a
+     * fixed scale (e.g. a JEE Mains exam is always "out of 300", regardless
+     * of how many subjects rendered).
+     */
+    domain?: [any, any]
+    /** Explicit tick positions on the Y-axis */
+    ticks?: number[]
+    /** Whether to draw the axis baseline */
+    axisLine?: boolean
+    /** Whether to draw individual tick marks */
+    tickLine?: boolean
   }
   /** Bar styling */
   barProps?: {
@@ -120,6 +177,21 @@ export interface BarChartProps {
     labelFormatter?: (label: any, payload: any[]) => React.ReactNode
     labelStyle?: React.CSSProperties
     contentStyle?: React.CSSProperties
+    /**
+     * Escape hatch for fully-custom tooltip rendering. When provided, the
+     * tooltip is rendered by this function and `formatter` / `labelFormatter`
+     * / `contentStyle` / `labelStyle` are ignored. The function receives
+     * recharts' `{ active, payload, label }` so the consumer can build
+     * multi-row breakdowns, color swatches, etc.
+     */
+    content?: (props: { active?: boolean; payload?: any[]; label?: any }) => React.ReactNode
+    /**
+     * Hover-cursor styling — controls the band painted behind the hovered
+     * column. Pass `false` to disable. Defaults to a soft muted fill at
+     * low opacity, theme-aware. Recharts' raw default is an opaque mid-gray
+     * which doesn't read well in dark mode.
+     */
+    cursor?: boolean | React.SVGProps<SVGRectElement>
   }
   /** Additional CSS classes */
   className?: string
@@ -162,26 +234,85 @@ export const BarChart: React.FC<BarChartProps> = ({
   const chartColors = colors || defaultColors
 
   const bars = dataKeys ? (
-    dataKeys.map((keyConfig, index) => (
-      <Bar
-        key={keyConfig.dataKey}
-        dataKey={keyConfig.dataKey}
-        fill={keyConfig.fill || chartColors[index % chartColors.length]}
-        name={keyConfig.name || keyConfig.dataKey}
-        radius={barProps.radius}
-        maxBarSize={barProps.maxBarSize}
-        {...(barProps.minPointSize !== undefined && { minPointSize: barProps.minPointSize })}
-      >
-        {labelList && (
-          <LabelList
-            dataKey={labelList.dataKey || keyConfig.dataKey}
-            position={labelList.position || 'top'}
-            style={labelList.style}
-            formatter={labelList.formatter}
-          />
-        )}
-      </Bar>
-    ))
+    dataKeys.map((keyConfig, index) => {
+      // Per-bar radius beats the chart-wide barProps.radius. Used to build
+      // "end-capped" stacks where only the bottom and top bars are rounded.
+      const barRadius =
+        keyConfig.radius !== undefined ? keyConfig.radius : barProps.radius
+
+      // Per-bar label — set on `dataKeys[i].label`. Rendering path:
+      //   - horizontal (default): standard recharts <LabelList formatter>
+      //   - vertical: <LabelList content={fn}> returning rotated SVG <text>
+      // Falls back to the chart-wide `labelList` prop when per-bar is absent.
+      const perBarLabel = keyConfig.label
+      const verticalLabel = perBarLabel?.orientation === 'vertical'
+
+      return (
+        <Bar
+          key={keyConfig.dataKey}
+          dataKey={keyConfig.dataKey}
+          fill={keyConfig.fill || chartColors[index % chartColors.length]}
+          name={keyConfig.name || keyConfig.dataKey}
+          stackId={keyConfig.stackId}
+          radius={barRadius}
+          maxBarSize={barProps.maxBarSize}
+          {...(barProps.minPointSize !== undefined && { minPointSize: barProps.minPointSize })}
+        >
+          {perBarLabel ? (
+            verticalLabel ? (
+              <LabelList
+                dataKey={perBarLabel.dataKey || keyConfig.dataKey}
+                content={(props: any) => {
+                  const { x, y, width, height, value } = props
+                  if (value === undefined || value === null) return null
+                  const cx = (x || 0) + (width || 0) / 2
+                  const cy = (y || 0) + (height || 0) / 2
+                  const text = perBarLabel.formatter
+                    ? perBarLabel.formatter(value)
+                    : value
+                  return (
+                    <text
+                      x={cx}
+                      y={cy}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      transform={`rotate(-90, ${cx}, ${cy})`}
+                      style={{
+                        fontSize: 11,
+                        fontWeight: 600,
+                        fill: 'var(--card-foreground, #fff)',
+                        ...perBarLabel.style,
+                      }}
+                    >
+                      {text}
+                    </text>
+                  )
+                }}
+              />
+            ) : (
+              <LabelList
+                dataKey={perBarLabel.dataKey || keyConfig.dataKey}
+                position={perBarLabel.position || 'center'}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  fill: 'var(--card-foreground, #fff)',
+                  ...perBarLabel.style,
+                }}
+                formatter={perBarLabel.formatter}
+              />
+            )
+          ) : labelList ? (
+            <LabelList
+              dataKey={labelList.dataKey || keyConfig.dataKey}
+              position={labelList.position || 'top'}
+              style={labelList.style}
+              formatter={labelList.formatter}
+            />
+          ) : null}
+        </Bar>
+      )
+    })
   ) : (
     <Bar
       dataKey={dataKey}
@@ -208,15 +339,34 @@ export const BarChart: React.FC<BarChartProps> = ({
     </Bar>
   )
 
-  const customTooltip = tooltip ? (
+  // Hover-cursor default: recharts' raw default is an opaque gray rect
+  // that fights the rest of the UI in both light and dark mode. Soften
+  // it to a theme-aware muted fill. Consumers can opt out with
+  // `tooltip.cursor: false` or override with their own SVG props.
+  const cursorProp = (() => {
+    if (tooltip?.cursor === false) return false
+    if (tooltip?.cursor && typeof tooltip.cursor === 'object') return tooltip.cursor
+    return { fill: 'var(--muted)', opacity: 0.35 }
+  })()
+
+  // tooltip.content takes precedence: passing it lets the consumer fully
+  // own rendering (multi-row breakdowns, color swatches, etc.). Otherwise
+  // fall back to formatter / contentStyle / etc. or the default Tooltip.
+  const customTooltip = tooltip?.content ? (
+    <Tooltip content={tooltip.content as any} cursor={cursorProp} />
+  ) : tooltip ? (
     <Tooltip
       formatter={tooltip.formatter}
       labelFormatter={tooltip.labelFormatter}
       labelStyle={tooltip.labelStyle}
       contentStyle={tooltip.contentStyle}
+      cursor={cursorProp}
     />
   ) : showTooltip ? (
-    <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '6px', color: 'hsl(var(--foreground))' }} />
+    <Tooltip
+      contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '6px', color: 'hsl(var(--foreground))' }}
+      cursor={cursorProp}
+    />
   ) : null
 
   return (
@@ -240,6 +390,8 @@ export const BarChart: React.FC<BarChartProps> = ({
               className="text-xs"
               tick={xAxis.tick || { fontSize: 12 }}
               label={xAxis.label ? { value: xAxis.label, position: 'insideBottom', offset: -5 } : undefined}
+              {...(xAxis.axisLine !== undefined && { axisLine: xAxis.axisLine })}
+              {...(xAxis.tickLine !== undefined && { tickLine: xAxis.tickLine })}
             />
           )}
           {yAxis && !yAxis.hide && (
@@ -249,6 +401,10 @@ export const BarChart: React.FC<BarChartProps> = ({
               className="text-xs"
               tick={yAxis.tick || { fontSize: 12 }}
               label={yAxis.label ? { value: yAxis.label, angle: -90, position: yAxis.position || 'insideLeft' } : undefined}
+              {...(yAxis.domain !== undefined && { domain: yAxis.domain })}
+              {...(yAxis.ticks !== undefined && { ticks: yAxis.ticks })}
+              {...(yAxis.axisLine !== undefined && { axisLine: yAxis.axisLine })}
+              {...(yAxis.tickLine !== undefined && { tickLine: yAxis.tickLine })}
             />
           )}
           {customTooltip}
