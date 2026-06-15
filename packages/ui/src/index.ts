@@ -81,7 +81,7 @@ export {
   CardDescription,
   CardContent,
 } from './components/card'
-export { Badge, type BadgeProps } from './components/badge'
+export { Badge, type BadgeProps, type BadgeColor, type BadgeVariant } from './components/badge'
 export { Chip, type ChipProps } from './components/chip'
 export { Separator, type SeparatorProps } from './components/separator'
 export {
