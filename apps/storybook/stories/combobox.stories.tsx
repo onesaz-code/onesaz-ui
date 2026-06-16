@@ -524,6 +524,42 @@ const InfoIcon = () => (
   </svg>
 );
 
+const BuildingIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+    <path d="M9 22v-4h6v4" />
+    <path d="M8 6h.01" />
+    <path d="M16 6h.01" />
+    <path d="M12 6h.01" />
+    <path d="M12 10h.01" />
+    <path d="M12 14h.01" />
+    <path d="M16 10h.01" />
+    <path d="M16 14h.01" />
+    <path d="M8 10h.01" />
+    <path d="M8 14h.01" />
+  </svg>
+);
+
+const departmentFilterOptions = [
+  { value: "all", label: "All departments", color: "#9ca3af" },
+  { value: "global", label: "Global", color: "#9333ea" },
+  { value: "cse", label: "CSE", color: "#2563eb" },
+  { value: "ece", label: "ECE", color: "#ea580c" },
+  { value: "mech", label: "MECH", color: "#16a34a" },
+  { value: "civil", label: "CIVIL", color: "#dc2626" },
+  { value: "it", label: "IT", color: "#0d9488" },
+];
+
 /** Decorative start adornment — no click handler, rendered as a non-interactive span */
 export const WithStartAdornment: Story = {
   render: () => (
@@ -1333,6 +1369,33 @@ export const FlipOnCollision: Story = {
           ↑ Near top of page — comboboxes here should open{" "}
           <strong>downward</strong>.
         </p>
+      </div>
+    );
+  },
+};
+
+export const InlineLabelWithIcon: Story = {
+  name: "Inline label + icon (department filter)",
+  render: function InlineLabelWithIcon() {
+    const [department, setDepartment] = React.useState<
+      (typeof departmentFilterOptions)[number] | null
+    >(departmentFilterOptions[0]);
+
+    return (
+      <div className="w-[320px]">
+        <Combobox
+          label="Dept"
+          labelPosition="inline"
+          options={departmentFilterOptions}
+          colorKey="color"
+          value={department}
+          onChange={setDepartment}
+          placeholder="Select department..."
+          searchPlaceholder="Search departments..."
+          startAdornment={<BuildingIcon />}
+          clearable={false}
+          className="bg-muted/40"
+        />
       </div>
     );
   },

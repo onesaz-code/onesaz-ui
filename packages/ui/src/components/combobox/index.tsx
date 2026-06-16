@@ -20,6 +20,8 @@ type NormalizedOption<T> = {
   disabled?: boolean;
   /** Resolved image URL for list + trigger, when `imageKey` is set */
   imageSrc?: string;
+  /** Resolved color for list dot indicator, when `colorKey` is set */
+  color?: string;
   raw: T;
 };
 
@@ -48,8 +50,15 @@ interface ComboboxSharedProps<
    * String options never show images.
    */
   imageKey?: string;
-  /** Label displayed above the trigger */
+  /**
+   * Object key for a color on each option (e.g. `"color"`).
+   * When set, a colored dot is shown next to the label in the dropdown.
+   */
+  colorKey?: string;
+  /** Label displayed above or inside the trigger */
   label?: string;
+  /** Where to render `label` — `"above"` (default) or `"inline"` inside the trigger */
+  labelPosition?: "above" | "inline";
   /** Marks the field as required — shows an asterisk and adds native required to the hidden input */
   required?: boolean;
   /** Node rendered at the start (left) of the trigger button */
@@ -123,14 +132,19 @@ function Adornment({
           e.stopPropagation();
           onClick(e);
         }}
-        className={cn("shrink-0 rounded p-0.5 hover:bg-muted", className)}
+        className={cn("flex shrink-0 items-center rounded p-0.5 hover:bg-muted", className)}
       >
         {children}
       </button>
     );
   }
   return (
-    <span className={cn("shrink-0 pointer-events-none opacity-50", className)}>
+    <span
+      className={cn(
+        "flex shrink-0 items-center pointer-events-none opacity-50",
+        className,
+      )}
+    >
       {children}
     </span>
   );
@@ -217,6 +231,13 @@ function OptionItem({
           className="h-7 w-7 shrink-0 rounded-md object-cover"
         />
       ) : null}
+      {option.color ? (
+        <span
+          className="h-2 w-2 shrink-0 rounded-full"
+          style={{ backgroundColor: option.color }}
+          aria-hidden="true"
+        />
+      ) : null}
       <span className="min-w-0 flex-1 break-all">{option.label}</span>
     </button>
   );
@@ -234,6 +255,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       openOnFocus = true,
       className,
       label,
+      labelPosition = "above",
       required = false,
       startAdornment,
       onStartAdornmentClick,
@@ -245,6 +267,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
     const labelKey = props.labelKey ?? "label";
     const valueKey = props.valueKey ?? "value";
     const imageKey = props.imageKey;
+    const colorKey = props.colorKey;
     const virtualItemHeight = props.virtualItemHeight ?? (imageKey ? 44 : 36);
 
     const [dropdownPosition, setDropdownPosition] = React.useState<
@@ -287,6 +310,17 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
       [imageKey],
     );
 
+    const getOptionColor = React.useCallback(
+      (option: ComboboxOptionInput): string | undefined => {
+        if (!colorKey || typeof option === "string") return undefined;
+        const record = option as Record<string, unknown>;
+        const raw = colorKey in record ? record[colorKey] : undefined;
+        if (typeof raw === "string" && raw.trim() !== "") return raw;
+        return undefined;
+      },
+      [colorKey],
+    );
+
     const normalizedOptions = React.useMemo<
       NormalizedOption<ComboboxOptionInput>[]
     >(
@@ -297,11 +331,14 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           value: getOptionValue(option),
           disabled: Boolean((option as { disabled?: boolean }).disabled),
           imageSrc: getOptionImage(option),
+          color: getOptionColor(option),
         })),
-      [options, getOptionLabel, getOptionValue, getOptionImage],
+      [options, getOptionLabel, getOptionValue, getOptionImage, getOptionColor],
     );
 
     const id = React.useId();
+    const inlineLabelId = React.useId();
+    const isInlineLabel = Boolean(label && labelPosition === "inline");
     const [open, setOpen] = React.useState(false);
     const [internalSearch, setInternalSearch] = React.useState("");
     const [focusedIndex, setFocusedIndex] = React.useState(-1);
@@ -538,7 +575,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
 
     return (
       <div ref={containerRef} className="relative">
-        {label && (
+        {label && labelPosition === "above" && (
           <Label htmlFor={id} className="mb-1.5 block">
             {label}
             {required && (
@@ -563,7 +600,13 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           type="button"
           role="combobox"
           aria-expanded={open}
-          aria-labelledby={label ? id : undefined}
+          aria-labelledby={
+            label
+              ? labelPosition === "inline"
+                ? inlineLabelId
+                : id
+              : undefined
+          }
           disabled={disabled}
           onClick={() => setOpen(!open)}
           onKeyDown={(e) => {
@@ -595,8 +638,7 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
             "ring-offset-background",
             "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
             "disabled:cursor-not-allowed disabled:opacity-50",
-            (isMultiple && selectedOptions.length > 0) ||
-              (!isMultiple && singleValue)
+            isMultiple && selectedOptions.length > 0
               ? "h-auto items-start justify-between"
               : "items-center justify-between",
             className,
@@ -604,13 +646,30 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
         >
           {/* Start adornment */}
           {startAdornment && (
-            <Adornment onClick={onStartAdornmentClick} className="mr-1.5">
+            <Adornment
+              onClick={onStartAdornmentClick}
+              className="mr-2 self-center"
+            >
               {startAdornment}
             </Adornment>
           )}
 
           {isMultiple ? (
             <div className="flex flex-1 flex-wrap items-center gap-1">
+              {isInlineLabel && (
+                <span
+                  id={inlineLabelId}
+                  className="shrink-0 text-muted-foreground font-normal"
+                >
+                  {label}
+                  {required && (
+                    <span className="ml-0.5 text-red-500" aria-hidden="true">
+                      *
+                    </span>
+                  )}
+                  :
+                </span>
+              )}
               {selectedOptions.length === 0 ? (
                 <span className="text-muted-foreground">{placeholder}</span>
               ) : (
@@ -664,10 +723,24 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
           ) : (
             <span
               className={cn(
-                "flex min-w-0 flex-1 items-center gap-2",
-                !singleValue && "text-muted-foreground",
+                "flex min-w-0 flex-1 items-center gap-1",
+                !singleValue && !isInlineLabel && "text-muted-foreground",
               )}
             >
+              {isInlineLabel && (
+                <span
+                  id={inlineLabelId}
+                  className="shrink-0 text-muted-foreground font-normal"
+                >
+                  {label}
+                  {required && (
+                    <span className="ml-0.5 text-red-500" aria-hidden="true">
+                      *
+                    </span>
+                  )}
+                  :{" "}
+                </span>
+              )}
               {singleValueImage ? (
                 <img
                   src={singleValueImage}
@@ -675,7 +748,18 @@ const Combobox = React.forwardRef<HTMLInputElement, ComboboxProps>(
                   className="h-6 w-6 shrink-0 rounded-md object-cover"
                 />
               ) : null}
-              <span className="min-w-0 flex-1 break-all">
+              <span
+                className={cn(
+                  "min-w-0 flex-1",
+                  isInlineLabel ? "truncate" : "break-all",
+                  isInlineLabel &&
+                    singleValue &&
+                    "font-semibold text-foreground",
+                  isInlineLabel &&
+                    !singleValue &&
+                    "font-normal text-muted-foreground",
+                )}
+              >
                 {singleValue ? getOptionLabel(singleValue) : placeholder}
               </span>
             </span>
