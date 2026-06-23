@@ -60,18 +60,10 @@ const colorMap: Record<
   },
 }
 
-/** Maps variant name → shape key used in colorMap */
-function variantToShape(
-  variant: ButtonProps['variant']
-): 'contained' | 'outlined' | 'secondary' | 'ghost' | 'link' {
-  switch (variant) {
-    case 'outlined':   return 'outlined'
-    case 'secondary':  return 'secondary'
-    case 'ghost':      return 'ghost'
-    case 'link':       return 'link'
-    default:           return 'contained' // 'contained' and 'destructive'
-  }
-}
+/** Default color for outlined — other shapes still use variant classes */
+const defaultColorMap = {
+  outlined: 'border border-accent bg-transparent text-accent hover:bg-accent/10',
+} as const
 
 // ============================================================================
 // Spinner (inline, no external dep)
@@ -112,6 +104,20 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   endIcon?: React.ReactNode
 }
 
+/** Maps variant name → shape key used in colorMap */
+function variantToShape(
+  variant: ButtonProps['variant'] | 'outline'
+): 'contained' | 'outlined' | 'secondary' | 'ghost' | 'link' {
+  switch (variant) {
+    case 'outlined':
+    case 'outline':    return 'outlined'
+    case 'secondary':  return 'secondary'
+    case 'ghost':      return 'ghost'
+    case 'link':       return 'link'
+    default:           return 'contained' // 'contained' and 'destructive'
+  }
+}
+
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -135,12 +141,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const resolvedColor    = color    ?? groupCtx.color    ?? 'default'
     const resolvedDisabled = disabled ?? groupCtx.disabled
 
+    const shape = variantToShape(resolvedVariant)
+
     // When color is non-default, derive classes from the color map.
     // When color is 'default', fall through to the original variant classes (full BC).
     const colorOverride =
       resolvedColor !== 'default'
-        ? (colorMap[resolvedColor]?.[variantToShape(resolvedVariant)] ?? null)
-        : null
+        ? (colorMap[resolvedColor]?.[shape] ?? null)
+        : (defaultColorMap[shape as keyof typeof defaultColorMap] ?? null)
 
     // Original per-variant classes (only used when no color override)
     const variantClasses = colorOverride
@@ -150,7 +158,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             resolvedVariant === 'contained',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90':
             resolvedVariant === 'destructive',
-          'border border-input bg-background hover:bg-muted hover:text-foreground dark:border-border dark:text-foreground dark:hover:bg-muted':
+          'border border-accent bg-transparent text-accent hover:bg-accent/10':
             resolvedVariant === 'outlined',
           'bg-muted text-foreground hover:bg-muted/80':
             resolvedVariant === 'secondary',
@@ -226,17 +234,18 @@ const iconButtonSizes = {
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
   ({ className, variant = 'contained', color = 'default', size = 'md', rounded = false, loading = false, ...props }, ref) => {
+    const shape = variantToShape(variant)
     const colorOverride =
       color !== 'default'
-        ? (colorMap[color]?.[variantToShape(variant)] ?? null)
-        : null
+        ? (colorMap[color]?.[shape] ?? null)
+        : (defaultColorMap[shape as keyof typeof defaultColorMap] ?? null)
 
     const variantClasses = colorOverride
       ? null
       : {
           'bg-accent text-accent-foreground hover:bg-accent-hover': variant === 'contained',
           'bg-destructive text-destructive-foreground hover:bg-destructive/90': variant === 'destructive',
-          'border border-input bg-background hover:bg-muted hover:text-foreground dark:border-border dark:text-foreground dark:hover:bg-muted': variant === 'outlined',
+          'border border-accent bg-transparent text-accent hover:bg-accent/10': variant === 'outlined',
           'bg-muted text-foreground hover:bg-muted/80': variant === 'secondary',
           'hover:bg-muted hover:text-foreground': variant === 'ghost',
           'text-accent underline-offset-4 hover:underline': variant === 'link',

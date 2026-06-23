@@ -55,7 +55,7 @@ type Story = StoryObj<typeof Button>
 // ── Existing variants (backward-compatible) ────────────────────────────────
 
 export const Default: Story = {
-  args: { children: 'Button', variant: 'default' },
+  args: { children: 'Button', variant: 'contained' },
 }
 
 export const Destructive: Story = {
@@ -63,7 +63,7 @@ export const Destructive: Story = {
 }
 
 export const Outline: Story = {
-  args: { children: 'Outline', variant: 'outline' },
+  args: { children: 'Outline', variant: 'outlined' },
 }
 
 export const Secondary: Story = {
@@ -95,7 +95,7 @@ export const AllVariants: Story = {
     <div className="flex flex-wrap gap-4">
       <Button>Default</Button>
       <Button variant="destructive">Destructive</Button>
-      <Button variant="outline">Outline</Button>
+      <Button variant="outlined">Outline</Button>
       <Button variant="secondary">Secondary</Button>
       <Button variant="ghost">Ghost</Button>
       <Button variant="link">Link</Button>
@@ -126,7 +126,7 @@ export const LoadingVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button loading>Default</Button>
-      <Button variant="outline" loading>Outline</Button>
+      <Button variant="outlined" loading>Outline</Button>
       <Button variant="secondary" loading>Secondary</Button>
       <Button variant="ghost" loading>Ghost</Button>
     </div>
@@ -185,11 +185,11 @@ export const ColorsOutline: Story = {
   name: 'Colors – Outline',
   render: () => (
     <div className="flex flex-wrap gap-4">
-      <Button variant="outline" color="default">Default</Button>
-      <Button variant="outline" color="success">Success</Button>
-      <Button variant="outline" color="warning">Warning</Button>
-      <Button variant="outline" color="error">Error</Button>
-      <Button variant="outline" color="destructive">Destructive</Button>
+      <Button variant="outlined" color="default">Default</Button>
+      <Button variant="outlined" color="success">Success</Button>
+      <Button variant="outlined" color="warning">Warning</Button>
+      <Button variant="outlined" color="error">Error</Button>
+      <Button variant="outlined" color="destructive">Destructive</Button>
     </div>
   ),
 }
@@ -239,7 +239,7 @@ export const ColorWithIcons: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button color="success" startIcon={<PlusIcon />}>Add</Button>
-      <Button color="error" variant="outline" endIcon={<ArrowRightIcon />}>Remove</Button>
+      <Button color="error" variant="outlined" endIcon={<ArrowRightIcon />}>Remove</Button>
       <Button color="warning" variant="secondary" startIcon={<DownloadIcon />}>Export</Button>
     </div>
   ),
@@ -249,7 +249,7 @@ export const LoadingWithColor: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button color="success" loading>Saving</Button>
-      <Button color="error" variant="outline" loading>Deleting</Button>
+      <Button color="error" variant="outlined" loading>Deleting</Button>
       <Button color="warning" variant="secondary" loading>Processing</Button>
     </div>
   ),

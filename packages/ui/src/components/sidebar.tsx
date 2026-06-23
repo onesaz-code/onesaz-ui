@@ -74,7 +74,7 @@ const Sidebar = React.forwardRef<HTMLElement, SidebarProps>(
         <aside
           ref={ref}
           className={cn(
-            'flex flex-col bg-card text-foreground transition-all duration-300 ease-in-out h-full',
+            'flex flex-col bg-white text-foreground transition-all duration-300 ease-in-out h-full dark:bg-card',
             bordered && 'border-r border-border',
             className
           )}
@@ -236,7 +236,8 @@ const SidebarItem = React.forwardRef<HTMLDivElement, SidebarItemProps>(
     const itemClasses = cn(
       'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer',
       active
-        ? 'bg-accent text-accent-foreground'
+        // ? 'bg-accent text-accent-foreground'
+        ? `bg-accent/15 text-accent font-semibold`
         : 'text-muted-foreground hover:text-foreground hover:bg-muted',
       disabled && 'opacity-50 pointer-events-none',
       collapsed && 'justify-center px-2',

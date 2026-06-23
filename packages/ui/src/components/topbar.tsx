@@ -27,7 +27,7 @@ const TopBar = React.forwardRef<HTMLElement, TopBarProps>(
       <header
         ref={ref}
         className={cn(
-          'flex items-center px-4 bg-card text-foreground',
+          'flex items-center px-4 bg-white text-foreground dark:bg-card',
           sizeClasses[safeSize],
           bordered && 'border-b border-border',
           sticky && 'sticky top-0 z-40',
