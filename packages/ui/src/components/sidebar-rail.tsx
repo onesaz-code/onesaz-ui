@@ -187,7 +187,7 @@ const IconRail = React.forwardRef<HTMLDivElement, IconRailProps>(
       >
         <div
           className={cn(
-            'flex flex-col bg-card border-r border-border h-full',
+            'flex flex-col bg-white dark:bg-card border-r border-border h-full',
             'transition-[width,box-shadow] duration-200',
             overlayRail && expandableRail
               ? cn(
@@ -346,7 +346,8 @@ const IconRailItem = React.forwardRef<HTMLButtonElement, IconRailItemProps>(
             : 'w-10 h-10 justify-center',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
           isActive
-            ? 'bg-accent text-accent-foreground'
+            // ? 'bg-accent text-accent-foreground'
+            ? `bg-accent/15 font-bold text-accent dark:bg-muted dark:text-white`
             : !iconColor && 'text-muted-foreground hover:text-foreground hover:bg-muted',
           iconColor && !isActive && 'hover:bg-muted',
           className

@@ -237,7 +237,7 @@ const SidebarItem = React.forwardRef<HTMLDivElement, SidebarItemProps>(
       'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer',
       active
         // ? 'bg-accent text-accent-foreground'
-        ? `bg-accent/15 text-accent font-semibold`
+        ? `bg-accent/15 font-bold text-accent dark:bg-muted dark:text-white`
         : 'text-muted-foreground hover:text-foreground hover:bg-muted',
       disabled && 'opacity-50 pointer-events-none',
       collapsed && 'justify-center px-2',

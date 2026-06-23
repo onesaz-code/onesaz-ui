@@ -213,6 +213,7 @@ export const ColorsSecondary: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button variant="secondary" color="default">Default</Button>
+      <Button variant="secondary" color="accent">Accent</Button>
       <Button variant="secondary" color="success">Success</Button>
       <Button variant="secondary" color="warning">Warning</Button>
       <Button variant="secondary" color="error">Error</Button>

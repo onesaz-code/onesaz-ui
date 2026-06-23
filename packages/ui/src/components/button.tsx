@@ -60,9 +60,10 @@ const colorMap: Record<
   },
 }
 
-/** Accent color — outlined variant only */
+/** Accent color — outlined and secondary variants */
 const accentColorMap = {
-  outlined: 'border border-accent bg-transparent text-accent hover:bg-accent/10',
+  outlined:  'border border-accent bg-transparent text-accent hover:bg-accent/10',
+  secondary: 'bg-accent/15 text-accent hover:bg-accent/25 dark:font-bold',
 } as const
 
 /** Maps variant name → shape key used in colorMap */
