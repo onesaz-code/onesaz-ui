@@ -464,19 +464,56 @@ export {
   type RailPanelItemProps,
 } from './components/sidebar-rail'
 
-// AI Tutor
+// // AI Tutor
+// export {
+//   AiTutorShell,
+//   AiTutorChat,
+//   AiTutorComposer,
+//   type AiTutorShellProps,
+//   type AiTutorChatProps,
+//   type AiTutorComposerProps,
+//   type TutorContext,
+//   type TutorMessage,
+//   type TutorSurface,
+//   type TutorStudentContext,
+// } from './components/ai-tutor'
+// // Chat / AI Agent UI
+
 export {
-  AiTutorShell,
-  AiTutorChat,
-  AiTutorComposer,
-  type AiTutorShellProps,
-  type AiTutorChatProps,
-  type AiTutorComposerProps,
-  type TutorContext,
-  type TutorMessage,
-  type TutorSurface,
-  type TutorStudentContext,
-} from './components/ai-tutor'
+  ChatWindow,
+  MessageList,
+  MessageBubble,
+  MessageContent,
+  Composer,
+  TypingIndicator,
+  useChat,
+  type ChatWindowProps,
+  type MessageListProps,
+  type MessageBubbleProps,
+  type MessageContentProps,
+  type ComposerProps,
+  type TypingIndicatorProps,
+  type UseChatOptions,
+  type UseChatHelpers,
+  type ChatRole,
+  type ChatStatus,
+  type ChatMessageStatus,
+  type ChatMessage,
+  type MessagePart,
+  type TextPart,
+  type CodePart,
+  type ToolCallPart,
+  type AttachmentPart,
+  type CustomPart,
+  type ChatAction,
+  type ChatActionsProp,
+  type ChatTransport,
+  type ChatTransportArgs,
+  type SendResult,
+  type RenderMarkdown,
+  type RenderCode,
+  type RenderPart,
+} from './components/chat'
 
 // Playground - for testing all components
 export { Playground } from './playground'
