@@ -464,5 +464,19 @@ export {
   type RailPanelItemProps,
 } from './components/sidebar-rail'
 
+// AI Tutor
+export {
+  AiTutorShell,
+  AiTutorChat,
+  AiTutorComposer,
+  type AiTutorShellProps,
+  type AiTutorChatProps,
+  type AiTutorComposerProps,
+  type TutorContext,
+  type TutorMessage,
+  type TutorSurface,
+  type TutorStudentContext,
+} from './components/ai-tutor'
+
 // Playground - for testing all components
 export { Playground } from './playground'
