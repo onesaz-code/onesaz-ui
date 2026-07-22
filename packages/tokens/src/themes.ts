@@ -18,13 +18,16 @@ export const defaultThemeConfig: ThemeConfig = {
   radius: 'medium',
 }
 
-// Light theme semantic tokens (using gray scale step numbers)
+// Light theme semantic tokens (using gray scale step numbers, or a literal
+// hex value for surfaces that must stay pure white regardless of the chosen
+// gray palette — e.g. cards need to read as elevated above the gray-1 page
+// background, not the same shade as it)
 export const lightTheme = {
   background: 1,        // gray-1
   foreground: 12,       // gray-12
-  card: 1,              // gray-1
+  card: '#ffffff',       // pure white — distinct from the gray-1 page background
   cardForeground: 12,   // gray-12
-  popover: 1,           // gray-1
+  popover: '#ffffff',    // pure white
   popoverForeground: 12,// gray-12
   muted: 2,             // gray-2
   mutedForeground: 6,   // gray-6

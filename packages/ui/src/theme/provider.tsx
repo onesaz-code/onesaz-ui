@@ -83,24 +83,30 @@ export function ThemeProvider({
     const root = document.documentElement
     const themeTokens = resolvedTheme === 'dark' ? darkTheme : lightTheme
     const accent = accentColors[accentColor]
-    const gray = grayColors[grayColor]
+    const gray = grayColors[grayColor] as Record<number, string>
     const radiusValues = radiusPresets[radius]
 
     // Set theme attribute
     root.setAttribute('data-theme', resolvedTheme)
     root.setAttribute('data-accent', accentColor)
 
+    // Theme tokens are either a gray-scale step (1-12) or a literal hex
+    // value for surfaces that must stay fixed regardless of the chosen
+    // gray palette (e.g. card/popover white in light mode).
+    const resolveToken = (value: number | string) =>
+      typeof value === 'string' ? value : gray[value]
+
     // Set gray-based semantic tokens
-    root.style.setProperty('--background', gray[themeTokens.background])
-    root.style.setProperty('--foreground', gray[themeTokens.foreground])
-    root.style.setProperty('--card', gray[themeTokens.card])
-    root.style.setProperty('--card-foreground', gray[themeTokens.cardForeground])
-    root.style.setProperty('--popover', gray[themeTokens.popover])
-    root.style.setProperty('--popover-foreground', gray[themeTokens.popoverForeground])
-    root.style.setProperty('--muted', gray[themeTokens.muted])
-    root.style.setProperty('--muted-foreground', gray[themeTokens.mutedForeground])
-    root.style.setProperty('--border', gray[themeTokens.border])
-    root.style.setProperty('--input', gray[themeTokens.input])
+    root.style.setProperty('--background', resolveToken(themeTokens.background))
+    root.style.setProperty('--foreground', resolveToken(themeTokens.foreground))
+    root.style.setProperty('--card', resolveToken(themeTokens.card))
+    root.style.setProperty('--card-foreground', resolveToken(themeTokens.cardForeground))
+    root.style.setProperty('--popover', resolveToken(themeTokens.popover))
+    root.style.setProperty('--popover-foreground', resolveToken(themeTokens.popoverForeground))
+    root.style.setProperty('--muted', resolveToken(themeTokens.muted))
+    root.style.setProperty('--muted-foreground', resolveToken(themeTokens.mutedForeground))
+    root.style.setProperty('--border', resolveToken(themeTokens.border))
+    root.style.setProperty('--input', resolveToken(themeTokens.input))
 
     // Set accent colors
     root.style.setProperty('--accent', accent[6])

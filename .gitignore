@@ -30,3 +30,6 @@ storybook-static/
 
 # OS files
 Thumbs.db
+
+# Claude Code local preview config
+.claude/launch.json
