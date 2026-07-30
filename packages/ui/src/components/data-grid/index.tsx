@@ -24,6 +24,8 @@ import {
   PaginationContent,
   PaginationItem,
   PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
   PaginationEllipsis,
 } from '../pagination'
 
@@ -662,14 +664,18 @@ const DataGridPagination = ({
       )
     )
 
-  const infoSection = (
-    <div className="flex items-center gap-4 flex-wrap">
-      <div className="flex items-center gap-2 text-xs text-muted-foreground whitespace-nowrap">
-        <span>Rows per page:</span>
+  return (
+    <div className="flex flex-wrap items-center gap-3 px-4 py-3 border-t border-border bg-muted/30 rounded-b-lg">
+      <span className="flex-1 min-w-0 text-xs text-muted-foreground whitespace-nowrap">
+        Showing {startRow}–{endRow} of {totalRows}
+      </span>
+
+      <label className="flex items-center gap-1.5 text-xs text-muted-foreground whitespace-nowrap">
+        Rows
         <select
           value={pageSize}
           onChange={(e) => table.setPageSize(Number(e.target.value))}
-          className="h-8 rounded-md border border-border bg-background px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+          className="h-[30px] rounded-lg border border-border bg-card px-2 text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         >
           {pageSizeOptions.map((size) => (
             <option key={size} value={size}>
@@ -677,57 +683,29 @@ const DataGridPagination = ({
             </option>
           ))}
         </select>
-      </div>
-      <span className="text-xs text-muted-foreground whitespace-nowrap">
-        {startRow}–{endRow} of {totalRows}
-      </span>
-    </div>
-  )
+      </label>
 
-  const navSection = (maxVisible: number) => (
-    <Pagination className="mx-0 w-auto">
-      <PaginationContent>
-        <PaginationItem>
-          <Button variant="outlined" size="icon" className="h-8 w-8"
-            onClick={() => table.setPageIndex(0)} disabled={!table.getCanPreviousPage()}>
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M11 17l-5-5 5-5M18 17l-5-5 5-5" />
-            </svg>
-          </Button>
-        </PaginationItem>
-        <PaginationItem>
-          <Button variant="outlined" size="icon" className="h-8 w-8"
-            onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
-          </Button>
-        </PaginationItem>
-        {renderPageNumbers(maxVisible)}
-        <PaginationItem>
-          <Button variant="outlined" size="icon" className="h-8 w-8"
-            onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 18l6-6-6-6" />
-            </svg>
-          </Button>
-        </PaginationItem>
-        <PaginationItem>
-          <Button variant="outlined" size="icon" className="h-8 w-8"
-            onClick={() => table.setPageIndex(pageCount - 1)} disabled={!table.getCanNextPage()}>
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M13 17l5-5-5-5M6 17l5-5-5-5" />
-            </svg>
-          </Button>
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
-  )
-
-  return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-2 border-t border-border bg-background">
-      {infoSection}
-      <div className="ml-auto">{navSection(5)}</div>
+      <Pagination className="mx-0 w-auto">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Prev
+            </PaginationPrevious>
+          </PaginationItem>
+          {renderPageNumbers(5)}
+          <PaginationItem>
+            <PaginationNext
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Next
+            </PaginationNext>
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   )
 }
@@ -957,7 +935,7 @@ const DataGridToolbar = ({
   moreOptions?: { label: string; onClick: () => void; icon?: React.ReactNode }[]
 }) => {
   return (
-    <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-background">
+    <div className="flex items-center gap-2 px-4 py-3 border-b border-border bg-card rounded-t-lg">
       {title && (
         <h3 className="text-sm font-semibold text-foreground shrink-0">{title}</h3>
       )}
@@ -1148,7 +1126,7 @@ const RowRenderer = ({
       ref={measureRef}
       data-index={dataIndex}
       className={cn(
-        'border-b border-border transition-colors hover:bg-muted/50',
+        'border-b border-border/60 transition-colors hover:bg-muted/50',
         row.getIsSelected() && 'bg-accent/10',
         isPinnedRow && 'bg-muted/30 font-semibold',
         customClassName
@@ -1215,9 +1193,9 @@ const RowRenderer = ({
             colSpan={htmlColSpan}
             rowSpan={htmlRowSpan}
             className={cn(
-              'px-4 overflow-hidden border-b border-border',
+              'px-4 overflow-hidden border-b border-border/60',
               showCellVerticalBorder && 'border-r border-border',
-              pinnedInfo && 'sticky z-[1] bg-background',
+              pinnedInfo && 'sticky z-[1] bg-card',
               pinnedInfo?.side === 'left' && 'border-r border-border',
               pinnedInfo?.side === 'right' && 'border-l border-border',
               htmlRowSpan && htmlRowSpan > 1 && 'align-middle',
@@ -1692,7 +1670,7 @@ const ColumnGroupHeader = ({
           key={`group-${cell.groupId || 'ungrouped'}-${idx}`}
           colSpan={cell.colSpan}
           className={cn(
-            'px-4 text-center font-semibold text-muted-foreground border-b border-border bg-muted overflow-hidden',
+            'px-4 text-center text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border bg-muted overflow-hidden',
             showColumnVerticalBorder && 'border-r last:border-r-0',
             cell.pinnedInfo && 'sticky z-[2]',
           )}
@@ -1993,10 +1971,17 @@ export function DataGrid<TData extends Record<string, any>>({
     if (maxHeight) containerStyle.maxHeight = maxHeight
   }
 
+  // Whether a footer bar will actually render below the table — used to
+  // decide which element's bottom corners need to match the container's
+  // rounded-lg border (the footer/toolbar are flat rectangles sitting flush
+  // against that border, so whichever one is outermost must round to match
+  // it or the container's corners look squared off).
+  const footerVisible = effectiveVirtualized ? !hideFooter : !hideFooter && !hideFooterPagination
+
   return (
     <div
       className={cn(
-        'rounded-lg border border-border bg-background flex flex-col text-xs',
+        'rounded-lg border border-border bg-card flex flex-col text-xs',
         className
       )}
       style={containerStyle}
@@ -2023,7 +2008,13 @@ export function DataGrid<TData extends Record<string, any>>({
       )}
 
       {/* Table container — overflow-hidden here clips table to rounded corners without affecting toolbar */}
-      <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+      <div
+        className={cn(
+          'flex-1 flex flex-col min-h-0 overflow-hidden',
+          !toolBar && 'rounded-t-lg',
+          !footerVisible && 'rounded-b-lg'
+        )}
+      >
       <div
         ref={tableContainerRef}
         className="relative flex-1 overflow-auto"
@@ -2085,7 +2076,7 @@ export function DataGrid<TData extends Record<string, any>>({
                       key={header.id}
                       title={meta?.headerName}
                       className={cn(
-                        'px-4 text-left text-xs font-medium text-muted-foreground border-b border-border bg-muted overflow-hidden relative',
+                        'px-4 text-left text-xs font-semibold uppercase tracking-wide text-muted-foreground border-b border-border bg-muted overflow-hidden relative',
                         showColumnVerticalBorder && 'border-r last:border-r-0',
                         header.column.getCanSort() && 'cursor-pointer select-none hover:bg-muted/80',
                         // Add cursor class when resizing
@@ -2219,7 +2210,7 @@ export function DataGrid<TData extends Record<string, any>>({
 
       {/* Footer info for virtualized mode */}
       {effectiveVirtualized && !hideFooter && (
-        <div className="flex items-center justify-end gap-4 px-4 py-3 border-t border-border bg-background">
+        <div className="flex items-center justify-end gap-4 px-4 py-3 border-t border-border bg-muted/30 rounded-b-lg">
           <span className="text-xs text-muted-foreground whitespace-nowrap">
             {table.getFilteredRowModel().rows.length} total rows (virtualized)
           </span>

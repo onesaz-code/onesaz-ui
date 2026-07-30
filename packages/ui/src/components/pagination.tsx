@@ -45,73 +45,46 @@ const PaginationLink = React.forwardRef<HTMLButtonElement, PaginationLinkProps>(
   ({ className, isActive, ...props }, ref) => (
     <Button
       ref={ref}
-      variant={isActive ? 'contained' : 'outlined'}
-      size="icon"
-      className={cn('h-9 w-9', className)}
+      variant="outlined"
+      className={cn(
+        'h-[30px] min-w-[30px] rounded-lg px-2 text-xs',
+        isActive
+          ? 'border-accent bg-accent/10 font-semibold text-accent hover:bg-accent/10'
+          : 'border-border bg-card text-foreground',
+        className
+      )}
       {...props}
     />
   )
 )
 PaginationLink.displayName = 'PaginationLink'
 
-const PaginationPrevious = React.forwardRef<
-  HTMLButtonElement,
-  ButtonProps
->(({ className, ...props }, ref) => (
-  <Button
-    ref={ref}
-    variant="outlined"
-    size="default"
-    className={cn('gap-1 pl-2.5', className)}
-    {...props}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
+const PaginationPrevious = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, children, ...props }, ref) => (
+    <Button
+      ref={ref}
+      variant="outlined"
+      className={cn('h-[30px] rounded-lg border-border bg-card px-2.5 text-xs font-normal text-foreground', className)}
+      {...props}
     >
-      <path d="m15 18-6-6 6-6" />
-    </svg>
-    <span>Previous</span>
-  </Button>
-))
+      {children ?? 'Previous'}
+    </Button>
+  )
+)
 PaginationPrevious.displayName = 'PaginationPrevious'
 
-const PaginationNext = React.forwardRef<
-  HTMLButtonElement,
-  ButtonProps
->(({ className, ...props }, ref) => (
-  <Button
-    ref={ref}
-    variant="outlined"
-    size="default"
-    className={cn('gap-1 pr-2.5', className)}
-    {...props}
-  >
-    <span>Next</span>
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
+const PaginationNext = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, children, ...props }, ref) => (
+    <Button
+      ref={ref}
+      variant="outlined"
+      className={cn('h-[30px] rounded-lg border-border bg-card px-2.5 text-xs font-normal text-foreground', className)}
+      {...props}
     >
-      <path d="m9 18 6-6-6-6" />
-    </svg>
-  </Button>
-))
+      {children ?? 'Next'}
+    </Button>
+  )
+)
 PaginationNext.displayName = 'PaginationNext'
 
 const PaginationEllipsis = React.forwardRef<
@@ -121,25 +94,10 @@ const PaginationEllipsis = React.forwardRef<
   <span
     ref={ref}
     aria-hidden
-    className={cn('flex h-9 w-9 items-center justify-center', className)}
+    className={cn('flex h-[30px] min-w-[30px] items-center justify-center text-xs text-muted-foreground', className)}
     {...props}
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="h-4 w-4"
-    >
-      <circle cx="12" cy="12" r="1" />
-      <circle cx="19" cy="12" r="1" />
-      <circle cx="5" cy="12" r="1" />
-    </svg>
+    …
     <span className="sr-only">More pages</span>
   </span>
 ))

@@ -5,12 +5,14 @@ const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
 >(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn('w-full caption-bottom text-sm', className)}
-      {...props}
-    />
+  <div className="w-full rounded-lg border border-border bg-card overflow-hidden">
+    <div className="relative w-full overflow-auto">
+      <table
+        ref={ref}
+        className={cn('w-full caption-bottom text-sm', className)}
+        {...props}
+      />
+    </div>
   </div>
 ))
 Table.displayName = 'Table'
@@ -57,7 +59,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'border-b border-border transition-colors',
+      'border-b border-border/60 transition-colors',
       'hover:bg-muted/50',
       'data-[state=selected]:bg-muted',
       className
@@ -74,7 +76,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-12 px-4 text-left align-middle font-medium text-muted-foreground',
+      'h-10 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground',
       '[&:has([role=checkbox])]:pr-0',
       className
     )}
@@ -110,6 +112,32 @@ const TableCaption = React.forwardRef<
 ))
 TableCaption.displayName = 'TableCaption'
 
+/** Bold primary line for a two-line table cell, e.g. a person's name. */
+const TableCellPrimary = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn('text-sm font-semibold text-foreground', className)}
+    {...props}
+  />
+))
+TableCellPrimary.displayName = 'TableCellPrimary'
+
+/** Muted secondary line for a two-line table cell, e.g. an id or role. */
+const TableCellMeta = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn('text-xs text-muted-foreground mt-0.5', className)}
+    {...props}
+  />
+))
+TableCellMeta.displayName = 'TableCellMeta'
+
 // Compound component pattern
 const TableNamespace = Object.assign(Table, {
   Header: TableHeader,
@@ -117,7 +145,10 @@ const TableNamespace = Object.assign(Table, {
   Footer: TableFooter,
   Row: TableRow,
   Head: TableHead,
-  Cell: TableCell,
+  Cell: Object.assign(TableCell, {
+    Primary: TableCellPrimary,
+    Meta: TableCellMeta,
+  }),
   Caption: TableCaption,
 })
 
@@ -129,5 +160,7 @@ export {
   TableHead,
   TableRow,
   TableCell,
+  TableCellPrimary,
+  TableCellMeta,
   TableCaption,
 }

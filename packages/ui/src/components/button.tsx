@@ -178,14 +178,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         disabled={resolvedDisabled || loading}
         className={cn(
-          'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors cursor-pointer',
+          'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium transition-colors cursor-pointer',
           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
           'disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed',
           colorOverride ?? variantClasses,
           {
             'h-10 px-4 py-2': resolvedSize === 'default',
-            'h-9 rounded-md px-3': resolvedSize === 'sm',
-            'h-11 rounded-md px-8': resolvedSize === 'lg',
+            'h-9 px-3': resolvedSize === 'sm',
+            'h-11 px-8': resolvedSize === 'lg',
             'h-10 w-10': resolvedSize === 'icon',
           },
           fullWidth && 'w-full',
