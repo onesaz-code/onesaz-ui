@@ -1,15 +1,25 @@
 import * as React from 'react'
 import { cn } from '../utils/cn'
 
+type StackSpacing = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16
+type StackAlign = 'start' | 'end' | 'center' | 'baseline' | 'stretch'
+type StackJustify = 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
+
 export interface StackProps extends React.HTMLAttributes<HTMLDivElement> {
   /** Stack direction */
   direction?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
   /** Spacing between items */
-  spacing?: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 8 | 10 | 12 | 16
+  spacing?: StackSpacing
+  /** Alias for `spacing` (matches the Box/Grid vocabulary) */
+  gap?: StackSpacing
   /** Align items */
-  align?: 'start' | 'end' | 'center' | 'baseline' | 'stretch'
+  align?: StackAlign
+  /** Alias for `align` (matches the Box vocabulary) */
+  alignItems?: StackAlign
   /** Justify content */
-  justify?: 'start' | 'end' | 'center' | 'between' | 'around' | 'evenly'
+  justify?: StackJustify
+  /** Alias for `justify` (matches the Box vocabulary) */
+  justifyContent?: StackJustify
   /** Wrap items */
   wrap?: 'wrap' | 'nowrap' | 'wrap-reverse'
   /** Divider between items */
@@ -68,9 +78,12 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
       as: Component = 'div',
       className,
       direction = 'column',
-      spacing = 0,
+      spacing,
+      gap,
       align,
+      alignItems,
       justify,
+      justifyContent,
       wrap,
       divider,
       children,
@@ -78,12 +91,18 @@ const Stack = React.forwardRef<HTMLDivElement, StackProps>(
     },
     ref
   ) => {
+    // Accept both the Stack vocabulary (spacing/justify/align) and the
+    // Box/Grid vocabulary (gap/justifyContent/alignItems). Explicit values win.
+    const resolvedSpacing = gap ?? spacing ?? 0
+    const resolvedAlign = alignItems ?? align
+    const resolvedJustify = justifyContent ?? justify
+
     const classes = cn(
       'flex',
       directionClasses[direction],
-      spacingClasses[spacing],
-      align && alignClasses[align],
-      justify && justifyClasses[justify],
+      spacingClasses[resolvedSpacing],
+      resolvedAlign && alignClasses[resolvedAlign],
+      resolvedJustify && justifyClasses[resolvedJustify],
       wrap && wrapClasses[wrap],
       className
     )

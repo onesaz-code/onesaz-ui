@@ -174,6 +174,13 @@ export interface DataGridProps<TData = any> {
   minHeight?: number | string
   maxHeight?: number | string
   density?: GridDensity
+  /**
+   * Height of the column header row, in px. Independent of `density` (which
+   * only controls data-row height) so the header stays stable as rows
+   * compress — matching the MUI DataGrid `columnHeaderHeight` behaviour.
+   * @default 48
+   */
+  columnHeaderHeight?: number
   showCellVerticalBorder?: boolean
   showColumnVerticalBorder?: boolean
   hideFooter?: boolean
@@ -1721,6 +1728,7 @@ export function DataGrid<TData extends Record<string, any>>({
   minHeight,
   maxHeight,
   density = 'compact',
+  columnHeaderHeight = 48,
   showCellVerticalBorder = false,
   showColumnVerticalBorder = false,
   hideFooter = false,
@@ -2089,7 +2097,7 @@ export function DataGrid<TData extends Record<string, any>>({
                         pinnedInfo?.side === 'right' && 'border-l border-border',
                       )}
                       style={{
-                        height: rowHeight,
+                        height: columnHeaderHeight,
                         width: effectiveWidth,
                         minWidth: colWidth?.minWidth || header.column.columnDef.minSize,
                         maxWidth: colWidth?.maxWidth || header.column.columnDef.maxSize,

@@ -250,6 +250,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       return (
         <Bar
           key={keyConfig.dataKey}
+          isAnimationActive={false}
           dataKey={keyConfig.dataKey}
           fill={keyConfig.fill || chartColors[index % chartColors.length]}
           name={keyConfig.name || keyConfig.dataKey}
@@ -320,6 +321,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       name={name || dataKey}
       radius={barProps.radius}
       maxBarSize={barProps.maxBarSize}
+      isAnimationActive={false}
       {...(barProps.minPointSize !== undefined && { minPointSize: barProps.minPointSize })}
     >
       {labelList && (
@@ -503,6 +505,7 @@ export const LineChart: React.FC<LineChartProps> = ({
     dataKeys.map((keyConfig, index) => (
       <Line
         key={keyConfig.dataKey}
+        isAnimationActive={false}
         type="monotone"
         dataKey={keyConfig.dataKey}
         stroke={keyConfig.stroke || defaultColors[index % defaultColors.length]}
@@ -512,6 +515,7 @@ export const LineChart: React.FC<LineChartProps> = ({
     ))
   ) : (
     <Line
+      isAnimationActive={false}
       type="monotone"
       dataKey={dataKey}
       stroke={stroke || defaultColors[0]}
@@ -618,6 +622,7 @@ export const PieChart: React.FC<PieChartProps> = ({
       <ResponsiveContainer width={width} height={height}>
         <RechartsPieChart>
           <Pie
+            isAnimationActive={false}
             data={data}
             cx={cx}
             cy={cy}
@@ -733,6 +738,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
     dataKeys.map((keyConfig, index) => (
       <Area
         key={keyConfig.dataKey}
+        isAnimationActive={false}
         type="monotone"
         dataKey={keyConfig.dataKey}
         stackId={stack ? '1' : undefined}
@@ -743,6 +749,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
     ))
   ) : (
     <Area
+      isAnimationActive={false}
       type="monotone"
       dataKey={dataKey}
       stroke={stroke || defaultColors[0]}
@@ -873,7 +880,7 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
           )}
           {showTooltip && <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '6px', color: 'hsl(var(--foreground))' }} />}
           {showLegend && <Legend />}
-          <Scatter name={name} dataKey={yDataKey} fill={fill || accentColors[accentColor as keyof typeof accentColors][6]} />
+          <Scatter isAnimationActive={false} name={name} dataKey={yDataKey} fill={fill || accentColors[accentColor as keyof typeof accentColors][6]} />
         </RechartsScatterChart>
       </ResponsiveContainer>
     </div>
@@ -932,6 +939,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
           <PolarAngleAxis dataKey={nameKey} />
           <PolarRadiusAxis />
           <Radar
+            isAnimationActive={false}
             name={name || dataKey}
             dataKey={dataKey}
             stroke={stroke || accentColors[accentColor as keyof typeof accentColors][6]}
@@ -1155,6 +1163,7 @@ export const DonutChart: React.FC<DonutChartProps> = ({
         <RechartsPieChart>
           {gradientDefs}
           <Pie
+            isAnimationActive={false}
             data={data}
             cx={cx}
             cy={cy}
@@ -1456,6 +1465,7 @@ export const ProgressDonut: React.FC<ProgressDonutProps> = ({
       <ResponsiveContainer width={width} height={height}>
         <RechartsPieChart>
           <Pie
+            isAnimationActive={false}
             data={data}
             cx="50%"
             cy="50%"
