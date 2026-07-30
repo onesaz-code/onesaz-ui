@@ -69,40 +69,60 @@ const TableRow = React.forwardRef<
 ))
 TableRow.displayName = 'TableRow'
 
-const TableHead = React.forwardRef<
-  HTMLTableCellElement,
-  React.ThHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <th
-    ref={ref}
-    className={cn(
-      // bg-muted matches the DataGrid column-header fill so plain Table and
-      // DataGrid headers read as the same component.
-      'h-10 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground bg-muted',
-      '[&:has([role=checkbox])]:pr-0',
-      className
-    )}
-    {...props}
-  />
-))
+/** Horizontal text alignment for table cells — use `align="right"` for numeric columns. */
+type CellAlign = 'left' | 'center' | 'right'
+const cellAlignClasses: Record<CellAlign, string> = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right',
+}
+
+export interface TableHeadProps
+  extends Omit<React.ThHTMLAttributes<HTMLTableCellElement>, 'align'> {
+  /** Horizontal alignment. Default `left`; use `right` for numeric columns. */
+  align?: CellAlign
+}
+
+const TableHead = React.forwardRef<HTMLTableCellElement, TableHeadProps>(
+  ({ className, align = 'left', ...props }, ref) => (
+    <th
+      ref={ref}
+      className={cn(
+        // bg-muted matches the DataGrid column-header fill so plain Table and
+        // DataGrid headers read as the same component.
+        'h-10 px-4 align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground bg-muted',
+        cellAlignClasses[align],
+        '[&:has([role=checkbox])]:pr-0',
+        className
+      )}
+      {...props}
+    />
+  )
+)
 TableHead.displayName = 'TableHead'
 
-const TableCell = React.forwardRef<
-  HTMLTableCellElement,
-  React.TdHTMLAttributes<HTMLTableCellElement>
->(({ className, ...props }, ref) => (
-  <td
-    ref={ref}
-    className={cn(
-      // tabular-nums keeps digits fixed-width so numeric columns don't jitter;
-      // it only affects digits, so text cells are unaffected. Inherits to
-      // TableCell.Primary / TableCell.Meta children.
-      'p-4 align-middle tabular-nums [&:has([role=checkbox])]:pr-0',
-      className
-    )}
-    {...props}
-  />
-))
+export interface TableCellProps
+  extends Omit<React.TdHTMLAttributes<HTMLTableCellElement>, 'align'> {
+  /** Horizontal alignment. Use `right` for numeric columns. */
+  align?: CellAlign
+}
+
+const TableCell = React.forwardRef<HTMLTableCellElement, TableCellProps>(
+  ({ className, align, ...props }, ref) => (
+    <td
+      ref={ref}
+      className={cn(
+        // tabular-nums keeps digits fixed-width so numeric columns don't jitter;
+        // it only affects digits, so text cells are unaffected. Inherits to
+        // TableCell.Primary / TableCell.Meta children.
+        'p-4 align-middle tabular-nums [&:has([role=checkbox])]:pr-0',
+        align && cellAlignClasses[align],
+        className
+      )}
+      {...props}
+    />
+  )
+)
 TableCell.displayName = 'TableCell'
 
 const TableCaption = React.forwardRef<

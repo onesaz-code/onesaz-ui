@@ -53,7 +53,13 @@ export interface GridColDef<TData = any> {
   wrapText?: boolean // If true, text wraps instead of truncating (default: false)
   scrollable?: boolean // If true, cell content becomes scrollable when it overflows
   maxCellHeight?: number // Maximum height for scrollable cells (default: 100px)
-  cellClassName?: string // Custom className for cell content
+  /**
+   * Custom className for the cell content. A string, or a function of the
+   * cell value/row for conditional styling — e.g.
+   * `cellClassName: (p) => p.value < 0 ? 'text-error-600' : 'text-success-600'`.
+   * Avoids reaching for `renderCell` just to colour a value.
+   */
+  cellClassName?: string | ((params: GridRenderCellParams<TData>) => string)
   // Spanning
   colSpan?: number | ((params: GridSpanParams<TData>) => number | undefined) // Number of columns this cell should span
   rowSpan?: boolean | ((params: GridSpanParams<TData>) => number | undefined) // true for auto-merge consecutive same values, or function returning span count
@@ -1165,7 +1171,11 @@ const RowRenderer = ({
         const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
         const scrollable = meta?.scrollable || false
         const maxCellHeight = meta?.maxCellHeight || 100
-        const cellClassName = meta?.cellClassName
+        const rawCellClassName = meta?.cellClassName
+        const cellClassName =
+          typeof rawCellClassName === 'function'
+            ? rawCellClassName({ value: cell.getValue(), row: cell.row.original, field: cell.column.id, rowIndex: cell.row.index })
+            : rawCellClassName
 
         const colWidth = columnWidths.get(cell.column.id)
         const width = colWidth?.width || cell.column.getSize()
@@ -1524,7 +1534,11 @@ const PinnedRowsRenderer = ({
               const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
               const scrollable = meta?.scrollable || false
               const maxCellHeight = meta?.maxCellHeight || 100
-              const cellClassName = meta?.cellClassName
+              const rawCellClassName = meta?.cellClassName
+              const cellClassName =
+                typeof rawCellClassName === 'function'
+                  ? rawCellClassName({ value: cell.getValue(), row: cell.row.original, field: cell.column.id, rowIndex: cell.row.index })
+                  : rawCellClassName
               const colWidth = columnWidths.get(cell.column.id)
               const width = colWidth?.width || cell.column.getSize()
               const pinnedInfo = pinnedColumnOffsets?.get(cell.column.id)

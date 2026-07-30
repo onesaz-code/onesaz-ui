@@ -46,7 +46,10 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate:api": "node scripts/generate-api-docs.mjs"
   },
   "dependencies": {
     "@onesaz/tokens": "*",
@@ -68,15 +71,20 @@
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
     "@types/react": "^18.3.13",
     "@types/react-dom": "^18.3.1",
     "autoprefixer": "^10.4.20",
+    "jest-axe": "^11.0.0",
+    "jsdom": "^29.1.1",
     "postcss": "^8.4.49",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tailwindcss": "^3.4.15",
     "tsup": "^8.3.5",
-    "typescript": "^5.5.4"
+    "typescript": "^5.5.4",
+    "vitest": "^2.1.9"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",

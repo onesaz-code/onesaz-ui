@@ -40,7 +40,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "generate:css": "node scripts/generate-css.mjs"
   },
   "devDependencies": {
     "tsup": "^8.3.5",

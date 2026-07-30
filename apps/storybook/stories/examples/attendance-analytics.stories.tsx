@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 import {
   Box,
+  Container,
   VStack,
   HStack,
   Grid,
@@ -8,10 +9,10 @@ import {
   CardHeader,
   CardTitle,
   CardContent,
-  Badge,
   Button,
   Typography,
   LinearProgress,
+  Stat,
   BarChart,
   DonutChart,
   LineChart,
@@ -60,25 +61,10 @@ const classes = [
   { name: 'Grade 9 · B', teacher: 'Mr. Khan', rate: 78, variant: 'warning' as const },
 ]
 
-function Kpi({ label, value, delta, positive }: { label: string; value: string; delta: string; positive?: boolean }) {
-  return (
-    <Card>
-      <CardContent>
-        <Box py={4}>
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{label}</p>
-          <HStack justifyContent="between" alignItems="center">
-            <p className="mt-1 text-2xl font-semibold text-foreground tabular-nums">{value}</p>
-            <Badge variant="soft" color={positive ? 'success' : 'error'}>{delta}</Badge>
-          </HStack>
-        </Box>
-      </CardContent>
-    </Card>
-  )
-}
-
 export const Default: Story = {
   render: () => (
-    <Box p={8} className="mx-auto max-w-6xl">
+    <Box py={8}>
+     <Container maxWidth="xl">
       <VStack gap={6} alignItems="stretch">
         <HStack justifyContent="between" alignItems="center" flexWrap="wrap" gap={4}>
           <VStack gap={1} alignItems="start">
@@ -92,10 +78,10 @@ export const Default: Story = {
         </HStack>
 
         <Grid columns={4} gap={4}>
-          <Kpi label="Present today" value="1,182" delta="+2.1%" positive />
-          <Kpi label="Avg attendance" value="93.4%" delta="+0.6%" positive />
-          <Kpi label="On leave" value="38" delta="-4" positive />
-          <Kpi label="Absent" value="71" delta="+9" />
+          <Stat label="Present today" value="1,182" delta="+2.1%" trend="up" />
+          <Stat label="Avg attendance" value="93.4%" delta="+0.6%" trend="up" />
+          <Stat label="On leave" value="38" delta="-4" trend="up" />
+          <Stat label="Absent" value="71" delta="+9" trend="down" />
         </Grid>
 
         <Grid columns={2} gap={4}>
@@ -141,6 +127,7 @@ export const Default: Story = {
           </CardContent>
         </Card>
       </VStack>
+     </Container>
     </Box>
   ),
 }
