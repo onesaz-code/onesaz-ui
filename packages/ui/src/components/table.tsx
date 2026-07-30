@@ -76,7 +76,9 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-10 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground',
+      // bg-muted matches the DataGrid column-header fill so plain Table and
+      // DataGrid headers read as the same component.
+      'h-10 px-4 text-left align-middle text-xs font-semibold uppercase tracking-wide text-muted-foreground bg-muted',
       '[&:has([role=checkbox])]:pr-0',
       className
     )}
