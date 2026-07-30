@@ -9,6 +9,7 @@ export { cn } from './utils/cn'
 // Layout Components
 export { Box, type BoxProps } from './components/box'
 export { Stack, HStack, VStack, type StackProps } from './components/stack'
+export { EmptyState, ErrorState, type EmptyStateProps, type ErrorStateProps } from './components/empty-state'
 export { Grid, type GridProps } from './components/grid'
 
 // Typography

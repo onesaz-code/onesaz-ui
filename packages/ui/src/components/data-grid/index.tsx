@@ -1193,7 +1193,9 @@ const RowRenderer = ({
             colSpan={htmlColSpan}
             rowSpan={htmlRowSpan}
             className={cn(
-              'px-4 overflow-hidden border-b border-border/60',
+              // tabular-nums keeps numeric columns from jittering; affects
+              // digits only, so text cells are unaffected.
+              'px-4 overflow-hidden border-b border-border/60 tabular-nums',
               showCellVerticalBorder && 'border-r border-border',
               pinnedInfo && 'sticky z-[1] bg-card',
               pinnedInfo?.side === 'left' && 'border-r border-border',
@@ -1537,7 +1539,7 @@ const PinnedRowsRenderer = ({
                   key={cell.id}
                   colSpan={htmlColSpan}
                   className={cn(
-                    'px-4 overflow-hidden bg-muted border-b border-border',
+                    'px-4 overflow-hidden bg-muted border-b border-border tabular-nums',
                     showCellVerticalBorder && 'border-r border-border',
                     pinnedInfo && 'sticky z-[3]',
                     pinnedInfo?.side === 'left' && 'border-r border-border',

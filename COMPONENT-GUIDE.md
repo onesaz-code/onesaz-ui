@@ -134,15 +134,15 @@ Components use a variant-based styling system:
 
 ```tsx
 // Button variants
-<Button variant="default">Default</Button>
+<Button variant="contained">Default</Button>
 <Button variant="destructive">Delete</Button>
-<Button variant="outline">Outline</Button>
+<Button variant="outlined">Outline</Button>
 <Button variant="secondary">Secondary</Button>
 <Button variant="ghost">Ghost</Button>
 <Button variant="link">Link</Button>
 
 // Alert variants
-<Alert variant="info">Information</Alert>
+<Alert variant="default">Information</Alert>
 <Alert variant="success">Success!</Alert>
 <Alert variant="warning">Warning</Alert>
 <Alert variant="error">Error</Alert>
@@ -350,9 +350,13 @@ import { Button } from '@onesaz/ui'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `'default' \| 'destructive' \| 'outline' \| 'secondary' \| 'ghost' \| 'link'` | `'default'` | Visual style variant |
+| `variant` | `'contained' \| 'destructive' \| 'outlined' \| 'secondary' \| 'ghost' \| 'link'` | `'contained'` | Visual style variant |
 | `size` | `'default' \| 'sm' \| 'lg' \| 'icon'` | `'default'` | Button size |
-| `asChild` | `boolean` | `false` | Render as child element |
+| `color` | `'default' \| 'accent' \| 'success' \| 'warning' \| 'error' \| 'destructive'` | `'default'` | Color scheme applied on top of the variant |
+| `fullWidth` | `boolean` | `false` | Take the full width of the container |
+| `loading` | `boolean` | `false` | Show a loading spinner and disable the button |
+| `startIcon` | `React.ReactNode` | `—` | Element rendered before the button label |
+| `endIcon` | `React.ReactNode` | `—` | Element rendered after the button label |
 | `disabled` | `boolean` | `false` | Disable the button |
 
 #### Examples
@@ -362,9 +366,9 @@ import { Button } from '@onesaz/ui'
 <Button>Click Me</Button>
 
 // Variants
-<Button variant="default">Default</Button>
+<Button variant="contained">Default</Button>
 <Button variant="destructive">Delete</Button>
-<Button variant="outline">Outline</Button>
+<Button variant="outlined">Outline</Button>
 <Button variant="secondary">Secondary</Button>
 <Button variant="ghost">Ghost</Button>
 <Button variant="link">Link</Button>
@@ -375,24 +379,21 @@ import { Button } from '@onesaz/ui'
 <Button size="lg">Large</Button>
 
 // With icon
-<Button>
-  <PlusIcon className="mr-2 h-4 w-4" />
-  Add Item
-</Button>
+<Button startIcon={<PlusIcon />}>Add Item</Button>
+<Button endIcon={<ArrowRightIcon />}>Next</Button>
+
+// Color
+<Button color="success">Save</Button>
+<Button color="error" variant="outlined">Delete</Button>
+
+// Full width
+<Button fullWidth>Continue</Button>
 
 // Disabled
 <Button disabled>Disabled</Button>
 
-// As link
-<Button asChild>
-  <a href="/about">About</a>
-</Button>
-
 // Loading state
-<Button disabled>
-  <Spinner className="mr-2" />
-  Loading...
-</Button>
+<Button loading>Loading...</Button>
 ```
 
 #### Best Practices
@@ -434,11 +435,9 @@ import { Alert, AlertTitle, AlertDescription } from '@onesaz/ui'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `'default' \| 'info' \| 'success' \| 'warning' \| 'error' \| 'destructive'` | `'default'` | Alert style variant |
-| `dismissible` | `boolean` | `false` | Show close button |
-| `showIcon` | `boolean` | `true` | Show status icon |
-| `onClose` | `() => void` | - | Callback when dismissed |
-| `duration` | `number` | - | Auto-dismiss after ms |
+| `variant` | `'default' \| 'success' \| 'warning' \| 'error'` | `'default'` | Alert style variant |
+| `onClose` | `() => void` | - | Renders a close button; called when clicked |
+| `icon` | `React.ReactNode \| null` | - | Override the default icon; pass `null` to hide it |
 
 #### Examples
 
@@ -452,7 +451,7 @@ import { Alert, AlertTitle, AlertDescription } from '@onesaz/ui'
 </Alert>
 
 // Variants
-<Alert variant="info">
+<Alert variant="default">
   <AlertTitle>Information</AlertTitle>
   <AlertDescription>This is informational content.</AlertDescription>
 </Alert>
@@ -473,13 +472,13 @@ import { Alert, AlertTitle, AlertDescription } from '@onesaz/ui'
 </Alert>
 
 // Dismissible
-<Alert dismissible onClose={() => console.log('Closed')}>
+<Alert onClose={() => console.log('Closed')}>
   <AlertTitle>Dismissible Alert</AlertTitle>
   <AlertDescription>Click the X to close this alert.</AlertDescription>
 </Alert>
 
 // Without icon
-<Alert showIcon={false}>
+<Alert icon={null}>
   <AlertDescription>Alert without icon</AlertDescription>
 </Alert>
 ```
@@ -910,7 +909,7 @@ const columns: GridColDef<User>[] = [
     headerName: 'Status',
     width: 120,
     renderCell: ({ value }) => (
-      <Badge variant={value === 'active' ? 'default' : 'secondary'}>
+      <Badge color={value === 'active' ? 'default' : 'normal'}>
         {value}
       </Badge>
     ),
@@ -930,7 +929,7 @@ const columns: GridColDef<User>[] = [
     sortable: false,
     renderCell: ({ row }) => (
       <div className="flex gap-2">
-        <Button size="sm" variant="outline">Edit</Button>
+        <Button size="sm" variant="outlined">Edit</Button>
         <Button size="sm" variant="destructive">Delete</Button>
       </div>
     ),
@@ -1075,7 +1074,7 @@ const columns: GridColDef[] = [
     renderCell: ({ value }) => (
       <div className="flex flex-wrap gap-1">
         {value.map((tag: string, i: number) => (
-          <Badge key={i} variant="secondary" className="text-xs">{tag}</Badge>
+          <Badge key={i} color="normal" className="text-xs">{tag}</Badge>
         ))}
       </div>
     ),
@@ -1118,7 +1117,7 @@ const columns: GridColDef[] = [
   slotProps={{
     toolbar: {
       customButtons: (
-        <Button variant="outline" size="sm" onClick={() => alert('Add')}>
+        <Button variant="outlined" size="sm" onClick={() => alert('Add')}>
           Add User
         </Button>
       ),
@@ -1264,7 +1263,7 @@ const [columnVisibility, setColumnVisibility] = useState<ColumnVisibilityModel>(
   title="Full Featured DataGrid"
   slotProps={{
     toolbar: {
-      customButtons: <Button variant="outline" size="sm">Add User</Button>,
+      customButtons: <Button variant="outlined" size="sm">Add User</Button>,
       moreOptions: [
         { label: 'Print',    onClick: () => console.log('Print') },
         { label: 'Settings', onClick: () => console.log('Settings') },
@@ -1426,7 +1425,7 @@ import {
     </div>
     <DialogFooter>
       <DialogClose asChild>
-        <Button variant="outline">Cancel</Button>
+        <Button variant="outlined">Cancel</Button>
       </DialogClose>
       <Button>Save</Button>
     </DialogFooter>
@@ -1476,7 +1475,7 @@ const [open, setOpen] = useState(false)
       </VStack>
       <DialogFooter className="mt-4">
         <DialogClose asChild>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="outlined">Cancel</Button>
         </DialogClose>
         <Button type="submit">Add User</Button>
       </DialogFooter>
@@ -1817,25 +1816,28 @@ import { Badge } from '@onesaz/ui'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `'default' \| 'secondary' \| 'destructive' \| 'outline' \| 'success' \| 'warning' \| 'info'` | `'default'` | Badge variant |
-| `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Badge size |
+| `variant` | `'contained' \| 'outlined' \| 'soft' \| 'text'` | `'contained'` | Badge visual style |
+| `color` | `'default' \| 'success' \| 'warning' \| 'error' \| 'destructive' \| 'info' \| 'normal' \| 'archived'` | `'default'` | Status color |
+| `bg` | `boolean` | `false` | With `variant="outlined"`, renders a soft filled background with bold text |
 
 #### Examples
 
 ```tsx
-// Variants
+// Variants (visual style)
 <Badge>Default</Badge>
-<Badge variant="secondary">Secondary</Badge>
-<Badge variant="destructive">Destructive</Badge>
-<Badge variant="outline">Outline</Badge>
-<Badge variant="success">Success</Badge>
-<Badge variant="warning">Warning</Badge>
-<Badge variant="info">Info</Badge>
+<Badge variant="contained">Contained</Badge>
+<Badge variant="outlined">Outlined</Badge>
+<Badge variant="soft">Soft</Badge>
+<Badge variant="text">Text</Badge>
 
-// Sizes
-<Badge size="sm">Small</Badge>
-<Badge size="md">Medium</Badge>
-<Badge size="lg">Large</Badge>
+// Colors
+<Badge color="success">Success</Badge>
+<Badge color="warning">Warning</Badge>
+<Badge color="error">Error</Badge>
+<Badge color="destructive">Destructive</Badge>
+<Badge color="info">Info</Badge>
+<Badge color="normal">Normal</Badge>
+<Badge color="archived">Archived</Badge>
 
 // With icons
 <Badge>
@@ -1846,7 +1848,7 @@ import { Badge } from '@onesaz/ui'
 // In use
 <div className="flex items-center gap-2">
   <span>Status:</span>
-  <Badge variant="success">Active</Badge>
+  <Badge color="success">Active</Badge>
 </div>
 ```
 
@@ -1879,8 +1881,8 @@ import { Chip } from '@onesaz/ui'
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `label` | `string` | - | Chip label text |
-| `variant` | `'filled' \| 'outlined'` | `'filled'` | Visual style |
-| `color` | `'default' \| 'primary' \| 'secondary' \| 'success' \| 'warning' \| 'error' \| 'info'` | `'default'` | Color theme |
+| `variant` | `'contained' \| 'outlined'` | `'contained'` | Visual style |
+| `color` | `'default' \| 'success' \| 'warning' \| 'error' \| 'destructive'` | `'default'` | Color theme |
 | `size` | `'small' \| 'medium'` | `'medium'` | Chip size |
 | `clickable` | `boolean` | `false` | Make chip interactive/clickable |
 | `disabled` | `boolean` | `false` | Disable the chip |
@@ -1895,15 +1897,15 @@ import { Chip } from '@onesaz/ui'
 <Chip label="Default" />
 
 // Variants
-<Chip label="Filled" variant="filled" />
+<Chip label="Contained" variant="contained" />
 <Chip label="Outlined" variant="outlined" />
 
 // Colors
-<Chip label="Primary" color="primary" />
+<Chip label="Default" color="default" />
 <Chip label="Success" color="success" />
 <Chip label="Warning" color="warning" />
 <Chip label="Error" color="error" />
-<Chip label="Info" color="info" />
+<Chip label="Destructive" color="destructive" />
 
 // Sizes
 <Chip label="Small" size="small" />
@@ -1923,8 +1925,8 @@ import { Chip } from '@onesaz/ui'
 
 // Tag list
 <div className="flex flex-wrap gap-2">
-  <Chip label="React" color="primary" variant="outlined" />
-  <Chip label="TypeScript" color="info" variant="outlined" />
+  <Chip label="React" color="default" variant="outlined" />
+  <Chip label="TypeScript" color="success" variant="outlined" />
   <Chip label="Tailwind" color="success" variant="outlined" />
 </div>
 
@@ -1936,7 +1938,7 @@ const [tags, setTags] = useState(['React', 'TypeScript', 'CSS'])
     <Chip
       key={tag}
       label={tag}
-      color="primary"
+      color="default"
       onDelete={() => setTags(tags.filter(t => t !== tag))}
     />
   ))}
@@ -2920,7 +2922,7 @@ import { IconButton } from '@onesaz/ui'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `variant` | `'default' \| 'destructive' \| 'outline' \| 'secondary' \| 'ghost' \| 'link'` | `'default'` | Button variant |
+| `variant` | `'contained' \| 'destructive' \| 'outlined' \| 'secondary' \| 'ghost' \| 'link'` | `'contained'` | Button variant |
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg'` | `'md'` | Button size |
 | `rounded` | `boolean` | `false` | Fully rounded |
 | `disabled` | `boolean` | `false` | Disable button |
@@ -2935,10 +2937,10 @@ import { IconButton } from '@onesaz/ui'
 </IconButton>
 
 // Variants
-<IconButton variant="default" aria-label="Edit">
+<IconButton variant="contained" aria-label="Edit">
   <EditIcon />
 </IconButton>
-<IconButton variant="outline" aria-label="Delete">
+<IconButton variant="outlined" aria-label="Delete">
   <TrashIcon />
 </IconButton>
 <IconButton variant="ghost" aria-label="Settings">
@@ -3639,7 +3641,7 @@ import { Tooltip } from '@onesaz/ui'
 
 // Disabled tooltip (won't show on hover)
 <Tooltip content="This won't show" disabled>
-  <Button variant="outline">Disabled Tooltip</Button>
+  <Button variant="outlined">Disabled Tooltip</Button>
 </Tooltip>
 ```
 
@@ -3685,7 +3687,7 @@ import { LinearProgress, CircularProgress, Progress } from '@onesaz/ui'
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `size` | `'sm' \| 'md' \| 'lg' \| 'xl' \| number` | `'md'` | Circle size (preset or px number) |
-| `thickness` | `number` | - | Stroke thickness in px |
+| `thickness` | `number` | `4` | Stroke thickness in px |
 | `children` | `React.ReactNode` | - | Custom center content |
 
 #### Examples
@@ -3985,7 +3987,7 @@ import {
     </DrawerBody>
     <DrawerFooter>
       <DrawerClose asChild>
-        <Button variant="outline">Cancel</Button>
+        <Button variant="outlined">Cancel</Button>
       </DrawerClose>
       <Button>Save</Button>
     </DrawerFooter>
@@ -4041,7 +4043,7 @@ const [open, setOpen] = useState(false)
     </DrawerBody>
     <DrawerFooter>
       <DrawerClose asChild>
-        <Button variant="outline">Cancel</Button>
+        <Button variant="outlined">Cancel</Button>
       </DrawerClose>
       <Button>Add Item</Button>
     </DrawerFooter>
@@ -4096,7 +4098,7 @@ import {
 // Basic dropdown menu
 <DropdownMenu>
   <DropdownMenuTrigger asChild>
-    <Button variant="outline">Open Menu</Button>
+    <Button variant="outlined">Open Menu</Button>
   </DropdownMenuTrigger>
   <DropdownMenuContent>
     <DropdownMenuLabel>My Account</DropdownMenuLabel>
@@ -4680,14 +4682,14 @@ function AppLayout() {
       <RailTrigger 
         rail="inbox" 
         icon={<InboxIcon />}
-        badge={<Badge variant="destructive" size="sm">12</Badge>}
+        badge={<Badge color="destructive">12</Badge>}
       >
         Inbox
       </RailTrigger>
       <RailTrigger 
         rail="notifications" 
         icon={<BellIcon />}
-        badge={<Badge variant="info" size="sm">3</Badge>}
+        badge={<Badge color="info">3</Badge>}
       >
         Notifications
       </RailTrigger>
@@ -5899,7 +5901,7 @@ function ThemeToggle() {
   
   return (
     <Button
-      variant="outline"
+      variant="outlined"
       size="icon"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
     >
@@ -6276,7 +6278,7 @@ function UsersTable() {
       headerName: 'Status',
       width: 100,
       renderCell: ({ value }) => (
-        <Badge variant={value === 'active' ? 'success' : 'secondary'}>
+        <Badge color={value === 'active' ? 'success' : 'normal'}>
           {value}
         </Badge>
       ),
@@ -6520,7 +6522,7 @@ function UserForm() {
           </VStack>
         </CardContent>
         <CardFooter className="justify-end gap-2">
-          <Button variant="outline" type="button">
+          <Button variant="outlined" type="button">
             Cancel
           </Button>
           <Button type="submit" disabled={isSubmitting}>

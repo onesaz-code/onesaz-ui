@@ -92,7 +92,10 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      'p-4 align-middle [&:has([role=checkbox])]:pr-0',
+      // tabular-nums keeps digits fixed-width so numeric columns don't jitter;
+      // it only affects digits, so text cells are unaffected. Inherits to
+      // TableCell.Primary / TableCell.Meta children.
+      'p-4 align-middle tabular-nums [&:has([role=checkbox])]:pr-0',
       className
     )}
     {...props}
