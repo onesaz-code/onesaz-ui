@@ -77,3 +77,6 @@ Single source of truth for both tokens and prop docs. **56 tests green.**
 
 ## Progress log
 - 2026-07-30 — Plan created. Starting Phase 0 (test + CI net).
+- 2026-07-30 — Phase 0 (test net, 58 tests) + Phase 1 (mid-level components, adopted)
+  + Phase 2 (token & API-docs codegen with drift guard) shipped. Added dashed Button
+  variant and segmented accent Tabs. Released 0.5.0 / tailwind-config 0.4.0 / tokens 0.1.5.

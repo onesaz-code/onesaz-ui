@@ -33,7 +33,7 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'destructive', 'outline', 'secondary', 'ghost', 'link'],
+      options: ['contained', 'outlined', 'secondary', 'dashed', 'ghost', 'link', 'destructive'],
     },
     size: {
       control: 'select',
@@ -55,15 +55,15 @@ type Story = StoryObj<typeof Button>
 // ── Existing variants (backward-compatible) ────────────────────────────────
 
 export const Default: Story = {
-  args: { children: 'Button', variant: 'default' },
+  args: { children: 'Button', variant: 'contained' },
 }
 
 export const Destructive: Story = {
   args: { children: 'Delete', variant: 'destructive' },
 }
 
-export const Outline: Story = {
-  args: { children: 'Outline', variant: 'outline' },
+export const Outlined: Story = {
+  args: { children: 'Outlined', variant: 'outlined' },
 }
 
 export const Secondary: Story = {
@@ -93,12 +93,23 @@ export const Disabled: Story = {
 export const AllVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
-      <Button>Default</Button>
-      <Button variant="destructive">Destructive</Button>
-      <Button variant="outline">Outline</Button>
+      <Button variant="contained">Contained</Button>
+      <Button variant="outlined">Outlined</Button>
       <Button variant="secondary">Secondary</Button>
+      <Button variant="dashed">Dashed</Button>
       <Button variant="ghost">Ghost</Button>
       <Button variant="link">Link</Button>
+      <Button variant="destructive">Destructive</Button>
+    </div>
+  ),
+}
+
+/** Dashed "add" affordance — dashed border at rest, accent-tinted fill on hover. */
+export const Dashed: Story = {
+  render: () => (
+    <div className="flex flex-wrap gap-4">
+      <Button variant="dashed" startIcon={<PlusIcon />}>Add holiday</Button>
+      <Button variant="dashed" startIcon={<PlusIcon />} fullWidth>Add row</Button>
     </div>
   ),
 }
@@ -126,7 +137,7 @@ export const LoadingVariants: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button loading>Default</Button>
-      <Button variant="outline" loading>Outline</Button>
+      <Button variant="outlined" loading>Outline</Button>
       <Button variant="secondary" loading>Secondary</Button>
       <Button variant="ghost" loading>Ghost</Button>
     </div>
@@ -185,12 +196,12 @@ export const ColorsOutline: Story = {
   name: 'Colors – Outline',
   render: () => (
     <div className="flex flex-wrap gap-4">
-      <Button variant="outline" color="default">Default</Button>
+      <Button variant="outlined" color="default">Default</Button>
       <Button variant="outlined" color="accent">Accent</Button>
-      <Button variant="outline" color="success">Success</Button>
-      <Button variant="outline" color="warning">Warning</Button>
-      <Button variant="outline" color="error">Error</Button>
-      <Button variant="outline" color="destructive">Destructive</Button>
+      <Button variant="outlined" color="success">Success</Button>
+      <Button variant="outlined" color="warning">Warning</Button>
+      <Button variant="outlined" color="error">Error</Button>
+      <Button variant="outlined" color="destructive">Destructive</Button>
     </div>
   ),
 }
@@ -241,7 +252,7 @@ export const ColorWithIcons: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button color="success" startIcon={<PlusIcon />}>Add</Button>
-      <Button color="error" variant="outline" endIcon={<ArrowRightIcon />}>Remove</Button>
+      <Button color="error" variant="outlined" endIcon={<ArrowRightIcon />}>Remove</Button>
       <Button color="warning" variant="secondary" startIcon={<DownloadIcon />}>Export</Button>
     </div>
   ),
@@ -251,7 +262,7 @@ export const LoadingWithColor: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4">
       <Button color="success" loading>Saving</Button>
-      <Button color="error" variant="outline" loading>Deleting</Button>
+      <Button color="error" variant="outlined" loading>Deleting</Button>
       <Button color="warning" variant="secondary" loading>Processing</Button>
     </div>
   ),

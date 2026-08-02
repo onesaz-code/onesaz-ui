@@ -72,6 +72,7 @@ function variantToShape(
 ): 'contained' | 'outlined' | 'secondary' | 'ghost' | 'link' {
   switch (variant) {
     case 'outlined':   return 'outlined'
+    case 'dashed':     return 'outlined'
     case 'secondary':  return 'secondary'
     case 'ghost':      return 'ghost'
     case 'link':       return 'link'
@@ -105,7 +106,7 @@ const Spinner = ({ className }: { className?: string }) => (
 // ============================================================================
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'contained' | 'destructive' | 'outlined' | 'secondary' | 'ghost' | 'link'
+  variant?: 'contained' | 'destructive' | 'outlined' | 'secondary' | 'ghost' | 'link' | 'dashed'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   color?: ButtonColor
   /** Whether the button should take the full width of its container */
@@ -168,6 +169,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             resolvedVariant === 'ghost',
           'text-accent underline-offset-4 hover:underline':
             resolvedVariant === 'link',
+          // Dashed "add" affordance: dashed border at rest → accent-tinted fill on hover.
+          'border-2 border-dashed border-border bg-transparent text-foreground hover:border-solid hover:border-accent hover:bg-accent/10 hover:text-accent':
+            resolvedVariant === 'dashed',
         }
 
     const iconSize =

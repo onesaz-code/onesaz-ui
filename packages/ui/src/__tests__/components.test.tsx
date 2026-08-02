@@ -6,6 +6,7 @@ import { Table, TableBody, TableRow, TableCell, TableHead } from '../components/
 import { CardTitle } from '../components/card'
 import { Button, IconButton } from '../components/button'
 import { EmptyState, ErrorState } from '../components/empty-state'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/tabs'
 
 describe('Stat', () => {
   it('renders label and value', () => {
@@ -57,6 +58,12 @@ describe('Button / IconButton icon sizing', () => {
     render(<IconButton aria-label="star" size="md"><svg /></IconButton>)
     expect(screen.getByLabelText('star').className).toContain('[&_svg]:h-5')
   })
+  it('dashed variant renders a dashed border with an accent hover', () => {
+    render(<Button variant="dashed" startIcon={<svg />}>Add holiday</Button>)
+    const cls = screen.getByRole('button', { name: 'Add holiday' }).className
+    expect(cls).toContain('border-dashed')
+    expect(cls).toContain('hover:bg-accent/10')
+  })
 })
 
 describe('EmptyState / ErrorState', () => {
@@ -72,5 +79,22 @@ describe('EmptyState / ErrorState', () => {
     expect(screen.getByText('Something went wrong')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }))
     expect(onRetry).toHaveBeenCalledOnce()
+  })
+})
+
+describe('Tabs (segmented style)', () => {
+  it('active tab is an accent-coloured elevated pill', () => {
+    render(
+      <Tabs defaultValue="overview">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="history">History</TabsTrigger>
+        </TabsList>
+        <TabsContent value="overview">…</TabsContent>
+      </Tabs>
+    )
+    const cls = screen.getByRole('tab', { name: 'Overview' }).className
+    expect(cls).toContain('data-[state=active]:text-accent')
+    expect(cls).toContain('data-[state=active]:bg-card')
   })
 })
