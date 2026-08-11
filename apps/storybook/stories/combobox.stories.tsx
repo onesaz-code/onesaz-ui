@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Combobox, Label } from "@onesaz/ui";
+import { Combobox, Label, MobileCombobox } from "@onesaz/ui";
 
 const meta: Meta<typeof Combobox> = {
   title: "Components/Combobox",
@@ -1396,6 +1396,211 @@ export const InlineLabelWithIcon: Story = {
           clearable={false}
           className="bg-muted/40"
         />
+      </div>
+    );
+  },
+};
+
+// ============================================================================
+// Mobile Combobox (bottom sheet drawer on mobile)
+// ============================================================================
+
+export const MobileComboboxDefault: Story = {
+  name: "Mobile — single select (drawer)",
+  render: () => (
+    <div className="grid w-[340px] items-center gap-1.5">
+      <Label>Framework</Label>
+      <MobileCombobox
+        options={frameworks}
+        placeholder="Select framework..."
+        searchPlaceholder="Search frameworks..."
+        sheetTitle="Framework"
+      />
+      <p className="text-xs text-muted-foreground">
+        Tap the trigger to open the bottom sheet picker.
+      </p>
+    </div>
+  ),
+};
+
+export const MobileComboboxControlled: Story = {
+  name: "Mobile — controlled single select",
+  render: function MobileComboboxControlled() {
+    const [value, setValue] = React.useState<
+      (typeof countries)[number] | null
+    >(null);
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Country</Label>
+        <MobileCombobox
+          options={countries}
+          value={value}
+          onChange={(next) =>
+            setValue(next as (typeof countries)[number] | null)
+          }
+          placeholder="Select country..."
+          searchPlaceholder="Search countries..."
+          sheetTitle="Country"
+        />
+        <p className="text-sm text-muted-foreground">
+          Selected: {value?.label ?? "None"}
+        </p>
+      </div>
+    );
+  },
+};
+
+export const MobileComboboxMultiSelect: Story = {
+  name: "Mobile — multi select with Done",
+  render: function MobileComboboxMultiSelect() {
+    const [value, setValue] = React.useState<(typeof frameworks)[number][]>(
+      [],
+    );
+    const [doneValue, setDoneValue] = React.useState<
+      (typeof frameworks)[number][]
+    >([]);
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Frameworks (multi)</Label>
+        <MobileCombobox
+          multiple
+          options={frameworks}
+          value={value}
+          onChange={(next) => setValue(next as (typeof frameworks)[number][])}
+          onDone={(next) => setDoneValue(next as (typeof frameworks)[number][])}
+          placeholder="Select frameworks..."
+          searchPlaceholder="Search frameworks..."
+          sheetTitle="Frameworks"
+          maxDisplayItems={2}
+        />
+        <p className="text-sm text-muted-foreground">
+          Draft: {value.length ? value.map((v) => v.label).join(", ") : "None"}
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Confirmed (Done):{" "}
+          {doneValue.length
+            ? doneValue.map((v) => v.label).join(", ")
+            : "None"}
+        </p>
+      </div>
+    );
+  },
+};
+
+export const MobileComboboxMultiSelectAll: Story = {
+  name: "Mobile — multi select with select all",
+  render: function MobileComboboxMultiSelectAll() {
+    const [value, setValue] = React.useState<(typeof countries)[number][]>([]);
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Countries</Label>
+        <MobileCombobox
+          multiple
+          selectAll
+          options={countries}
+          value={value}
+          onChange={(next) => setValue(next as (typeof countries)[number][])}
+          placeholder="Select countries..."
+          searchPlaceholder="Search countries..."
+          sheetTitle="Countries"
+        />
+        <p className="text-sm text-muted-foreground">
+          {value.length} selected
+        </p>
+      </div>
+    );
+  },
+};
+
+export const MobileComboboxWithImages: Story = {
+  name: "Mobile — with option images",
+  render: function MobileComboboxWithImages() {
+    const [value, setValue] = React.useState<
+      (typeof contactsWithImages)[number] | null
+    >(null);
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Assign to</Label>
+        <MobileCombobox
+          options={contactsWithImages}
+          imageKey="image"
+          value={value}
+          onChange={(next) =>
+            setValue(next as (typeof contactsWithImages)[number] | null)
+          }
+          placeholder="Select a person..."
+          searchPlaceholder="Search people..."
+          sheetTitle="Assign to"
+        />
+        <p className="text-sm text-muted-foreground">
+          Selected: {value?.label ?? "None"}
+        </p>
+      </div>
+    );
+  },
+};
+
+export const MobileComboboxWithColors: Story = {
+  name: "Mobile — with option colors",
+  render: function MobileComboboxWithColors() {
+    const [value, setValue] = React.useState<
+      (typeof departmentFilterOptions)[number] | null
+    >(departmentFilterOptions[0]);
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Department</Label>
+        <MobileCombobox
+          options={departmentFilterOptions}
+          colorKey="color"
+          value={value}
+          onChange={(next) =>
+            setValue(next as (typeof departmentFilterOptions)[number] | null)
+          }
+          placeholder="Select department..."
+          searchPlaceholder="Search departments..."
+          sheetTitle="Department"
+          clearable={false}
+        />
+        <p className="text-sm text-muted-foreground">
+          Selected: {value?.label ?? "None"}
+        </p>
+      </div>
+    );
+  },
+};
+
+export const MobileComboboxDropdown: Story = {
+  name: "Mobile — dropdown mode (desktop Combobox)",
+  render: function MobileComboboxDropdown() {
+    const [value, setValue] = React.useState<
+      (typeof frameworks)[number] | null
+    >(null);
+
+    return (
+      <div className="grid w-[340px] items-center gap-1.5">
+        <Label>Framework (dropdown)</Label>
+        <MobileCombobox
+          viewType="dropdown"
+          options={frameworks}
+          value={value}
+          onChange={(next) =>
+            setValue(next as (typeof frameworks)[number] | null)
+          }
+          placeholder="Select framework..."
+          searchPlaceholder="Search frameworks..."
+        />
+        <p className="text-xs text-muted-foreground">
+          <code>viewType=&quot;dropdown&quot;</code> delegates to the desktop
+          Combobox popover.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Selected: {value?.label ?? "None"}
+        </p>
       </div>
     );
   },
