@@ -230,6 +230,14 @@ export {
   type ComboboxMultipleProps,
 } from './components/combobox'
 export {
+  MobileCombobox,
+  type MobileComboboxProps,
+  type MobileComboboxOption,
+  type MobileComboboxOptionInput,
+  type MobileComboboxSingleProps,
+  type MobileComboboxMultipleProps,
+} from './components/mobile-combobox'
+export {
   DataGrid,
   DataGridV0,
   type DataGridProps,
@@ -402,6 +410,9 @@ export {
   SheetDescription,
   SheetBody,
   SheetFooter,
+  type DrawerProps,
+  type DrawerVariant,
+  type DrawerPortalTarget,
   type DrawerContentProps,
   type DrawerHeaderProps,
   type DrawerBodyProps,
