@@ -26,11 +26,29 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 )
 CardHeader.displayName = 'CardHeader'
 
-const CardTitle = React.forwardRef<HTMLHeadingElement, React.HTMLAttributes<HTMLHeadingElement>>(
-  ({ className, ...props }, ref) => (
+export interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
+  /**
+   * Title size. Defaults to `lg` (the original 2xl). Use `sm`/`md` for the
+   * common case of a section-header title inside a dense card.
+   */
+  size?: 'sm' | 'md' | 'lg'
+}
+
+const cardTitleSizeClasses: Record<NonNullable<CardTitleProps['size']>, string> = {
+  sm: 'text-base',
+  md: 'text-lg',
+  lg: 'text-2xl',
+}
+
+const CardTitle = React.forwardRef<HTMLHeadingElement, CardTitleProps>(
+  ({ className, size = 'lg', ...props }, ref) => (
     <h3
       ref={ref}
-      className={cn('text-2xl font-semibold leading-none tracking-tight', className)}
+      className={cn(
+        cardTitleSizeClasses[size],
+        'font-semibold leading-none tracking-tight',
+        className
+      )}
       {...props}
     />
   )

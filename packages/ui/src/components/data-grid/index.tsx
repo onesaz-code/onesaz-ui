@@ -53,7 +53,13 @@ export interface GridColDef<TData = any> {
   wrapText?: boolean // If true, text wraps instead of truncating (default: false)
   scrollable?: boolean // If true, cell content becomes scrollable when it overflows
   maxCellHeight?: number // Maximum height for scrollable cells (default: 100px)
-  cellClassName?: string // Custom className for cell content
+  /**
+   * Custom className for the cell content. A string, or a function of the
+   * cell value/row for conditional styling — e.g.
+   * `cellClassName: (p) => p.value < 0 ? 'text-error-600' : 'text-success-600'`.
+   * Avoids reaching for `renderCell` just to colour a value.
+   */
+  cellClassName?: string | ((params: GridRenderCellParams<TData>) => string)
   // Spanning
   colSpan?: number | ((params: GridSpanParams<TData>) => number | undefined) // Number of columns this cell should span
   rowSpan?: boolean | ((params: GridSpanParams<TData>) => number | undefined) // true for auto-merge consecutive same values, or function returning span count
@@ -174,6 +180,13 @@ export interface DataGridProps<TData = any> {
   minHeight?: number | string
   maxHeight?: number | string
   density?: GridDensity
+  /**
+   * Height of the column header row, in px. Independent of `density` (which
+   * only controls data-row height) so the header stays stable as rows
+   * compress — matching the MUI DataGrid `columnHeaderHeight` behaviour.
+   * @default 48
+   */
+  columnHeaderHeight?: number
   showCellVerticalBorder?: boolean
   showColumnVerticalBorder?: boolean
   hideFooter?: boolean
@@ -1158,7 +1171,11 @@ const RowRenderer = ({
         const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
         const scrollable = meta?.scrollable || false
         const maxCellHeight = meta?.maxCellHeight || 100
-        const cellClassName = meta?.cellClassName
+        const rawCellClassName = meta?.cellClassName
+        const cellClassName =
+          typeof rawCellClassName === 'function'
+            ? rawCellClassName({ value: cell.getValue(), row: cell.row.original, field: cell.column.id, rowIndex: cell.row.index })
+            : rawCellClassName
 
         const colWidth = columnWidths.get(cell.column.id)
         const width = colWidth?.width || cell.column.getSize()
@@ -1193,7 +1210,9 @@ const RowRenderer = ({
             colSpan={htmlColSpan}
             rowSpan={htmlRowSpan}
             className={cn(
-              'px-4 overflow-hidden border-b border-border/60',
+              // tabular-nums keeps numeric columns from jittering; affects
+              // digits only, so text cells are unaffected.
+              'px-4 overflow-hidden border-b border-border/60 tabular-nums',
               showCellVerticalBorder && 'border-r border-border',
               pinnedInfo && 'sticky z-[1] bg-card',
               pinnedInfo?.side === 'left' && 'border-r border-border',
@@ -1515,7 +1534,11 @@ const PinnedRowsRenderer = ({
               const wrapText = meta?.wrapText !== undefined ? meta.wrapText : globalWrapText
               const scrollable = meta?.scrollable || false
               const maxCellHeight = meta?.maxCellHeight || 100
-              const cellClassName = meta?.cellClassName
+              const rawCellClassName = meta?.cellClassName
+              const cellClassName =
+                typeof rawCellClassName === 'function'
+                  ? rawCellClassName({ value: cell.getValue(), row: cell.row.original, field: cell.column.id, rowIndex: cell.row.index })
+                  : rawCellClassName
               const colWidth = columnWidths.get(cell.column.id)
               const width = colWidth?.width || cell.column.getSize()
               const pinnedInfo = pinnedColumnOffsets?.get(cell.column.id)
@@ -1537,7 +1560,7 @@ const PinnedRowsRenderer = ({
                   key={cell.id}
                   colSpan={htmlColSpan}
                   className={cn(
-                    'px-4 overflow-hidden bg-muted border-b border-border',
+                    'px-4 overflow-hidden bg-muted border-b border-border tabular-nums',
                     showCellVerticalBorder && 'border-r border-border',
                     pinnedInfo && 'sticky z-[3]',
                     pinnedInfo?.side === 'left' && 'border-r border-border',
@@ -1719,6 +1742,7 @@ export function DataGrid<TData extends Record<string, any>>({
   minHeight,
   maxHeight,
   density = 'compact',
+  columnHeaderHeight = 48,
   showCellVerticalBorder = false,
   showColumnVerticalBorder = false,
   hideFooter = false,
@@ -2087,7 +2111,7 @@ export function DataGrid<TData extends Record<string, any>>({
                         pinnedInfo?.side === 'right' && 'border-l border-border',
                       )}
                       style={{
-                        height: rowHeight,
+                        height: columnHeaderHeight,
                         width: effectiveWidth,
                         minWidth: colWidth?.minWidth || header.column.columnDef.minSize,
                         maxWidth: colWidth?.maxWidth || header.column.columnDef.maxSize,

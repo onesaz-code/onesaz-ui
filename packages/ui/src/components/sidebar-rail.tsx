@@ -506,16 +506,19 @@ const RailPanelItem = React.forwardRef<HTMLDivElement, RailPanelItemProps>(
     }
 
     return (
-      <div
-        ref={ref}
-        className={itemClasses}
-        onClick={disabled ? undefined : onClick}
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        {...props}
+      // Real <button> for native keyboard activation (the prior role="button"
+      // div had no key handler). w-full/text-left preserve full-width layout;
+      // public ref type stays HTMLDivElement to keep the API unchanged.
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type="button"
+        className={cn(itemClasses, 'w-full text-left')}
+        onClick={disabled ? undefined : (onClick as React.MouseEventHandler<HTMLButtonElement> | undefined)}
+        disabled={disabled}
+        {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
       >
         {content}
-      </div>
+      </button>
     )
   }
 )

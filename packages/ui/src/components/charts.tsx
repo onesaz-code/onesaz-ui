@@ -250,6 +250,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       return (
         <Bar
           key={keyConfig.dataKey}
+          isAnimationActive={false}
           dataKey={keyConfig.dataKey}
           fill={keyConfig.fill || chartColors[index % chartColors.length]}
           name={keyConfig.name || keyConfig.dataKey}
@@ -320,6 +321,7 @@ export const BarChart: React.FC<BarChartProps> = ({
       name={name || dataKey}
       radius={barProps.radius}
       maxBarSize={barProps.maxBarSize}
+      isAnimationActive={false}
       {...(barProps.minPointSize !== undefined && { minPointSize: barProps.minPointSize })}
     >
       {labelList && (
@@ -503,6 +505,7 @@ export const LineChart: React.FC<LineChartProps> = ({
     dataKeys.map((keyConfig, index) => (
       <Line
         key={keyConfig.dataKey}
+        isAnimationActive={false}
         type="monotone"
         dataKey={keyConfig.dataKey}
         stroke={keyConfig.stroke || defaultColors[index % defaultColors.length]}
@@ -512,6 +515,7 @@ export const LineChart: React.FC<LineChartProps> = ({
     ))
   ) : (
     <Line
+      isAnimationActive={false}
       type="monotone"
       dataKey={dataKey}
       stroke={stroke || defaultColors[0]}
@@ -618,12 +622,13 @@ export const PieChart: React.FC<PieChartProps> = ({
       <ResponsiveContainer width={width} height={height}>
         <RechartsPieChart>
           <Pie
+            isAnimationActive={false}
             data={data}
             cx={cx}
             cy={cy}
             innerRadius={innerRadius}
             outerRadius={outerRadius}
-            fill="#8884d8"
+            fill="#6933d3"
             dataKey={dataKey}
             nameKey={nameKey}
           >
@@ -733,6 +738,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
     dataKeys.map((keyConfig, index) => (
       <Area
         key={keyConfig.dataKey}
+        isAnimationActive={false}
         type="monotone"
         dataKey={keyConfig.dataKey}
         stackId={stack ? '1' : undefined}
@@ -743,6 +749,7 @@ export const AreaChart: React.FC<AreaChartProps> = ({
     ))
   ) : (
     <Area
+      isAnimationActive={false}
       type="monotone"
       dataKey={dataKey}
       stroke={stroke || defaultColors[0]}
@@ -873,7 +880,7 @@ export const ScatterChart: React.FC<ScatterChartProps> = ({
           )}
           {showTooltip && <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--background))', border: '1px solid hsl(var(--border))', borderRadius: '6px', color: 'hsl(var(--foreground))' }} />}
           {showLegend && <Legend />}
-          <Scatter name={name} dataKey={yDataKey} fill={fill || accentColors[accentColor as keyof typeof accentColors][6]} />
+          <Scatter isAnimationActive={false} name={name} dataKey={yDataKey} fill={fill || accentColors[accentColor as keyof typeof accentColors][6]} />
         </RechartsScatterChart>
       </ResponsiveContainer>
     </div>
@@ -932,6 +939,7 @@ export const RadarChart: React.FC<RadarChartProps> = ({
           <PolarAngleAxis dataKey={nameKey} />
           <PolarRadiusAxis />
           <Radar
+            isAnimationActive={false}
             name={name || dataKey}
             dataKey={dataKey}
             stroke={stroke || accentColors[accentColor as keyof typeof accentColors][6]}
@@ -1155,12 +1163,13 @@ export const DonutChart: React.FC<DonutChartProps> = ({
         <RechartsPieChart>
           {gradientDefs}
           <Pie
+            isAnimationActive={false}
             data={data}
             cx={cx}
             cy={cy}
             innerRadius={innerRadius}
             outerRadius={outerRadius}
-            fill="#8884d8"
+            fill="#6933d3"
             dataKey={dataKey}
             nameKey={nameKey}
             strokeLinecap={styling.progressArc.strokeLinecap}
@@ -1221,7 +1230,7 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
   onClick,
   donutSize = 50,
   strokeWidth = 7,
-  backgroundColor = '#E0E4E8',
+  backgroundColor = '#e2e8f0',
   getColor,
   enableShadows = true,
   enableGradients = true,
@@ -1236,11 +1245,11 @@ export const ProgressCard: React.FC<ProgressCardProps> = ({
   // Default color logic matching your example
   const defaultGetColor = (percentage: number): [string, string] => {
     if (percentage <= 30) {
-      return ['rgb(132, 249, 169)', '#46AB87'] // Green for success
+      return ['#86efac', '#16a34a'] // Green for success
     } else if (percentage <= 50) {
-      return ['#3366cc', '#0066cc'] // Blue for info  
+      return ['#3b82f6', '#2563eb'] // Blue for info
     } else {
-      return ['#ff3300', '#cc3300'] // Red for error
+      return ['#ef4444', '#dc2626'] // Red for error
     }
   }
 
@@ -1456,12 +1465,13 @@ export const ProgressDonut: React.FC<ProgressDonutProps> = ({
       <ResponsiveContainer width={width} height={height}>
         <RechartsPieChart>
           <Pie
+            isAnimationActive={false}
             data={data}
             cx="50%"
             cy="50%"
             innerRadius={innerRadius}
             outerRadius={outerRadius}
-            fill="#8884d8"
+            fill="#6933d3"
             dataKey="value"
             nameKey="label"
           >
@@ -1517,7 +1527,7 @@ export const MultiProgressDonut: React.FC<MultiProgressDonutProps> = ({
   size = 80,
   outerRadius = 35,
   strokeWidth = 8,
-  backgroundColor = '#E0E4E8',
+  backgroundColor = '#e2e8f0',
   backgroundStrokeWidth = 8,
   showPercentage = true,
   getColor,
@@ -1790,7 +1800,7 @@ export const PackedBubbleChart: React.FC<PackedBubbleChartProps> = ({
   height = 300,
   minSize = 30,
   maxSize = 70,
-  defaultColor = '#3BBDED',
+  defaultColor = '#6933d3',
   colorByValue,
   showLabels = true,
   showValues = false,
@@ -1848,7 +1858,7 @@ export const PackedBubbleChart: React.FC<PackedBubbleChartProps> = ({
     >
       {title && (
         <div
-          className="text-center text-sm font-bold text-[#31456A] dark:text-slate-200"
+          className="text-center text-sm font-bold text-foreground dark:text-slate-200"
           style={titleStyle}
         >
           {title}

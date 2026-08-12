@@ -1,6 +1,6 @@
 {
   "name": "@onesaz/tokens",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Design tokens for Onesaz UI component library - colors, spacing, typography, and theming",
   "type": "module",
   "license": "MIT",
@@ -40,7 +40,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "generate:css": "node scripts/generate-css.mjs"
   },
   "devDependencies": {
     "tsup": "^8.3.5",

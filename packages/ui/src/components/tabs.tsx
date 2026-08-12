@@ -16,7 +16,7 @@ const TabsList = React.forwardRef<
   <TabsPrimitive.List
     ref={ref}
     className={cn(
-      'inline-flex h-10 items-center justify-center rounded-md p-1',
+      'inline-flex h-10 items-center justify-center rounded-lg p-1',
       'bg-muted text-muted-foreground',
       className
     )}
@@ -32,11 +32,12 @@ const TabsTrigger = React.forwardRef<
   <TabsPrimitive.Trigger
     ref={ref}
     className={cn(
-      'inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium transition-all',
-      'ring-offset-background',
+      'inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1.5 text-sm font-medium transition-all',
+      'ring-offset-background hover:text-foreground',
       'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
       'disabled:pointer-events-none disabled:opacity-50',
-      'data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm',
+      // Active segment: elevated card pill with accent-coloured label (light + dark).
+      'data-[state=active]:bg-card data-[state=active]:text-accent data-[state=active]:font-semibold data-[state=active]:shadow-sm',
       className
     )}
     {...props}

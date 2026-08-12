@@ -319,12 +319,36 @@
   --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
 
   /* ========================================
-   * Z-INDEX (high values for modals)
+   * MOTION
+   * Duration and easing primitives so transitions/animations can be themed
+   * from one place instead of hardcoding 150ms/ease-out at each call site.
    * ======================================== */
-  --z-modal: 99999;
-  --z-tooltip: 99998;
-  --z-dropdown: 99997;
+  --duration-fast: 100ms;
+  --duration-normal: 150ms;
+  --duration-slow: 300ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+
+  /* ========================================
+   * Z-INDEX
+   * Ordered scale for in-app layering. The high tiers below (overlay and
+   * above) intentionally sit far above third-party widget CSS; the low tiers
+   * cover normal document stacking. Prefer these tokens over ad-hoc numbers.
+   * ======================================== */
+  --z-hide: -1;
+  --z-base: 0;
+  --z-docked: 10;
+  --z-sticky: 20;
+  --z-banner: 30;
+  --z-fixed: 40;
+  --z-popover: 50;
+
+  /* High tiers — above app chrome and most third-party content. Unchanged. */
   --z-overlay: 99996;
+  --z-dropdown: 99997;
+  --z-tooltip: 99998;
+  --z-modal: 99999;
 
   /* ========================================
    * ANIMATIONS

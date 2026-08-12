@@ -57,6 +57,10 @@ export interface TypographyProps extends React.HTMLAttributes<HTMLElement> {
   noWrap?: boolean
   /** Paragraph mode (adds bottom margin) */
   paragraph?: boolean
+  /** Monospace font — for code, IDs, timestamps, hashes */
+  mono?: boolean
+  /** Fixed-width digits so numbers don't jitter column-to-column */
+  tabularNums?: boolean
 }
 
 const variantMapping: Record<TypographyVariant, React.ElementType> = {
@@ -160,6 +164,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       gutterBottom = false,
       noWrap = false,
       paragraph = false,
+      mono = false,
+      tabularNums = false,
       style,
       ...props
     },
@@ -177,6 +183,8 @@ const Typography = React.forwardRef<HTMLElement, TypographyProps>(
       gutterBottom && 'mb-2',
       noWrap && 'truncate',
       paragraph && 'mb-4',
+      mono && 'font-mono',
+      tabularNums && 'tabular-nums',
       // Text gradient styles
       textGradient && [
         'bg-gradient-to-r bg-clip-text text-transparent',

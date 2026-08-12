@@ -255,16 +255,21 @@ const SidebarItem = React.forwardRef<HTMLDivElement, SidebarItemProps>(
     }
 
     return (
-      <div
-        ref={ref}
-        className={itemClasses}
+      // Real <button> so keyboard activation (Enter/Space) works natively —
+      // the previous role="button" div had tabIndex but no key handler, so it
+      // was not keyboard-operable. w-full/text-left preserve the div's
+      // full-width block layout. Public ref type is kept as HTMLDivElement to
+      // avoid changing the component's API for existing callers.
+      <button
+        ref={ref as React.Ref<HTMLButtonElement>}
+        type="button"
+        className={cn(itemClasses, 'w-full text-left')}
         onClick={disabled ? undefined : onClick}
-        role="button"
-        tabIndex={disabled ? -1 : 0}
-        {...props}
+        disabled={disabled}
+        {...(props as React.ButtonHTMLAttributes<HTMLButtonElement>)}
       >
         {content}
-      </div>
+      </button>
     )
   }
 )
@@ -305,14 +310,14 @@ const SidebarSubMenu = React.forwardRef<HTMLDivElement, SidebarSubMenuProps>(
 
     return (
       <div ref={ref} className={className} {...props}>
-        <div
+        <button
+          type="button"
           className={cn(
-            'flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer',
+            'flex w-full items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer text-left',
             'text-muted-foreground hover:text-foreground hover:bg-muted'
           )}
           onClick={() => setOpen(!open)}
-          role="button"
-          tabIndex={0}
+          aria-expanded={open}
         >
           {icon && <span className="shrink-0">{icon}</span>}
           <span className="flex-1 truncate">{label}</span>
@@ -328,7 +333,7 @@ const SidebarSubMenu = React.forwardRef<HTMLDivElement, SidebarSubMenuProps>(
           >
             <path d="m9 18 6-6-6-6" />
           </svg>
-        </div>
+        </button>
         {open && (
           <div className="ml-4 pl-3 border-l border-border space-y-1 mt-1">
             {children}

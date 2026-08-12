@@ -72,6 +72,7 @@ function variantToShape(
 ): 'contained' | 'outlined' | 'secondary' | 'ghost' | 'link' {
   switch (variant) {
     case 'outlined':   return 'outlined'
+    case 'dashed':     return 'outlined'
     case 'secondary':  return 'secondary'
     case 'ghost':      return 'ghost'
     case 'link':       return 'link'
@@ -105,7 +106,7 @@ const Spinner = ({ className }: { className?: string }) => (
 // ============================================================================
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'contained' | 'destructive' | 'outlined' | 'secondary' | 'ghost' | 'link'
+  variant?: 'contained' | 'destructive' | 'outlined' | 'secondary' | 'ghost' | 'link' | 'dashed'
   size?: 'default' | 'sm' | 'lg' | 'icon'
   color?: ButtonColor
   /** Whether the button should take the full width of its container */
@@ -168,6 +169,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             resolvedVariant === 'ghost',
           'text-accent underline-offset-4 hover:underline':
             resolvedVariant === 'link',
+          // Dashed "add" affordance: dashed border at rest → accent-tinted fill on hover.
+          'border-2 border-dashed border-border bg-transparent text-foreground hover:border-solid hover:border-accent hover:bg-accent/10 hover:text-accent':
+            resolvedVariant === 'dashed',
         }
 
     const iconSize =
@@ -203,9 +207,11 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           </>
         ) : (
           <>
-            {startIcon && <span className={cn('shrink-0', iconSize)}>{startIcon}</span>}
+            {/* inline-flex box sizes the slot; [&_svg]:h-full forces the child
+                icon (even a raw 24px <svg> with no size class) to match. */}
+            {startIcon && <span className={cn('inline-flex shrink-0 items-center justify-center [&_svg]:h-full [&_svg]:w-full', iconSize)}>{startIcon}</span>}
             {children}
-            {endIcon && <span className={cn('shrink-0', iconSize)}>{endIcon}</span>}
+            {endIcon && <span className={cn('inline-flex shrink-0 items-center justify-center [&_svg]:h-full [&_svg]:w-full', iconSize)}>{endIcon}</span>}
           </>
         )}
       </button>
@@ -232,6 +238,15 @@ const iconButtonSizes = {
   sm: 'h-8 w-8',
   md: 'h-10 w-10',
   lg: 'h-12 w-12',
+}
+
+// Force the child icon (even a raw <svg> with no size class) to a glyph size
+// proportional to the button, so icons never render at their intrinsic 24px.
+const iconButtonGlyph = {
+  xs: '[&_svg]:h-3.5 [&_svg]:w-3.5',
+  sm: '[&_svg]:h-4 [&_svg]:w-4',
+  md: '[&_svg]:h-5 [&_svg]:w-5',
+  lg: '[&_svg]:h-6 [&_svg]:w-6',
 }
 
 const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
@@ -264,6 +279,7 @@ const IconButton = React.forwardRef<HTMLButtonElement, IconButtonProps>(
           'disabled:pointer-events-none disabled:opacity-50 disabled:cursor-not-allowed',
           colorOverride ?? variantClasses,
           iconButtonSizes[size],
+          iconButtonGlyph[size],
           rounded ? 'rounded-full' : 'rounded-md',
           className
         )}
